@@ -215,13 +215,16 @@ body { display: grid; grid-template-rows: auto minmax(0, 1fr); grid-template-col
 .sheet-foot { flex: none; padding: 6px 10px; border-top: 1px solid var(--card-border); background: var(--side); }
 #parseWarn { margin: 2px 0 6px; padding: 7px 10px; border: 1px solid var(--warn-border); border-radius: 6px; background: var(--warn-bg); color: var(--warn); font-size: 12px; }
 .fix-comma { margin-top: 6px; }
-.paste-body { margin: 8px 0 4px; }
-.paste-actions { display: flex; gap: 8px; margin-top: 8px; }
-.disclosure > summary { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--fg-muted); }
-.disclosure > summary:hover { color: var(--fg-strong); }
-.disclosure > summary::before { content: ""; width: 5px; height: 5px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: rotate(-45deg); transition: transform .15s; }
-.disclosure[open] > summary::before { transform: rotate(45deg); }
-#pasteBox { display: block; width: 100%; max-width: 560px; padding: 6px 8px; border: 1px solid var(--input-border); border-radius: 6px; background: var(--input-bg); color: var(--fg-strong); font: 12px/1.45 Arial, Helvetica, sans-serif; resize: vertical; }
+/* paste bar: click, then ⌘/Ctrl+V — the clipboard replaces the sheet */
+.paste-bar { display: flex; align-items: center; gap: 8px; }
+#pasteZone { flex: 1; min-width: 0; display: flex; align-items: center; gap: 7px; height: 28px; padding: 0 10px; border: 1px dashed var(--input-hover-border); border-radius: 6px; color: var(--fg-muted); font-size: 12px; cursor: pointer; transition: border-color .15s, background-color .15s, color .15s; }
+#pasteZone svg { width: 14px; height: 14px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+#pasteZone span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#pasteZone:hover { border-color: var(--focus-border); color: var(--fg-strong); }
+#pasteZone.armed, #pasteZone.over { border-style: solid; border-color: var(--focus-border); background: var(--accent-soft); color: var(--fg-strong); }
+#pasteZone.done { border-style: solid; border-color: var(--ok-box-border); background: var(--ok-box-bg); color: var(--ok); }
+.paste-bar #loadDemoBtn { flex: none; height: 28px; border-color: transparent; background: transparent; box-shadow: none; color: var(--fg-muted); }
+.paste-bar #loadDemoBtn:hover { background: var(--btn-hover); color: var(--fg-strong); }
 
 /* Data grid — spreadsheet look: column letters, hairline grid, sticky header + row numbers */
 table.data-grid { table-layout: fixed; border-collapse: separate; border-spacing: 0; }
@@ -312,7 +315,7 @@ input::placeholder, textarea::placeholder { color: var(--fg-faint); }
 #ribbon .unit .num-field { cursor: text; }
 #ribbon .field:focus, #ribbon .unit:focus-within { background-color: var(--input-bg); }
 .tb-btn:active:not(:disabled), .seg button:active, #runBtn:active:not(:disabled) { transform: translateY(1px); }
-#ribbon .field:focus, #pasteBox:focus { outline: none; border-color: var(--focus-border); box-shadow: var(--focus-ring); }
+#ribbon .field:focus { outline: none; border-color: var(--focus-border); box-shadow: var(--focus-ring); }
 button { transition: background-color .15s, color .15s, border-color .15s; }
 :focus-visible { outline: 2px solid var(--focus-border); outline-offset: 1px; }
 
@@ -358,7 +361,7 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
         <label for="importJH" id="importLabel" class="tb-btn" title="Open a saved .jgz session (data + settings)"><svg viewBox="0 0 24 24"><path d="M12 15V3m-4 8 4 4 4-4"/><path d="M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/></svg>Open</label>
         <button id="exportBtn" class="tb-btn" title="Save this session (data + settings) as a .jgz file"><svg viewBox="0 0 24 24"><path d="M12 3v12m-4-8 4-4 4 4"/><path d="M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/></svg>Save</button>
         <button id="copyData" class="tb-btn" title="Copy the whole sheet as TSV (paste into Excel / Sheets)"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>Copy</button>
-        <button id="pasteBtn" class="tb-btn" title="Paste or type TSV / CSV text to import into the sheet"><svg viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="17" rx="2"/><path d="M9 4V3h6v1M9 10h6M9 14h6M9 18h3"/></svg>Paste</button>
+        <button id="pasteBtn" class="tb-btn" title="Paste a table from Excel, Word, a web page, a PDF or a CSV: replaces the sheet"><svg viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="17" rx="2"/><path d="M9 4V3h6v1M9 10h6M9 14h6M9 18h3"/></svg>Paste</button>
       </div>
       <input id="importJH" type="file" accept=".jgz,.jh" class="hidden" />
       <div class="rg-cap">File</div>
@@ -482,17 +485,16 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
       </div>
       <div class="sheet-foot">
         <div id="parseWarn" class="hidden" role="status"></div>
-        <details class="disclosure">
-          <summary>Paste / import TSV or CSV</summary>
-          <div class="paste-body">
-            <label for="pasteBox" class="sr-only">Delimited data to import</label>
-            <textarea id="pasteBox" rows="5" placeholder="Optionally include a header row of group names.&#10;Control&#9;Drug A&#9;Drug B&#10;5.1&#9;7.2&#9;9.8&#10;4.8&#9;6.9&#9;10.2"></textarea>
-            <div class="paste-actions">
-              <button id="importBtn" class="tb-btn">Import into grid</button>
-              <button id="loadDemoBtn" class="tb-btn">Reset to demo data</button>
-            </div>
-          </div>
-        </details>
+        <div class="paste-bar">
+          <!-- a paste target: click it, press ⌘/Ctrl+V, and the clipboard replaces the sheet.
+               The hidden textarea takes focus so the paste event fires in every browser. -->
+          <label id="pasteZone" title="Copy a table from Excel, Word, a web page, a PDF or a CSV file, then click here and paste. You can also drop a .csv / .txt file here.">
+            <svg viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="17" rx="2"/><path d="M9 4V3h6v1M9 10h6M9 14h6M9 18h3"/></svg>
+            <span id="pasteMsg"></span>
+            <textarea id="pasteCatch" class="sr-only" aria-label="Paste data here to replace the sheet" tabindex="-1"></textarea>
+          </label>
+          <button id="loadDemoBtn" class="tb-btn" title="Replace the sheet with the demo data (Undo brings yours back)">Demo data</button>
+        </div>
       </div>
     </section>
 
@@ -518,7 +520,7 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
     <dl>
       <dt>Layout</dt><dd>One column per group. Paired, repeated-measures and Friedman tests match values by row (one subject per row). Correlation uses column A as X and B as Y. Contingency tables hold counts: columns are groups, rows are outcomes (named by the row titles).</dd>
       <dt>Two-way</dt><dd>Columns are the levels of one factor (e.g. Control / Drug); the row title names the level of the other (e.g. Male / Female). Put each replicate on its own row and repeat the row title.</dd>
-      <dt>Paste</dt><dd>Paste a block from Excel/Sheets into any cell (<kbd>⌘/Ctrl</kbd> <kbd>V</kbd>); the grid expands to fit. Paste in the ribbon imports TSV / CSV text, optionally with a header row.</dd>
+      <dt>Paste</dt><dd>Paste a block from Excel/Sheets into any cell (<kbd>⌘/Ctrl</kbd> <kbd>V</kbd>); the grid expands to fit. To replace the whole sheet, click the paste bar under the sheet (or Paste in the ribbon) and press <kbd>⌘/Ctrl</kbd> <kbd>V</kbd>: tables from Excel, Word, web pages, PDFs and CSV text all work, with or without a header row. You can also drop a .csv / .txt file on the bar.</dd>
       <dt>Select</dt><dd>Click a cell and just type to replace it; double-click or <kbd>F2</kbd> to edit inside it. Drag, or <kbd>Shift</kbd> + click / arrows, to select a block; click a row number or column letter for a whole row or column; <kbd>⌘/Ctrl</kbd> <kbd>A</kbd> selects everything. Click the empty grid to add rows and columns there.</dd>
       <dt>Move</dt><dd>Arrows, <kbd>Tab</kbd> and <kbd>Enter</kbd> move between cells (<kbd>Enter</kbd> on the last row adds one); <kbd>⌘/Ctrl</kbd> + arrow jumps to the edge.</dd>
       <dt>Edit</dt><dd>Copy, cut and paste work on blocks; one copied value pasted onto a block fills it. <kbd>Delete</kbd> clears the block, <kbd>⌘/Ctrl</kbd> <kbd>D</kbd> fills down, <kbd>Esc</kbd> cancels a change. Type a value with a block selected and press <kbd>⌘/Ctrl</kbd> <kbd>Enter</kbd> to put it in every cell. Right-click for insert / delete rows and columns. Results update as you type.</dd>
@@ -561,11 +563,20 @@ function parseNum(s) {
 
 /* Parse pasted TSV / CSV / semicolon-separated text into rows of cells.
    The delimiter is chosen once from the first line (tab > ; > ,), so a
-   thousands separator inside a TSV cell is never split. Supports "quoted" cells. */
+   thousands separator inside a TSV cell is never split. Supports "quoted" cells.
+   Text with none of those (copied from a PDF or a paragraph) splits on spaces:
+   on runs of 2+ spaces where that gives the same number of columns as the data
+   rows (so a header like "Drug A" stays one name), else on any space. */
 function parseDelimited(text) {
   const lines = String(text).replace(/\r\n?/g, "\n").split("\n").filter(l => l.trim() !== "");
   if (!lines.length) return [];
   const first = lines[0];
+  if (!lines.some(l => l.includes("\t")) && !first.includes(";") && !first.includes(",")) {
+    const body = (lines.length > 1 ? lines.slice(1) : lines).map(l => l.trim().split(/\s+/));
+    const n = Math.max(...body.map(r => r.length));
+    if (n <= 1) return lines.map(l => [l.trim()]);   // one column (names may contain spaces)
+    return lines.map(l => { const r = l.trim().split(/\s{2,}/); return r.length === n ? r : l.trim().split(/\s+/); });
+  }
   const delim = first.includes("\t") ? "\t" : (first.includes(";") ? ";" : ",");
   return lines.map(l => splitLine(l, delim));
 }
@@ -2015,9 +2026,9 @@ function isTitleColumn(matrix, mayHaveHeader) {
   const first = body.map(r => String(r[0] ?? "").trim()).filter(Boolean);
   return first.length > 0 && first.every(c => !isFinite(S.parseNum(c))) && body.some(r => r.length > 1);
 }
-function importPaste(text) {
-  const all = S.parseDelimited(text);
-  if (!all.length) return;
+function importMatrix(all) {
+  all = all.filter(r => r.some(c => String(c).trim() !== ""));
+  if (!all.length) return false;
   mutate(() => {
     const withTitles = isTitleColumn(all, true);
     const rows = withTitles ? all.map(r => r.slice(1)) : all;
@@ -2029,7 +2040,55 @@ function importPaste(text) {
     for (let c = 0; c < nCols; c++) grid.push({ name: names[c] || groupLabel(c), cells: dataRows.map(r => r[c] ?? "") });
     if (!dataRows.length) grid.forEach(g => g.cells.push(""));
   });
+  return true;
 }
+
+/* ---------- paste bar ---------- */
+const PASTE_IDLE = `Paste a table from Excel, Word, a web page or CSV: click here, then ${isMac ? "⌘" : "Ctrl+"}V`;
+const PASTE_ARMED = `Press ${isMac ? "⌘" : "Ctrl+"}V now. It replaces the sheet; Undo brings the old one back`;
+let pasteMsgTimer = null;
+function pasteMsg(text, cls) {
+  clearTimeout(pasteMsgTimer);
+  $("pasteMsg").textContent = text;
+  $("pasteZone").classList.remove("armed", "done");
+  if (cls) $("pasteZone").classList.add(cls);
+}
+function armPaste() { const t = $("pasteCatch"); t.value = ""; t.focus({ preventScroll: true }); }
+/* cells of the first <table> in pasted HTML (web pages; Word / Excel when the text has no tabs) */
+function htmlTableMatrix(html) {
+  const tb = new DOMParser().parseFromString(html, "text/html").querySelector("table");
+  if (!tb) return null;
+  const m = [...tb.rows].map(tr => [...tr.cells].flatMap(td => [td.textContent.replace(/\s+/g, " ").trim(), ...Array(Math.max(0, (td.colSpan || 1) - 1)).fill("")]));
+  return m.some(r => r.length > 1) || m.length > 1 ? m : null;
+}
+function importClipboard(dt) {
+  const plain = dt.getData("text/plain") || "", html = dt.getData("text/html") || "";
+  const m = (!plain.includes("\t") && html && htmlTableMatrix(html)) || S.parseDelimited(plain);
+  if (!importMatrix(m)) { pasteMsg("Nothing to import: the clipboard holds no text table", "armed"); return; }
+  const rows = nRows();
+  pasteMsg(`✓ Imported ${grid.length} column${grid.length > 1 ? "s" : ""} × ${rows} row${rows > 1 ? "s" : ""}. Undo brings the old sheet back`, "done");
+  $("pasteCatch").blur();
+  pasteMsgTimer = setTimeout(() => pasteMsg(PASTE_IDLE), 3500);
+}
+pasteMsg(PASTE_IDLE);
+$("pasteZone").addEventListener("mousedown", e => { e.preventDefault(); armPaste(); });
+$("pasteCatch").addEventListener("focus", () => pasteMsg(PASTE_ARMED, "armed"));
+$("pasteCatch").addEventListener("blur", () => { if (!$("pasteZone").classList.contains("done")) pasteMsg(PASTE_IDLE); });
+$("pasteCatch").addEventListener("keydown", e => { if (e.key === "Escape") e.target.blur(); });
+$("pasteCatch").addEventListener("paste", e => { e.preventDefault(); importClipboard(e.clipboardData); });
+$("pasteCatch").addEventListener("input", e => {   // a paste the browser inserted as text (no paste event)
+  const v = e.target.value; e.target.value = "";
+  if (v.trim()) importClipboard({ getData: (t) => t === "text/plain" ? v : "" });
+});
+/* drop a .csv / .tsv / .txt file, or dragged text, on the bar */
+["dragenter", "dragover"].forEach(ev => $("pasteZone").addEventListener(ev, e => { e.preventDefault(); $("pasteZone").classList.add("over"); }));
+["dragleave", "drop"].forEach(ev => $("pasteZone").addEventListener(ev, () => $("pasteZone").classList.remove("over")));
+$("pasteZone").addEventListener("drop", async e => {
+  e.preventDefault();
+  const f = e.dataTransfer.files[0];
+  if (f) { const text = await f.text(); importClipboard({ getData: (t) => t === "text/plain" ? text : "" }); }
+  else importClipboard(e.dataTransfer);
+});
 
 $("undoBtn").onclick = undo;
 $("redoBtn").onclick = redo;
@@ -2042,12 +2101,10 @@ $("clearBtn").onclick = () => {
   pushHistory();
   seedBlank();
   scheduleSave();
-  $("pasteBox").value = "";
   clearResults();
   const u = $("undoBtn"); u.classList.add("pulse"); setTimeout(() => u.classList.remove("pulse"), 1600);   // point at Undo, which brings the data back
 };
-$("importBtn").onclick = () => importPaste($("pasteBox").value);
-$("loadDemoBtn").onclick = () => { pushHistory(); seedFromDemo(); scheduleSave(); $("pasteBox").value = ""; run(); };
+$("loadDemoBtn").onclick = () => { pushHistory(); seedFromDemo(); scheduleSave(); run(); };
 
 document.addEventListener("keydown", e => {
   if (!(e.metaKey || e.ctrlKey) || e.altKey) return;
@@ -3122,7 +3179,7 @@ themeBtn.onclick = () => {
 };
 applyUiTheme(document.documentElement.dataset.theme === "light");
 $("helpBtn").onclick = () => $("helpDlg").showModal();
-$("pasteBtn").onclick = () => { document.querySelector("#vData .disclosure").open = true; $("pasteBox").focus(); };
+$("pasteBtn").onclick = armPaste;
 
 
 /* ============================================================

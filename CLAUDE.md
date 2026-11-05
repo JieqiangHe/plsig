@@ -37,6 +37,7 @@ The project was called ministat until Nov 2026, when the repository was renamed.
 
   Both are kept in undo, in localStorage and in `.jgz` files.
 - The sheet behaves like Excel (user's request, Nov 2026): `sel` holds the active cell and the far corner of a range; a click selects a cell (typing replaces it), double-click or F2 edits inside it; drag / Shift selects blocks for copy, cut, paste, Delete and fill-down; right-click opens insert / delete for rows and columns; clicking the empty grid grows the sheet. The sheet owns ⌘/Ctrl+Z, because a cell input always holds focus. Results re-run by themselves after every edit (`scheduleRun`).
+- Under the sheet is a paste bar (user's request, Nov 2026), not a textarea: click it (or Paste in the ribbon) and press ⌘/Ctrl+V, and the clipboard replaces the sheet as one undo step. A visually hidden `#pasteCatch` textarea takes the focus so the paste event fires in every browser. `importClipboard` reads tab-separated text (Excel, Sheets, Word) first, then the first HTML `<table>` (web pages), then `parseDelimited`, which also splits space-separated text from PDFs. Dropping a .csv / .txt file on the bar works too.
 
 ## Checking changes
 
