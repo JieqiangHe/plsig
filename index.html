@@ -103,7 +103,7 @@ select.field{-webkit-appearance:none;appearance:none;padding-right:22px;backgrou
 .num-field{background-color:var(--input-bg);border:1px solid var(--input-border);color:var(--fg-strong);border-radius:6px;padding:0 6px;height:26px;font-size:12px;font-variant-numeric:tabular-nums}
 .num-field:focus{outline:none;border-color:var(--focus-border)}
 .seg{display:inline-flex;gap:2px;padding:2px;border-radius:7px;background:var(--seg-bg);flex:none}
-.seg button{height:22px;padding:0 9px;border:0;border-radius:5px;background:none;color:var(--fg-muted);font-size:12px;cursor:pointer}
+.seg button{height:22px;padding:0 7px;border:0;border-radius:5px;background:none;color:var(--fg-muted);font-size:12px;cursor:pointer}
 .seg button:hover{color:var(--fg-strong)}
 .seg button.on{background:var(--seg-on);color:var(--fg-strong);box-shadow:0 1px 2px rgba(0,0,0,.14);font-weight:500}
 input[type=checkbox] { accent-color: var(--accent); }
@@ -120,7 +120,7 @@ body { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; grid-templat
 
 /* ribbon: labeled groups of small controls, two rows high */
 #ribbon { display: flex; align-items: stretch; overflow-x: auto; scrollbar-width: none; background: var(--bg); border-bottom: 1px solid var(--card-border); }
-.rg { flex: none; display: flex; flex-direction: column; padding: 6px 9px 2px; position: relative; }
+.rg { flex: none; display: flex; flex-direction: column; padding: 6px 8px 2px; position: relative; }
 .rg + .rg::before { content: ""; position: absolute; left: 0; top: 8px; bottom: 8px; width: 1px; background: var(--card-border); }
 .rg-body { flex: 1; display: grid; grid-auto-flow: column; grid-template-rows: 26px 26px; gap: 4px 6px; align-items: center; justify-content: start; justify-items: stretch; }
 .rg-eq .rg-body { grid-auto-columns: 1fr; }                /* every column as wide as the widest */
@@ -142,6 +142,7 @@ body { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; grid-templat
 .unit:focus-within { border-color: var(--focus-border); box-shadow: var(--focus-ring); }
 .unit label { font-size: 11px; color: var(--fg-faint); }
 .unit .num-field { flex: 1; min-width: 0; width: 38px; border: 0; height: 24px; padding: 0; background: transparent; box-shadow: none !important; }
+.unit.wide label { white-space: nowrap; }
 .unit.txt .num-field { width: 68px; text-align: left; font-variant-numeric: normal; }
 .rg .row { display: flex; align-items: center; gap: 6px; }
 #runBtn { grid-row: span 2; background: var(--run-bg); color: var(--run-fg); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; width: 62px; height: 56px; border: 0; border-radius: 8px; font-size: 12px; font-weight: 600; box-shadow: 0 1px 2px rgba(0,0,0,.18); cursor: pointer; }
@@ -306,23 +307,41 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
 
     <div class="rg">
       <div class="rg-body">
-        <select id="testSelect" class="field" style="width:226px" aria-label="Statistical test">
+        <select id="testSelect" class="field" style="width:212px" aria-label="Statistical test">
+          <optgroup label="Column statistics">
+            <option value="desc">Descriptive statistics + normality</option>
+            <option value="onet">One-sample t-test</option>
+            <option value="onew">One-sample Wilcoxon signed-rank</option>
+          </optgroup>
           <optgroup label="Two groups — independent">
-            <option value="ttest">Unpaired t-test</option>
+            <option value="ttest" selected>Unpaired t-test</option>
             <option value="mwu">Mann–Whitney U / Wilcoxon rank-sum</option>
           </optgroup>
           <optgroup label="Two groups — paired (matched rows)">
             <option value="paired">Paired t-test</option>
             <option value="wilcoxon">Wilcoxon signed-rank</option>
           </optgroup>
-          <optgroup label="Two or more groups">
+          <optgroup label="Three or more groups">
             <option value="anova">One-way ANOVA + post-hoc</option>
             <option value="kruskal">Kruskal–Wallis + Dunn's post-hoc</option>
+          </optgroup>
+          <optgroup label="Three or more — repeated measures (matched rows)">
+            <option value="rmanova">Repeated-measures ANOVA</option>
+            <option value="friedman">Friedman + Dunn's post-hoc</option>
+          </optgroup>
+          <optgroup label="XY — column A = X, column B = Y">
+            <option value="corr">Correlation + linear regression</option>
+          </optgroup>
+          <optgroup label="Contingency — counts (rows = outcomes)">
+            <option value="chisq">Chi-square / Fisher's exact test</option>
           </optgroup>
         </select>
         <div>
           <div id="opt_ttest" class="test-opts">
             <label class="check" title="Recommended; does not assume equal variances"><input type="checkbox" id="welchChk" checked />Welch's correction</label>
+          </div>
+          <div id="opt_onesample" class="test-opts hidden">
+            <span class="unit txt wide"><label for="mu0">Hypothetical value</label><input id="mu0" type="number" step="any" value="0" class="num-field" /></span>
           </div>
           <div id="opt_anova" class="test-opts hidden">
             <select id="posthocSelect" class="field" aria-label="Post-hoc test" style="width:226px">
@@ -348,7 +367,9 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
       <div class="rg-body">
         <select id="chartType" class="field as-seg" aria-label="Chart type">
           <option value="bar" data-short="Bar">Bar + error bars</option>
+          <option value="dot" data-short="Dot">Scatter dot plot (mean ± error)</option>
           <option value="box" data-short="Box">Box &amp; whisker</option>
+          <option value="violin" data-short="Violin">Violin (with box)</option>
         </select>
         <select id="errType" class="field as-seg" aria-label="Error bars">
           <option value="sd" data-short="SD">Mean ± SD</option>
@@ -433,7 +454,8 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
   <dialog id="helpDlg"><form method="dialog">
     <header><h3>Tips</h3><button type="submit" value="" aria-label="Close">×</button></header>
     <dl>
-      <dt>Paste</dt><dd>Paste a block from Excel/Sheets into any cell (<kbd>⌘/Ctrl</kbd> <kbd>V</kbd>); the grid expands to fit.</dd>
+      <dt>Layout</dt><dd>One column per group. Paired, repeated-measures and Friedman tests match values by row (one subject per row). Correlation uses column A as X and B as Y. Contingency tables hold counts: columns are groups, rows are outcomes.</dd>
+      <dt>Paste</dt><dd>Paste a block from Excel/Sheets into any cell (<kbd>⌘/Ctrl</kbd> <kbd>V</kbd>); the grid expands to fit. Paste in the ribbon imports TSV / CSV text, optionally with a header row.</dd>
       <dt>Move</dt><dd><kbd>Enter</kbd> / <kbd>↑</kbd> <kbd>↓</kbd> move between rows; <kbd>←</kbd> <kbd>→</kbd> move between groups at a cell's edge.</dd>
       <dt>Delete</dt><dd>Hover a row number and click × to delete the row; hover a column header and click × to delete the column (group).</dd>
       <dt>Undo</dt><dd><kbd>⌘/Ctrl</kbd> <kbd>Z</kbd>; add <kbd>Shift</kbd> for redo.</dd>
@@ -1000,6 +1022,164 @@ function bronKerbosch(R, P, X, adj, out) {
 }
 
 /* ============================================================
+   COLUMN SHAPE  (sample skewness / excess kurtosis, as Excel & Prism)
+   ============================================================ */
+function shape(v) {
+  const n = v.length, m = jStat.mean(v);
+  let m2 = 0, m3 = 0, m4 = 0;
+  v.forEach(x => { const d = x - m; m2 += d * d; m3 += d * d * d; m4 += d * d * d * d; });
+  const s2 = m2 / (n - 1), s = Math.sqrt(s2);
+  const skew = n > 2 && s > 0 ? n / ((n - 1) * (n - 2)) * m3 / (s * s2) : NaN;
+  const kurt = n > 3 && s > 0 ? n * (n + 1) / ((n - 1) * (n - 2) * (n - 3)) * m4 / (s2 * s2) - 3 * (n - 1) ** 2 / ((n - 2) * (n - 3)) : NaN;
+  const geo = v.every(x => x > 0) ? Math.exp(jStat.mean(v.map(Math.log))) : NaN;
+  return { skew, kurt, geo, cv: m !== 0 ? s / Math.abs(m) : NaN, sum: jStat.sum(v) };
+}
+
+/* ============================================================
+   ONE-SAMPLE TESTS  (vs. a hypothetical value)
+   ============================================================ */
+function oneSampleT(v, mu) {
+  const D = describe(v), df = D.n - 1, diff = D.mean - mu;
+  const t = diff / D.sem, tc = jStat.studentt.inv(0.975, df);
+  return { D, mu, diff, t, df, p: pT2(t, df), ci: [diff - tc * D.sem, diff + tc * D.sem], d: diff / D.sd };
+}
+const oneSampleWilcoxon = (v, mu) => wilcoxonSignedRank(v, v.map(() => mu));
+
+/* ============================================================
+   REPEATED MEASURES  (cols: k arrays of the same n subjects)
+   ============================================================ */
+/* One-way RM ANOVA; Greenhouse–Geisser ε from the double-centred covariance matrix. */
+function rmAnova(cols) {
+  const k = cols.length, n = cols[0].length;
+  const all = [].concat(...cols), grand = jStat.mean(all);
+  const desc = cols.map(describe);
+  const subj = Array.from({ length: n }, (_, r) => cols.reduce((s, c) => s + c[r], 0) / k);
+  const ssT = all.reduce((s, x) => s + (x - grand) ** 2, 0);
+  const ssTr = n * desc.reduce((s, d) => s + (d.mean - grand) ** 2, 0);
+  const ssS = k * subj.reduce((s, m) => s + (m - grand) ** 2, 0);
+  const ssE = Math.max(0, ssT - ssTr - ssS);
+  const dfTr = k - 1, dfS = n - 1, dfE = dfTr * dfS;
+  const msTr = ssTr / dfTr, msS = ssS / dfS, msE = ssE / dfE;
+  const F = msE > 0 ? msTr / msE : (msTr > 0 ? Infinity : NaN);
+  const Fs = msE > 0 ? msS / msE : NaN;
+  const cov = cols.map((a, i) => cols.map((b, j) => {
+    let s = 0; for (let r = 0; r < n; r++) s += (a[r] - desc[i].mean) * (b[r] - desc[j].mean);
+    return s / (n - 1);
+  }));
+  const rowM = cov.map(r => jStat.mean(r)), gm = jStat.mean(rowM);
+  let tr = 0, sq = 0;
+  for (let i = 0; i < k; i++) for (let j = 0; j < k; j++) {
+    const v = cov[i][j] - rowM[i] - rowM[j] + gm;
+    sq += v * v; if (i === j) tr += v;
+  }
+  const eps = sq > 0 ? Math.min(1, Math.max(1 / dfTr, tr * tr / (dfTr * sq))) : 1;
+  return { k, n, desc, ssTr, ssS, ssE, ssT, dfTr, dfS, dfE, msTr, msS, msE, F, p: pFUpper(F, dfTr, dfE),
+           eps, pGG: pFUpper(F, dfTr * eps, dfE * eps), Fs, pS: pFUpper(Fs, dfS, dfE), eta2p: ssTr / (ssTr + ssE) };
+}
+/* Friedman test (ranks within each subject, tie-corrected) + Dunn's comparisons on rank sums. */
+function friedman(cols) {
+  const k = cols.length, n = cols[0].length;
+  const R = new Array(k).fill(0);
+  let tieSum = 0;
+  for (let r = 0; r < n; r++) {
+    const rk = rankAll(cols.map(c => c[r]));
+    rk.ranks.forEach((x, j) => { R[j] += x; });
+    tieSum += rk.tieSum;
+  }
+  const C = 1 - tieSum / (n * (k * k * k - k));
+  const Q = C > 0 ? 12 / (n * k * (k + 1)) * R.reduce((s, x) => s + (x - n * (k + 1) / 2) ** 2, 0) / C : 0;
+  const df = k - 1;
+  return { k, n, Q, df, p: C > 0 ? pChi2Upper(Q, df) : 1, rankSums: R, meanRanks: R.map(x => x / n),
+           W: Q / (n * (k - 1)), desc: cols.map(describe) };
+}
+function friedmanDunn(fr, method) {
+  const { k, n, rankSums } = fr, se = Math.sqrt(n * k * (k + 1) / 6), pairs = [];
+  for (let i = 0; i < k; i++) for (let j = i + 1; j < k; j++) {
+    const z = (rankSums[i] - rankSums[j]) / se;
+    pairs.push({ i, j, diff: (rankSums[i] - rankSums[j]) / n, stat: z, praw: pNorm2(z), ci: null });
+  }
+  const adj = adjustP(pairs.map(pr => pr.praw), method);
+  pairs.forEach((pr, idx) => { pr.p = adj[idx]; });
+  return pairs;
+}
+
+/* ============================================================
+   CORRELATION + SIMPLE LINEAR REGRESSION  (paired x, y)
+   ============================================================ */
+function pearson(x, y) {
+  const n = x.length, mx = jStat.mean(x), my = jStat.mean(y);
+  let sxx = 0, syy = 0, sxy = 0;
+  for (let i = 0; i < n; i++) { const dx = x[i] - mx, dy = y[i] - my; sxx += dx * dx; syy += dy * dy; sxy += dx * dy; }
+  const r = sxy / Math.sqrt(sxx * syy), df = n - 2;
+  const p = Math.abs(r) >= 1 ? 0 : pT2(r * Math.sqrt(df / (1 - r * r)), df);
+  let ci = null;
+  if (n > 3 && Math.abs(r) < 1) {                      // Fisher z interval
+    const z = Math.atanh(r), h = 1.959964 / Math.sqrt(n - 3);
+    ci = [Math.tanh(z - h), Math.tanh(z + h)];
+  }
+  return { n, r, p, ci, mx, my, sxx, syy, sxy, df };
+}
+function correlation(x, y) {
+  const P = pearson(x, y);
+  const sp = pearson(rankAll(x).ranks, rankAll(y).ranks);   // Spearman ρ = Pearson on ranks (t approx.)
+  const { n, mx, my, sxx, syy, sxy, df } = P;
+  const slope = sxy / sxx, intercept = my - slope * mx;
+  const ssRes = Math.max(0, syy - slope * sxy), syx = Math.sqrt(ssRes / df);
+  const seSlope = syx / Math.sqrt(sxx), seInt = syx * Math.sqrt(1 / n + mx * mx / sxx);
+  const tc = jStat.studentt.inv(0.975, df);
+  const F = ssRes > 0 ? (syy - ssRes) / (ssRes / df) : Infinity;
+  return { n, pearson: P, spearman: { rho: sp.r, p: sp.p }, slope, intercept, seSlope, seInt, syx, tc,
+           slopeCI: [slope - tc * seSlope, slope + tc * seSlope], intCI: [intercept - tc * seInt, intercept + tc * seInt],
+           r2: P.r * P.r, F, pSlope: pFUpper(F, 1, df), xInt: slope !== 0 ? -intercept / slope : NaN,
+           band: (x0) => tc * syx * Math.sqrt(1 / n + (x0 - mx) ** 2 / sxx) };   // 95% CI of the fitted line
+}
+
+/* ============================================================
+   CONTINGENCY TABLES  (rows × columns of counts)
+   ============================================================ */
+const lnFact = (n) => jStat.gammaln(n + 1);
+/* Fisher's exact test, 2×2, two-sided (sum of tables no more likely than the observed one) */
+function fisherExact(a, b, c, d) {
+  const r1 = a + b, c1 = a + c, N = a + b + c + d;
+  const lp = (x) => lnFact(r1) + lnFact(N - r1) + lnFact(c1) + lnFact(N - c1) - lnFact(N)
+                  - lnFact(x) - lnFact(r1 - x) - lnFact(c1 - x) - lnFact(N - r1 - c1 + x);
+  const obs = lp(a);
+  let p = 0;
+  for (let x = Math.max(0, r1 + c1 - N); x <= Math.min(r1, c1); x++) { const l = lp(x); if (l <= obs + 1e-7) p += Math.exp(l); }
+  return Math.min(1, p);
+}
+function contingency(t) {
+  const R = t.length, C = t[0].length;
+  const rows = t.map(r => jStat.sum(r)), cols = t[0].map((_, j) => jStat.sum(t.map(r => r[j])));
+  const N = jStat.sum(rows);
+  let chi2 = 0, yates = 0, minE = Infinity;
+  t.forEach((r, i) => r.forEach((o, j) => {
+    const e = rows[i] * cols[j] / N;
+    minE = Math.min(minE, e);
+    chi2 += (o - e) ** 2 / e;
+    yates += Math.max(0, Math.abs(o - e) - 0.5) ** 2 / e;
+  }));
+  const df = (R - 1) * (C - 1);
+  const out = { R, C, rows, cols, N, chi2, df, p: pChi2Upper(chi2, df), minE,
+                cramerV: Math.sqrt(chi2 / (N * Math.min(R - 1, C - 1))) };
+  if (R === 2 && C === 2) {
+    const [[a, b], [c, d]] = t;
+    Object.assign(out, { yates, pYates: pChi2Upper(yates, 1), pFisher: fisherExact(a, b, c, d) });
+    // columns = groups, row 1 = outcome: risk of outcome in each group
+    const p1 = a / (a + c), p2 = b / (b + d);
+    out.rr = p1 / p2;
+    if (a && b && c && d) {
+      const or = (a * d) / (b * c), se = Math.sqrt(1 / a + 1 / b + 1 / c + 1 / d);
+      out.or = or; out.orCI = [or * Math.exp(-1.959964 * se), or * Math.exp(1.959964 * se)];
+      const seRR = Math.sqrt(1 / a - 1 / (a + c) + 1 / b - 1 / (b + d));
+      out.rrCI = [out.rr * Math.exp(-1.959964 * seRR), out.rr * Math.exp(1.959964 * seRR)];
+    }
+    out.p1 = p1; out.p2 = p2;
+  }
+  return out;
+}
+
+/* ============================================================
    FORMATTING
    ============================================================ */
 function starsFor(p) {
@@ -1019,6 +1199,7 @@ return {
   tTest, pairedTTest, mannWhitney, wilcoxonSignedRank,
   anova, anovaPosthoc, kruskalWallis, dunnTest, adjustP,
   shapiroWilk, brownForsythe, compactLetters,
+  shape, oneSampleT, oneSampleWilcoxon, rmAnova, friedman, friedmanDunn, correlation, contingency, fisherExact,
   ptukey, qtukey, pdunnett, qdunnett,
   starsFor, fmt, fmtP,
 };
@@ -1054,7 +1235,7 @@ const DEMO = [
 ];
 const DEFAULT_ROWS = 10;
 const STORE_KEY = "ministat:v1";
-const SETTING_IDS = ["testSelect", "posthocSelect", "dunnAdj", "chartType", "errType", "themeSelect", "sigLabel", "xLabel", "yLabel", "plotW", "plotH", "dotSize"];
+const SETTING_IDS = ["testSelect", "posthocSelect", "dunnAdj", "mu0", "chartType", "errType", "themeSelect", "sigLabel", "xLabel", "yLabel", "plotW", "plotH", "dotSize"];
 const GRAPH_DEFAULTS = { chartType: "bar", errType: "sem", themeSelect: "prism", sigLabel: "stars", xLabel: "Group", yLabel: "Value", plotW: "300", plotH: "400", dotSize: "6" };
 
 let grid = [];          // array of groups: {name, cells:[string,...]}
@@ -1386,15 +1567,15 @@ function showWarnings(list, decimalComma) {
 /* ============================================================
    CONTROLLER
    ============================================================ */
-const TWO_GROUP = new Set(["ttest", "mwu", "paired", "wilcoxon"]);
+const TWO_GROUP = new Set(["ttest", "mwu", "paired", "wilcoxon", "corr"]);
+const ONE_GROUP = new Set(["desc", "onet", "onew"]);   // these work on a single column
+const OPTION_PANELS = { opt_ttest: ["ttest"], opt_onesample: ["onet", "onew"], opt_anova: ["anova", "rmanova"], opt_kruskal: ["kruskal", "friedman"] };
 function syncTestOptions() {
   const t = $("testSelect").value;
-  $("opt_ttest").classList.toggle("hidden", t !== "ttest");
-  $("opt_anova").classList.toggle("hidden", t !== "anova");
-  $("opt_kruskal").classList.toggle("hidden", t !== "kruskal");
+  Object.entries(OPTION_PANELS).forEach(([id, tests]) => $(id).classList.toggle("hidden", !tests.includes(t)));
 }
 // analysis options: re-run immediately if results are already on screen
-["testSelect", "posthocSelect", "dunnAdj", "welchChk"].forEach(id => $(id).addEventListener("change", () => {
+["testSelect", "posthocSelect", "dunnAdj", "welchChk", "mu0"].forEach(id => $(id).addEventListener("change", () => {
   syncTestOptions(); scheduleSave();
   if (lastReport) run();
 }));
@@ -1410,12 +1591,13 @@ function run() {
   const test = $("testSelect").value;
   const problems = [...warns];
 
-  if (groups.length < 2) problems.push("Need at least 2 non-empty groups to run a test.");
+  const minGroups = ONE_GROUP.has(test) ? 1 : 2;
+  if (groups.length < minGroups) problems.push(minGroups === 1 ? "Enter some values first." : "Need at least 2 non-empty columns for this analysis.");
   else if (TWO_GROUP.has(test) && groups.length > 2) {
-    problems.push(`This test compares 2 groups — using “${groups[0].name}” and “${groups[1].name}”.`);
+    problems.push(`This analysis uses 2 columns — using “${groups[0].name}” and “${groups[1].name}”.`);
     groups = groups.slice(0, 2);
   }
-  if (groups.length < 2) { showWarnings(problems, decimalComma); clearResults(); return; }
+  if (groups.length < minGroups) { showWarnings(problems, decimalComma); clearResults(); return; }
 
   const btn = $("runBtn"), label = btn.innerHTML; btn.disabled = true; btn.textContent = "Analyzing…";
   setTimeout(() => {   // let the button repaint before a potentially slow post-hoc
@@ -1698,7 +1880,223 @@ const ANALYSES = {
       plot: { groups, mode: "letters", letters },
     };
   },
+
+  /* ---- column analyses ---- */
+  desc(groups) {
+    const names = groups.map(g => g.name), descs = groups.map(g => S.describe(g.values));
+    const sh = groups.map(g => S.shape(g.values));
+    const sws = groups.map(g => S.shapiroWilk(g.values));
+    return {
+      verdict: { sig: false, html: `Column statistics for ${groups.length} column${groups.length > 1 ? "s" : ""}.` },
+      report: { test: "Column statistics", sections: [
+        descSection(names, descs),
+        { title: "Shape & spread", head: ["Statistic", ...names], rows: [
+          ["Coefficient of variation", ...sh.map(x => isFinite(x.cv) ? fmt(x.cv * 100, 2) + "%" : "—")],
+          ["Geometric mean", ...sh.map(x => fmt(x.geo))],
+          ["Skewness", ...sh.map(x => fmt(x.skew, 3))],
+          ["Kurtosis (excess)", ...sh.map(x => fmt(x.kurt, 3))],
+          ["Sum", ...sh.map(x => fmt(x.sum))],
+        ] },
+        { title: "Normality (Shapiro–Wilk)", head: ["Statistic", ...names], rows: [
+          ["W", ...sws.map(w => w ? fmt(w.W) : "—")],
+          ["P value", ...sws.map(w => w ? fmtP(w.p) : "—")],
+          ["Passed (α = 0.05)?", ...sws.map(w => w ? (w.p < 0.05 ? "No" : "Yes") : "n < 3")],
+        ] },
+      ] },
+      plot: { groups, mode: "none" },
+    };
+  },
+
+  onet(groups, problems) { return oneSample(groups, problems, false); },
+  onew(groups, problems) { return oneSample(groups, problems, true); },
+
+  /* ---- repeated measures (rows = subjects) ---- */
+  rmanova(groups, problems) {
+    const m = matchedRows(groups, problems);
+    if (!m) return null;
+    const rm = S.rmAnova(m.cols);
+    if (!(rm.msE > 0)) { problems.push("Repeated-measures ANOVA needs some residual variation."); return null; }
+    const method = $("posthocSelect").value;
+    const names = m.groups.map(g => g.name);
+    const pairs = S.anovaPosthoc({ k: rm.k, desc: rm.desc, msW: rm.msE, dfW: rm.dfE }, method);
+    const METHOD_NAMES = { tukey: "Tukey", bonferroni: "Bonferroni", holm: "Holm", dunnett: `Dunnett (vs. ${names[0]})` };
+    const sections = [
+      descSection(names, rm.desc),
+      { title: "Repeated-measures one-way ANOVA", head: ["Source", "SS", "df", "MS", "F", "P"], rows: [
+        ["Treatment (between columns)", fmt(rm.ssTr), String(rm.dfTr), fmt(rm.msTr), fmt(rm.F, 3), bold(fmtP(rm.pGG))],
+        ["Individual (between rows)", fmt(rm.ssS), String(rm.dfS), fmt(rm.msS), fmt(rm.Fs, 3), fmtP(rm.pS)],
+        ["Residual", fmt(rm.ssE), String(rm.dfE), fmt(rm.msE), "—", "—"],
+        ["Total", fmt(rm.ssT), String(rm.dfTr + rm.dfS + rm.dfE), "—", "—", "—"],
+      ], note: "(treatment P uses the Geisser–Greenhouse correction)" },
+      { title: "Sphericity & effect size", rows: [
+        ["Geisser–Greenhouse ε", fmt(rm.eps, 4)],
+        ["P (assuming sphericity)", fmtP(rm.p)],
+        ["Was the matching effective?", rm.pS < 0.05 ? "Yes" : "No"],
+        ["Partial η²", fmt(rm.eta2p, 3)],
+      ] },
+      posthocSection(`Post-hoc comparisons — ${METHOD_NAMES[method]}`, pairs, names, "Mean diff.", method !== "holm"),
+    ];
+    let plot;
+    if (method === "dunnett") plot = { groups: m.groups, mode: "control", ps: [null, ...pairs.map(p => p.p)], paired: true };
+    else {
+      const letters = S.compactLetters(rm.k, pairs, rm.desc.map(d => d.mean));
+      sections.push(cldSection(names, rm.desc.map(d => fmt(d.mean)), "Mean", letters));
+      plot = { groups: m.groups, mode: "letters", letters, paired: true };
+    }
+    return {
+      verdict: verdict(`Is there a significant difference among the ${rm.k} matched columns?`,
+        `RM one-way ANOVA, F(${fmt(rm.dfTr * rm.eps, 3)}, ${fmt(rm.dfE * rm.eps, 3)}) = ${fmt(rm.F, 3)}`, rm.pGG, false),
+      report: { test: "Repeated-measures one-way ANOVA", sections }, plot,
+    };
+  },
+
+  friedman(groups, problems) {
+    const m = matchedRows(groups, problems);
+    if (!m) return null;
+    const fr = S.friedman(m.cols);
+    const adj = $("dunnAdj").value;
+    const pairs = S.friedmanDunn(fr, adj);
+    const names = m.groups.map(g => g.name);
+    const letters = S.compactLetters(fr.k, pairs, fr.meanRanks);
+    return {
+      verdict: verdict(`Is there a significant difference among the ${fr.k} matched columns?`, `Friedman, χ²(${fr.df}) = ${fmt(fr.Q, 3)}`, fr.p, false),
+      report: { test: "Friedman test", sections: [
+        descSection(names, fr.desc),
+        { title: "Friedman test", rows: [
+          ["Number of rows (subjects)", String(fr.n)],
+          ["Friedman statistic (tie-corrected)", fmt(fr.Q, 3)], ["df", String(fr.df)],
+          ["P value (χ² approx.)", bold(fmtP(fr.p))], ["Significance", sigCell(fr.p)],
+          ["Kendall's W", fmt(fr.W, 3)],
+        ] },
+        posthocSection(`Dunn's multiple comparisons — ${adj === "holm" ? "Holm" : "Bonferroni"} adjusted`, pairs, names, "Mean rank diff.", false),
+        cldSection(names, fr.meanRanks.map(r => fmt(r, 2)), "Mean rank", letters),
+      ] },
+      plot: { groups: m.groups, mode: "letters", letters, paired: true },
+    };
+  },
+
+  /* ---- XY: column A = X, column B = Y ---- */
+  corr(groups, problems) {
+    const [a, b] = groups;
+    const pr = pairedData(a, b, problems);
+    if (pr.x.length < 3) { problems.push("Correlation needs at least 3 rows with both X and Y."); return null; }
+    const c = S.correlation(pr.x, pr.y), P = c.pearson;
+    const sign = (v) => (v >= 0 ? "+ " : "− ") + fmt(Math.abs(v));
+    return {
+      verdict: verdict(`Is ${b.name} significantly correlated with ${a.name}?`, `Pearson r = ${fmt(P.r, 3)}`, P.p),
+      report: { test: "Correlation & linear regression", sections: [
+        descSection([a.name + " (X)", b.name + " (Y)"], [S.describe(pr.x), S.describe(pr.y)]),
+        { title: "Correlation", head: ["", "Pearson r", "Spearman ρ"], rows: [
+          ["Coefficient", fmt(P.r, 4), fmt(c.spearman.rho, 4)],
+          ["95% CI", P.ci ? `${fmt(P.ci[0], 4)} to ${fmt(P.ci[1], 4)}` : "—", "—"],
+          ["R²", fmt(c.r2, 4), "—"],
+          ["P value (two-tailed)", bold(fmtP(P.p)), bold(fmtP(c.spearman.p))],
+          ["Significance", sigCell(P.p), sigCell(c.spearman.p)],
+          ["Number of XY pairs", String(c.n), String(c.n)],
+        ] },
+        { title: "Simple linear regression", note: `(Y = ${fmt(c.slope)}·X ${sign(c.intercept)})`, head: ["Parameter", "Best-fit value", "Std. error", "95% CI"], rows: [
+          ["Slope", fmt(c.slope), fmt(c.seSlope), ciText(c.slopeCI)],
+          ["Y-intercept", fmt(c.intercept), fmt(c.seInt), ciText(c.intCI)],
+          ["X-intercept", fmt(c.xInt), "—", "—"],
+        ] },
+        { title: "Goodness of fit & slope test", rows: [
+          ["R squared", fmt(c.r2, 4)], ["Sy.x", fmt(c.syx)],
+          ["F (slope ≠ 0)", `F(1, ${c.n - 2}) = ${fmt(c.F, 3)}`],
+          ...pRows(c.pSlope),
+        ] },
+      ] },
+      plot: { mode: "xy", x: pr.x, y: pr.y, xName: a.name, yName: b.name, fit: c },
+    };
+  },
+
+  /* ---- contingency: columns = groups, rows = outcomes (counts) ---- */
+  chisq(groups, problems) {
+    const rows = [...new Set(groups.flatMap(g => g.rows))].sort((p, q) => p - q)
+      .filter(r => groups.every(g => g.rows.includes(r)));
+    const t = rows.map(r => groups.map(g => g.values[g.rows.indexOf(r)]));
+    if (t.length < 2) { problems.push("A contingency table needs at least 2 rows (outcomes) filled in every column."); return null; }
+    if (t.some(r => r.some(v => v < 0 || !Number.isInteger(v)))) { problems.push("Contingency tables hold counts — whole numbers ≥ 0."); return null; }
+    const ct = S.contingency(t);
+    if (ct.rows.some(x => x === 0) || ct.cols.some(x => x === 0)) { problems.push("Every row and column of the table needs a non-zero total."); return null; }
+    const names = groups.map(g => g.name), rowNames = rows.map(r => `Row ${r + 1}`);
+    const is22 = ct.R === 2 && ct.C === 2;
+    const pMain = is22 ? ct.pFisher : ct.p;
+    if (ct.minE < 5) problems.push(`Some expected counts are below 5 (smallest ${fmt(ct.minE, 2)})${is22 ? " — Fisher's exact test is the one to report." : " — the χ² approximation may be inaccurate."}`);
+    const sections = [
+      { title: "Observed counts", head: ["", ...names, "Total"], rows: [
+        ...t.map((r, i) => [rowNames[i], ...r.map(String), String(ct.rows[i])]),
+        ["Total", ...ct.cols.map(String), String(ct.N)],
+      ] },
+      { title: "Column percentages", head: ["", ...names], rows: t.map((r, i) => [rowNames[i], ...r.map((v, j) => fmt(100 * v / ct.cols[j], 1) + "%")]) },
+      { title: is22 ? "Tests" : "Chi-square test", rows: [
+        ...(is22 ? [["Fisher's exact test, P (two-sided)", bold(fmtP(ct.pFisher))]] : []),
+        ["Chi-square", `χ²(${ct.df}) = ${fmt(ct.chi2, 3)}`], ["Chi-square P", is22 ? fmtP(ct.p) : bold(fmtP(ct.p))],
+        ...(is22 ? [["Chi-square with Yates' correction", `χ²(1) = ${fmt(ct.yates, 3)}, P = ${fmtP(ct.pYates)}`]] : []),
+        ["Significance", sigCell(pMain)],
+        ["Cramér's V", fmt(ct.cramerV, 3)],
+      ] },
+    ];
+    if (is22) sections.push({ title: "Effect size", note: `(risk of ${rowNames[0]} in ${names[0]} vs. ${names[1]})`, rows: [
+      [`Risk in ${names[0]} / ${names[1]}`, `${fmt(ct.p1 * 100, 1)}% / ${fmt(ct.p2 * 100, 1)}%`],
+      ["Relative risk", `${fmt(ct.rr, 3)}${ct.rrCI ? ` (95% CI ${fmt(ct.rrCI[0], 3)} to ${fmt(ct.rrCI[1], 3)})` : ""}`],
+      ["Odds ratio", ct.or ? `${fmt(ct.or, 3)} (95% CI ${fmt(ct.orCI[0], 3)} to ${fmt(ct.orCI[1], 3)})` : "— (a zero cell)"],
+    ] });
+    return {
+      verdict: verdict("Is the distribution of outcomes different between the columns?", is22 ? "Fisher's exact test" : `χ²(${ct.df}) = ${fmt(ct.chi2, 3)}`, pMain),
+      report: { test: "Contingency table", sections },
+      plot: { mode: "counts", names, rowNames, table: t, p: pMain },
+    };
+  },
 };
+
+/* one-sample t / Wilcoxon: every column vs. the hypothetical value */
+function oneSample(groups, problems, nonpar) {
+  const mu = S.parseNum($("mu0").value);
+  if (!isFinite(mu)) { problems.push("Enter a number for the hypothetical value."); return null; }
+  const cols = groups.filter(g => g.values.length >= (nonpar ? 1 : 2));
+  if (cols.length < groups.length) problems.push("Columns with fewer than 2 values were skipped.");
+  if (!cols.length) return null;
+  const names = cols.map(g => g.name);
+  const rs = cols.map(g => nonpar ? S.oneSampleWilcoxon(g.values, mu) : S.oneSampleT(g.values, mu));
+  const name = nonpar ? "One-sample Wilcoxon signed-rank test" : "One-sample t-test";
+  const rows = nonpar ? [
+    ["Hypothetical median", ...rs.map(() => fmt(mu))],
+    ["Actual median", ...rs.map(r => fmt(r.A.median))],
+    ["Discrepancy", ...rs.map(r => fmt(r.A.median - mu))],
+    ["Sum of signed ranks (W+ − W−)", ...rs.map(r => fmt(r.Wplus - r.Wminus, 1))],
+    ["P value method", ...rs.map(r => r.exact ? "Exact" : "Normal approx.")],
+  ] : [
+    ["Hypothetical mean", ...rs.map(() => fmt(mu))],
+    ["Actual mean", ...rs.map(r => fmt(r.D.mean))],
+    ["Discrepancy (mean − hypothetical)", ...rs.map(r => fmt(r.diff))],
+    ["95% CI of discrepancy", ...rs.map(r => ciText(r.ci))],
+    ["t, df", ...rs.map(r => `t = ${fmt(r.t)}, df = ${r.df}`)],
+    ["Effect size (Cohen's d)", ...rs.map(r => fmt(r.d, 3))],
+  ];
+  rows.push(["P value (two-tailed)", ...rs.map(r => bold(fmtP(r.p)))], ["Significance", ...rs.map(r => sigCell(r.p))]);
+  const pMin = Math.min(...rs.map(r => r.p));
+  return {
+    verdict: cols.length === 1
+      ? verdict(`Is the ${nonpar ? "median" : "mean"} of ${names[0]} different from ${fmt(mu)}?`, name, rs[0].p)
+      : { sig: pMin < 0.05, html: `${rs.filter(r => r.p < 0.05).length} of ${cols.length} columns differ significantly from ${fmt(mu)} (${name}, unadjusted).` },
+    report: { test: name, sections: [
+      descSection(names, cols.map(g => S.describe(g.values))),
+      { title: name, head: ["", ...names], rows },
+      ...(nonpar ? [] : [assumptionSection(cols, { variance: false, parametric: true })]),
+    ] },
+    plot: { groups: cols, mode: "each", ps: rs.map(r => r.p), ref: mu },
+  };
+}
+
+/* rows filled in every column → one subject per row (warns about incomplete rows) */
+function matchedRows(groups, problems) {
+  const rows = groups[0].rows.filter(r => groups.every(g => g.rows.includes(r)));
+  const dropped = new Set(groups.flatMap(g => g.rows)).size - rows.length;
+  if (dropped) problems.push(`${dropped} row(s) with missing values were excluded (repeated measures need complete rows).`);
+  if (rows.length < 2) { problems.push("Repeated measures need at least 2 complete rows."); return null; }
+  const cols = groups.map(g => rows.map(r => g.values[g.rows.indexOf(r)]));
+  return { cols, groups: groups.map((g, i) => ({ name: g.name, values: cols[i] })) };
+}
 
 function posthocSection(title, pairs, names, diffLabel, withCI) {
   const head = ["Comparison", diffLabel, ...(withCI ? ["95% CI (simultaneous)"] : []), "Adj. P", "Sig."];
@@ -1714,8 +2112,9 @@ function cldSection(names, stat, statLabel, letters) {
 
 /* ============================================================
    PLOTTING
-   spec: { groups:[{name, values}], mode: "two"|"letters"|"control",
-           p?, letters?, ps? (per-group P vs control), paired? }
+   spec: { groups:[{name, values}], mode: "two"|"letters"|"control"|"each"|"none",
+           p?, letters?, ps? (per-group P), paired? (rows matched), ref? (reference line) }
+         | { mode: "xy", x, y, xName, yName, fit } | { mode: "counts", names, rowNames, table, p }
    ============================================================ */
 /* small deterministic PRNG so jitter is identical on every redraw/export */
 function mulberry32(a) {
@@ -1727,104 +2126,107 @@ function mulberry32(a) {
   };
 }
 
+/* frame shared by every figure: white paper, boxed axes, Arial */
+function baseLayout(theme, xTitle, yTitle) {
+  const axisFont = { size: 14, family: "Arial, Helvetica, sans-serif" };
+  const axis = (title) => ({ title: { text: title, font: axisFont }, zeroline: false, showline: true, mirror: true,
+                             linecolor: theme.line, linewidth: 1.5, ticks: "" });
+  return {
+    paper_bgcolor: theme.paper, plot_bgcolor: theme.paper,
+    font: { color: theme.font, family: "Arial, Helvetica, sans-serif", size: 13 },
+    showlegend: false, margin: { t: 36, r: 20, b: 55, l: 60 },
+    xaxis: axis(xTitle), yaxis: Object.assign(axis(yTitle), { gridcolor: GRIDCOL }),
+    annotations: [], shapes: [],
+  };
+}
+const sigText = (p) => $("sigLabel").value === "pval" ? ("<i>P</i> " + pRel(p)) : starsFor(p);
+/* the axis titles default to "Group" / "Value"; XY and contingency plots use better defaults until edited */
+const axisTitle = (id, fallback) => ($(id).value === GRAPH_DEFAULTS[id] ? fallback : $(id).value);
+function render(traces, layout) {
+  setPlotBox();
+  Plotly.newPlot("plot", traces, layout, { responsive: true, displayModeBar: false });
+}
+
 function drawPlot(spec) {
   lastPlot = spec;
-  const { groups } = spec;
   const theme = THEMES[$("themeSelect").value] || THEMES.prism;
+  if (spec.mode === "xy") return drawXY(spec, theme);
+  if (spec.mode === "counts") return drawCounts(spec, theme);
+  const { groups } = spec;
   const errType = $("errType").value;
-  const chartType = $("chartType").value;
+  const chart = $("chartType").value;          // bar | dot | box | violin
+  const meanErr = chart === "bar" || chart === "dot";
   const dotSize = Math.max(2, parseInt($("dotSize").value, 10) || 6);
   const descs = groups.map(g => S.describe(g.values));
   const xIdx = groups.map((_, i) => i);
   const names = groups.map(g => g.name);
-  const axisFont = { size: 14, family: "Arial, Helvetica, sans-serif" };
+  const color = (i) => theme.colors[i % theme.colors.length];
   // error-bar half-width; NaN (e.g. n = 1) → no bar, never poisons the axis range
   const errOf = (d) => {
     const e = errType === "sd" ? d.sd : errType === "ci" ? d.ciHi - d.mean : d.sem;
     return Number.isFinite(e) ? e : 0;
   };
-
+  const layout = baseLayout(theme, $("xLabel").value, $("yLabel").value);
+  Object.assign(layout.xaxis, { tickvals: xIdx, ticktext: names.map(escapeHtml), range: [-0.7, groups.length - 0.3], showgrid: false });
   const traces = [];
-  const layout = {
-    paper_bgcolor: theme.paper, plot_bgcolor: theme.paper,
-    font: { color: theme.font, family: "Arial, Helvetica, sans-serif", size: 13 },
-    showlegend: false, margin: { t: 36, r: 20, b: 55, l: 60 },
-    xaxis: { title: { text: $("xLabel").value, font: axisFont }, tickvals: xIdx, ticktext: names.map(escapeHtml),
-             range: [-0.7, groups.length - 0.3], zeroline: false, showgrid: false,
-             showline: true, mirror: true, linecolor: theme.line, linewidth: 1.5, ticks: "" },
-    yaxis: { title: { text: $("yLabel").value, font: axisFont }, zeroline: false,
-             gridcolor: GRIDCOL, showline: true, mirror: true, linecolor: theme.line, linewidth: 1.5, ticks: "" },
-    annotations: [], shapes: [],
-  };
 
-  // top of each group's drawn elements (bar + error bar, whisker, and raw points)
-  const tops = groups.map((g, i) => Math.max(...g.values, chartType === "bar" ? descs[i].mean + errOf(descs[i]) : -Infinity));
-  let yMax = Math.max(...tops);
-  let yMin = Math.min(...groups.map((g, i) => Math.min(...g.values, chartType === "bar" ? descs[i].mean - errOf(descs[i]) : Infinity)));
+  // top / bottom of each group's drawn elements (bar or mean ± error, whiskers, raw points)
+  const tops = groups.map((g, i) => Math.max(...g.values, meanErr ? descs[i].mean + errOf(descs[i]) : -Infinity));
+  let yMax = Math.max(...tops), yMin = Math.min(...groups.map((g, i) => Math.min(...g.values, meanErr ? descs[i].mean - errOf(descs[i]) : Infinity)));
+  if (spec.ref != null) { yMax = Math.max(yMax, spec.ref); yMin = Math.min(yMin, spec.ref); }
+  const errorBars = { type: "data", array: descs.map(errOf), visible: true, color: theme.line, thickness: 1.6, width: 6 };
 
-  if (chartType === "bar") {
+  if (chart === "bar") {
     traces.push({
-      type: "bar", x: xIdx, y: descs.map(d => d.mean),
-      marker: { color: names.map((_, i) => theme.colors[i % theme.colors.length]), line: { color: theme.markerLine, width: 1.5 } },
-      width: 0.6,
-      error_y: { type: "data", array: descs.map(errOf), visible: true, color: theme.line, thickness: 1.6, width: 6 },
-      customdata: names.map(escapeHtml),
-      hovertemplate: "%{customdata}<br>mean %{y:.3f}<extra></extra>",
+      type: "bar", x: xIdx, y: descs.map(d => d.mean), width: 0.6, error_y: errorBars,
+      marker: { color: xIdx.map(color), line: { color: theme.markerLine, width: 1.5 } },
+      customdata: names.map(escapeHtml), hovertemplate: "%{customdata}<br>mean %{y:.3f}<extra></extra>",
     });
-  } else {
-    groups.forEach((g, i) => {
-      traces.push({
-        type: "box", y: g.values, x: g.values.map(() => i),
-        name: escapeHtml(g.name), boxpoints: false, width: 0.5,
-        line: { color: theme.markerLine, width: 1.5 },
-        fillcolor: theme.colors[i % theme.colors.length],
-        marker: { color: theme.colors[i % theme.colors.length] },
-        hoverinfo: "y",
-      });
-    });
+  } else if (chart === "box" || chart === "violin") {
+    groups.forEach((g, i) => traces.push(chart === "box"
+      ? { type: "box", y: g.values, x: g.values.map(() => i), boxpoints: false, width: 0.5,
+          line: { color: theme.markerLine, width: 1.5 }, fillcolor: color(i), hoverinfo: "y" }
+      : { type: "violin", y: g.values, x: g.values.map(() => i), points: false, width: 0.7, spanmode: "hard",
+          line: { color: theme.markerLine, width: 1.3 }, fillcolor: color(i), opacity: 1,
+          box: { visible: true, width: 0.18, fillcolor: "#ffffff", line: { color: theme.markerLine, width: 1.2 } },
+          meanline: { visible: false }, hoverinfo: "y" }));
   }
 
-  // raw points — deterministic jitter (or exact x with connecting lines for paired data)
+  // raw points — deterministic jitter (exact x, joined by lines, for matched rows)
   if (spec.paired) {
-    const [a, b] = groups;
     const xs = [], ys = [];
-    a.values.forEach((v, j) => { xs.push(0, 1, null); ys.push(v, b.values[j], null); });
+    groups[0].values.forEach((_, r) => { groups.forEach((g, i) => { xs.push(i); ys.push(g.values[r]); }); xs.push(null); ys.push(null); });
     traces.push({ type: "scatter", mode: "lines", x: xs, y: ys, line: { color: "rgba(0,0,0,0.35)", width: 1 }, hoverinfo: "skip" });
   }
   groups.forEach((g, i) => {
-    const rnd = mulberry32(1009 * (i + 1));
+    const rnd = mulberry32(1009 * (i + 1)), spread = chart === "dot" ? 0.42 : 0.28;
     traces.push({
       type: "scatter", mode: "markers",
-      x: g.values.map(() => spec.paired ? i : i + (rnd() - 0.5) * 0.28),
-      y: g.values,
-      marker: { color: "rgba(0,0,0,0)", size: dotSize, line: { color: "#000000", width: 1 } },
-      text: g.values.map(() => escapeHtml(g.name)),
-      hovertemplate: "%{text}<br>%{y:.3f}<extra></extra>",
-      showlegend: false,
+      x: g.values.map(() => spec.paired ? i : i + (rnd() - 0.5) * spread), y: g.values,
+      marker: chart === "dot" ? { color: color(i), size: dotSize + 1, line: { color: theme.markerLine, width: 0.8 } }
+                              : { color: "rgba(0,0,0,0)", size: dotSize, line: { color: "#000000", width: 1 } },
+      text: g.values.map(() => escapeHtml(g.name)), hovertemplate: "%{text}<br>%{y:.3f}<extra></extra>",
     });
   });
+  if (chart === "dot") traces.push({          // mean line + error bars drawn over the points
+    type: "scatter", mode: "markers", x: xIdx, y: descs.map(d => d.mean), error_y: Object.assign({}, errorBars, { width: 9 }),
+    marker: { symbol: "line-ew-open", size: 30, color: theme.line, line: { color: theme.line, width: 2.2 } }, hoverinfo: "skip",
+  });
 
+  if (chart === "bar") yMin = Math.min(0, yMin);             // bars start at 0; other charts hug the data
   const span = (yMax - yMin) || Math.abs(yMax) || 1;
-  // Adaptive top padding so significance brackets / letters never overflow the frame.
-  const sigPad = spec.mode === "two" ? 0.28 : 0.16;
-  const lower = chartType === "bar" ? Math.min(0, yMin - span * 0.05) : yMin - span * 0.05;  // bars start at 0; boxes hug the data
-  layout.yaxis.range = [lower, Math.max(yMax + span * sigPad, chartType === "bar" ? 0 : -Infinity)];
+  // adaptive top padding so significance brackets / letters never overflow the frame
+  const sigPad = spec.mode === "two" ? 0.28 : spec.mode === "none" ? 0.06 : 0.16;
+  const lower = chart === "bar" && yMin === 0 ? 0 : yMin - span * 0.05;
+  layout.yaxis.range = [lower, Math.max(yMax + span * sigPad, chart === "bar" ? 0 : -Infinity)];
 
-  const sigText = (p) => $("sigLabel").value === "pval" ? ("<i>P</i> " + pRel(p)) : starsFor(p);
-  if (spec.mode === "letters") {
-    tops.forEach((top, i) => layout.annotations.push({
-      x: i, y: top + span * 0.04, text: "<b>" + escapeHtml(spec.letters[i]) + "</b>",
-      showarrow: false, font: { size: 15, color: theme.font }, yanchor: "bottom",
-    }));
-  } else if (spec.mode === "control") {
-    tops.forEach((top, i) => {
-      if (i === 0) return;
-      layout.annotations.push({ x: i, y: top + span * 0.04, text: sigText(spec.ps[i]), showarrow: false,
-                                font: { size: 13, color: theme.font }, yanchor: "bottom" });
-    });
-  } else if (spec.mode === "two") {
-    const yBar = yMax + span * 0.12, yLeg = yMax + span * 0.03;
-    const line = { color: theme.line, width: 1.4 };
+  const above = (i, text, size = 13) => layout.annotations.push({ x: i, y: tops[i] + span * 0.04, text, showarrow: false, yanchor: "bottom", font: { size, color: theme.font } });
+  if (spec.ref != null) layout.shapes.push({ type: "line", xref: "paper", x0: 0, x1: 1, y0: spec.ref, y1: spec.ref, line: { color: theme.line, width: 1.2, dash: "dash" } });
+  if (spec.mode === "letters") spec.letters.forEach((l, i) => above(i, "<b>" + escapeHtml(l) + "</b>", 15));
+  else if (spec.mode === "control") spec.ps.forEach((p, i) => { if (i) above(i, sigText(p)); });
+  else if (spec.mode === "each") spec.ps.forEach((p, i) => above(i, sigText(p)));
+  else if (spec.mode === "two") {
+    const yBar = yMax + span * 0.12, yLeg = yMax + span * 0.03, line = { color: theme.line, width: 1.4 };
     layout.shapes.push(
       { type: "line", x0: 0, x1: 0, y0: yLeg, y1: yBar, line },
       { type: "line", x0: 1, x1: 1, y0: yLeg, y1: yBar, line },
@@ -1832,9 +2234,48 @@ function drawPlot(spec) {
     );
     layout.annotations.push({ x: 0.5, y: yBar, text: sigText(spec.p), showarrow: false, yanchor: "bottom", font: { size: 14, color: theme.font } });
   }
+  render(traces, layout);
+}
 
-  setPlotBox();
-  Plotly.newPlot("plot", traces, layout, { responsive: true, displayModeBar: false });
+/* XY: points, least-squares line and its 95% confidence band */
+function drawXY(spec, theme) {
+  const { x, y, fit } = spec;
+  const dotSize = Math.max(2, parseInt($("dotSize").value, 10) || 6);
+  const layout = baseLayout(theme, axisTitle("xLabel", spec.xName), axisTitle("yLabel", spec.yName));
+  layout.xaxis.gridcolor = GRIDCOL;
+  const lo = Math.min(...x), hi = Math.max(...x), pad = (hi - lo) * 0.05 || 1;
+  const xs = Array.from({ length: 61 }, (_, i) => lo + (hi - lo) * i / 60);
+  const yhat = xs.map(v => fit.intercept + fit.slope * v);
+  const c = theme.colors[0];
+  layout.xaxis.range = [lo - pad, hi + pad];
+  const traces = [
+    { type: "scatter", mode: "lines", x: xs, y: yhat.map((v, i) => v + fit.band(xs[i])), line: { width: 0 }, hoverinfo: "skip" },
+    { type: "scatter", mode: "lines", x: xs, y: yhat.map((v, i) => v - fit.band(xs[i])), line: { width: 0 }, fill: "tonexty", fillcolor: "rgba(0,0,0,0.08)", hoverinfo: "skip" },
+    { type: "scatter", mode: "lines", x: xs, y: yhat, line: { color: theme.line, width: 1.8 }, hoverinfo: "skip" },
+    { type: "scatter", mode: "markers", x, y, marker: { color: c, size: dotSize + 2, line: { color: theme.markerLine, width: 1 } },
+      hovertemplate: "(%{x:.3f}, %{y:.3f})<extra></extra>" },
+  ];
+  layout.annotations.push({ xref: "paper", yref: "paper", x: 0.03, y: 0.97, xanchor: "left", yanchor: "top", showarrow: false, align: "left",
+    text: `<i>r</i> = ${fmt(fit.pearson.r, 3)}<br><i>R</i>² = ${fmt(fit.r2, 3)}<br><i>P</i> ${pRel(fit.pearson.p)}`, font: { size: 12, color: theme.font } });
+  render(traces, layout);
+}
+
+/* contingency: stacked bars of column percentages, one segment per outcome row */
+function drawCounts(spec, theme) {
+  const { names, rowNames, table, p } = spec;
+  const totals = names.map((_, j) => table.reduce((s, r) => s + r[j], 0));
+  const layout = baseLayout(theme, axisTitle("xLabel", ""), axisTitle("yLabel", "Percent of column"));
+  Object.assign(layout, { barmode: "stack", showlegend: true, legend: { orientation: "h", traceorder: "normal", x: 0, y: -0.18, font: { size: 12 } } });
+  layout.margin.b = 80;
+  Object.assign(layout.xaxis, { tickvals: names.map((_, j) => j), ticktext: names.map(escapeHtml), showgrid: false });
+  layout.yaxis.range = [0, 118];
+  const traces = rowNames.map((rn, i) => ({
+    type: "bar", name: rn, x: names.map((_, j) => j), y: table[i].map((v, j) => 100 * v / totals[j]), width: 0.6,
+    marker: { color: theme.colors[i % theme.colors.length], line: { color: theme.markerLine, width: 1.2 } },
+    customdata: table[i], hovertemplate: rn + ": %{customdata} (%{y:.1f}%)<extra></extra>",
+  }));
+  layout.annotations.push({ xref: "paper", x: 0.5, y: 103, yanchor: "bottom", showarrow: false, text: sigText(p), font: { size: 14, color: theme.font } });
+  render(traces, layout);
 }
 
 /* user-set width/height of the plot (blank width = full width) */
