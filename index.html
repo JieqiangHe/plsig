@@ -126,11 +126,6 @@ kbd { font: 500 11px/1 ui-monospace, SFMono-Regular, Menlo, monospace; padding: 
 /* ---------- app shell: top bar + four cards (Data / Figure / Analysis / Results) ---------- */
 body { display: flex; flex-direction: column; height: 100vh; height: 100dvh; overflow: hidden; }
 #menuBar { flex: none; display: flex; align-items: center; gap: 10px; height: 42px; padding: 0 10px 0 14px; background: var(--bg); border-bottom: 1px solid var(--card-border); }
-.brand { display: flex; align-items: center; gap: 9px; color: var(--fg-strong); text-decoration: none; }
-.brand-mark { display: grid; place-items: center; flex: none; color: var(--fg-strong); }
-.brand-mark svg { width: 18px; height: 18px; }
-.brand-name { font-size: 15px; font-weight: 650; letter-spacing: -.01em; }
-.brand-tag { font-size: 12px; color: var(--fg-faint); padding-left: 10px; margin-left: 2px; border-left: 1px solid var(--card-border); }
 .bar-spacer { flex: 1; }
 .privacy { display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; color: var(--fg-muted); padding: 0 10px; height: 24px; border-radius: 999px; background: var(--panel); }
 .privacy::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--ok); }
@@ -236,7 +231,6 @@ button { transition: background-color .15s, color .15s, border-color .15s, trans
 button:active:not(:disabled) { transform: scale(.97); }
 :focus-visible { outline: 2px solid var(--focus-border); outline-offset: 1px; }
 
-@media (max-width: 1100px) { .brand-tag { display: none; } }
 @media (max-width: 880px) {
   body { display: block; height: auto; overflow: auto; }
   #menuBar { position: sticky; top: 0; z-index: 10; padding: 0 12px; }
@@ -268,11 +262,6 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
 
 <body class="bg-black text-neutral-200">
   <header id="menuBar">
-    <span class="brand">
-      <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 16 16"><rect x="2" y="8" width="3" height="6" rx=".8" fill="currentColor"/><rect x="6.5" y="3" width="3" height="11" rx=".8" fill="currentColor"/><rect x="11" y="6" width="3" height="8" rx=".8" fill="currentColor" opacity=".55"/></svg></span>
-      <span class="brand-name">ministat</span>
-      <span class="brand-tag">Statistics &amp; scientific graphing</span>
-    </span>
     <span class="bar-spacer"></span>
     <span class="privacy" title="All calculations run in this browser; your data never leaves this machine">Runs locally · nothing uploaded</span>
     <button id="themeBtn" class="tb-btn" title="Switch between light and dark interface">Theme</button>
@@ -455,7 +444,7 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
   </main>
 
   <dialog id="helpDlg"><form method="dialog">
-    <header><h3>ministat — tips</h3><button type="submit" value="" aria-label="Close">×</button></header>
+    <header><h3>Tips</h3><button type="submit" value="" aria-label="Close">×</button></header>
     <dl>
       <dt>Paste</dt><dd>Paste a block from Excel/Sheets into any cell (<kbd>⌘/Ctrl</kbd> <kbd>V</kbd>); the grid expands to fit.</dd>
       <dt>Move</dt><dd><kbd>Enter</kbd> / <kbd>↑</kbd> <kbd>↓</kbd> move between rows; <kbd>←</kbd> <kbd>→</kbd> move between groups at a cell's edge.</dd>
