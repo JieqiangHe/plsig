@@ -131,8 +131,8 @@ body { display: grid; grid-template-rows: auto minmax(0, 1fr); grid-template-col
 #ribbon .seg button svg { width: 18px; height: 18px; display: block; margin: auto; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
 #ribbon .seg button svg .f { fill: currentColor; stroke: none; }
 /* colour-theme swatch: the first four colours of the theme */
-.chip { display: block; width: 20px; height: 10px; margin: auto; border-radius: 3px; box-shadow: inset 0 0 0 1px rgba(0,0,0,.12); }
-#ribbon #themeSelect + .seg button { padding: 0 3px; }
+.chip { flex: none; display: inline-block; vertical-align: -1px; width: 20px; height: 10px; margin-right: 7px; border-radius: 3px; box-shadow: inset 0 0 0 1px rgba(0,0,0,.12); }
+.strip { flex: none; display: block; width: 72px; height: 10px; border-radius: 3px; box-shadow: inset 0 0 0 1px rgba(0,0,0,.12); }   /* a theme's whole palette, in the menu */
 #undoBtn.pulse { background: var(--accent-soft); }
 #undoBtn.pulse svg { color: var(--accent); }
 .rg-eq .rg-body { grid-auto-columns: 1fr; }                /* every column as wide as the widest */
@@ -173,7 +173,7 @@ body { display: grid; grid-template-rows: auto minmax(0, 1fr); grid-template-col
 #menuPop { position: fixed; z-index: 60; width: max-content; max-width: 360px; overflow-y: auto; padding: 5px; border: 1px solid var(--card-border); border-radius: 8px; background: var(--surface); box-shadow: 0 8px 28px rgba(0,0,0,.18), 0 1px 3px rgba(0,0,0,.1); }
 #menuPop h4 { margin: 7px 8px 3px; font-size: 9.5px; font-weight: 500; letter-spacing: .07em; text-transform: uppercase; color: var(--fg-faint); }
 #menuPop h4:first-child { margin-top: 3px; }
-#menuPop button { display: flex; align-items: baseline; gap: 18px; width: 100%; height: 26px; padding: 0 9px; border-radius: 5px; font-size: 12px; color: var(--fg); text-align: left; white-space: nowrap; }
+#menuPop button { display: flex; align-items: center; gap: 18px; width: 100%; height: 26px; padding: 0 9px; border-radius: 5px; font-size: 12px; color: var(--fg); text-align: left; white-space: nowrap; }
 #menuPop button span { flex: 1; }
 #menuPop button small { font-size: 11px; color: var(--fg-faint); }
 #menuPop button.on { font-weight: 600; color: var(--accent); }
@@ -268,7 +268,8 @@ th.hd-on .col-letter { color: var(--accent); font-weight: 600; box-shadow: inset
 
 /* output: figure (white paper) + results */
 #vOut { min-height: 0; overflow: auto; background: var(--side); }
-#vGraph { display: flex; justify-content: center; padding: 20px 16px; border-bottom: 1px solid var(--card-border); }
+#vGraph { display: flex; flex-direction: column; align-items: center; padding: 20px 16px 10px; border-bottom: 1px solid var(--card-border); }
+#plotHint { margin-top: 7px; font-size: 11px; color: var(--fg-faint); opacity: .75; user-select: none; }
 #plot { flex: none; background: #fff; box-shadow: var(--plot-shadow); }
 #vResults { padding: 14px 18px 24px; background: var(--surface); }
 .res-head { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
@@ -322,7 +323,7 @@ button { transition: background-color .15s, color .15s, border-color .15s; }
   .rg { border-bottom: 1px solid var(--card-border); }
   #sheetWrap { min-height: 280px; max-height: 60vh; }
   #vOut { overflow: visible; }
-  #vGraph { overflow-x: auto; justify-content: flex-start; }
+  #vGraph { overflow-x: auto; align-items: flex-start; }
 }
 
 /* help dialog */
@@ -438,12 +439,7 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
           <option value="sem" data-short="SEM" selected>Mean ± SEM</option>
           <option value="ci" data-short="95% CI">Mean ± 95% CI</option>
         </select>
-        <select id="themeSelect" class="field as-seg" aria-label="Color theme">
-          <option value="claude" selected>Claude</option>
-          <option value="prism">Classic Prism</option>
-          <option value="pastel">Pastel</option>
-          <option value="vibrant">Vibrant</option>
-        </select>
+        <select id="themeSelect" class="field as-menu" data-swatch aria-label="Colour theme"></select><!-- options come from THEMES -->
         <select id="sigLabel" class="field as-seg" aria-label="Significance label">
           <option value="stars" data-short="***">Asterisks (*)</option>
           <option value="pval" data-short="P =">p-value</option>
@@ -502,7 +498,7 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
 
     <!-- ============ OUTPUT: graph + results ============ -->
     <section id="vOut">
-      <div id="vGraph"><div id="plot" style="height: 400px;"></div></div>
+      <div id="vGraph"><div id="plot" style="height: 400px;"></div><p id="plotHint" hidden>Click an axis title to rename it</p></div>
       <div id="vResults">
         <div class="res-head">
           <h2>Results</h2>
@@ -1351,14 +1347,15 @@ const $ = (id) => document.getElementById(id);
 /* ============================================================
    THEMES
    ============================================================ */
-// Light-mode themes (white graph paper). Lines/fonts are dark for contrast.
+// Colour themes (white graph paper; lines / fonts dark for contrast). To add a theme, add one
+// entry here: the Graph menu lists every entry, in this order, under its `name`.
 const PAPER = "#ffffff";
 const THEMES = {
   // Claude: Anthropic's brand orange / blue / green / warm grey, then deeper and muted tones of the same family
-  claude:  { colors: ["#d97757","#6a9bcc","#788c5d","#b0aea5","#c9a15b","#8b6f9f","#a8553a","#4f6b80"], line:"#141413", markerLine:"#141413", paper:PAPER, font:"#141413" },
-  prism:   { colors: ["#0173b2","#de8f05","#029e73","#d55e00","#cc78bc","#56b4e9","#949494","#fbafe4"], line:"#1f2937", markerLine:"#1f2937", paper:PAPER, font:"#1f2937" },
-  pastel:  { colors: ["#7dd3fc","#fca5a5","#6ee7b7","#fcd34d","#c4b5fd","#f9a8d4","#67e8f9","#fdba74"], line:"#374151", markerLine:"#374151", paper:PAPER, font:"#374151" },
-  vibrant: { colors: ["#2563eb","#dc2626","#16a34a","#eab308","#7c3aed","#db2777","#0891b2","#ea580c"], line:"#0f172a", markerLine:"#0f172a", paper:PAPER, font:"#0f172a" },
+  claude:  { name: "Claude", colors: ["#d97757","#6a9bcc","#788c5d","#b0aea5","#c9a15b","#8b6f9f","#a8553a","#4f6b80"], line:"#141413", markerLine:"#141413", paper:PAPER, font:"#141413" },
+  prism:   { name: "Classic Prism", colors: ["#0173b2","#de8f05","#029e73","#d55e00","#cc78bc","#56b4e9","#949494","#fbafe4"], line:"#1f2937", markerLine:"#1f2937", paper:PAPER, font:"#1f2937" },
+  pastel:  { name: "Pastel", colors: ["#7dd3fc","#fca5a5","#6ee7b7","#fcd34d","#c4b5fd","#f9a8d4","#67e8f9","#fdba74"], line:"#374151", markerLine:"#374151", paper:PAPER, font:"#374151" },
+  vibrant: { name: "Vibrant", colors: ["#2563eb","#dc2626","#16a34a","#eab308","#7c3aed","#db2777","#0891b2","#ea580c"], line:"#0f172a", markerLine:"#0f172a", paper:PAPER, font:"#0f172a" },
 };
 
 /* ============================================================
@@ -1393,7 +1390,8 @@ function syncSegs() {
   document.querySelectorAll("select.as-menu").forEach(sel => {
     const o = sel.selectedOptions[0];
     if (!sel._btn || !o) return;
-    sel._btn.querySelector(".lbl").innerHTML = (sel.dataset.prefix ? `<span class="k">${escapeHtml(sel.dataset.prefix)}</span>` : "") + `<span class="val">${escapeHtml(o.text)}</span>`;
+    sel._btn.querySelector(".lbl").innerHTML = ("swatch" in sel.dataset ? swatch(o.value, 4) : "") +
+      (sel.dataset.prefix ? `<span class="k">${escapeHtml(sel.dataset.prefix)}</span>` : "") + `<span class="val">${escapeHtml(o.text)}</span>`;
     sel._btn.title = (sel.dataset.prefix ? sel.dataset.prefix + ": " : "") + (o.title || o.text) + " — click to choose";
   });
   const on = $("welchChk").checked, wb = $("welchBtn");
@@ -1408,13 +1406,13 @@ const SEG_ICONS = {
     violin: '<svg viewBox="0 0 24 24"><path d="M4 21h16"/><path d="M8 4c0 3-3 4.5-3 8s3 4 3 7c0-3 3-3.5 3-7S8 7 8 4Z"/><path d="M16 3c0 4-3 5-3 8.5s3 3.5 3 6.5c0-3 3-3 3-6.5S16 7 16 3Z"/></svg>',
   },
 };
-const segContent = (sel, o) => {
-  if (sel.id === "themeSelect") {
-    const c = (THEMES[o.value] || THEMES.claude).colors;
-    return `<i class="chip" style="background:linear-gradient(90deg,${c[0]} 0 25%,${c[1]} 25% 50%,${c[2]} 50% 75%,${c[3]} 75%)"></i>`;
-  }
-  return (SEG_ICONS[sel.id] || {})[o.value] || escapeHtml(o.dataset.short || o.text);
-};
+const segContent = (sel, o) => (SEG_ICONS[sel.id] || {})[o.value] || escapeHtml(o.dataset.short || o.text);
+/* a colour theme's swatch: its first n colours as equal bands */
+function swatch(key, n, cls = "chip") {
+  const c = ((THEMES[key] || THEMES.claude).colors).slice(0, n), w = 100 / c.length;
+  return `<i class="${cls}" style="background:linear-gradient(90deg,${c.map((x, i) => `${x} ${i * w}% ${(i + 1) * w}%`).join(",")})"></i>`;
+}
+Object.entries(THEMES).forEach(([key, t]) => $("themeSelect").add(new Option(t.name || key, key, key === "claude", key === "claude")));
 document.querySelectorAll("select.as-seg").forEach(sel => {
   const seg = document.createElement("span");
   seg.className = "seg"; seg.setAttribute("role", "group"); seg.setAttribute("aria-label", sel.getAttribute("aria-label") || "");
@@ -1447,7 +1445,8 @@ document.querySelectorAll("select.as-menu").forEach(sel => {
 function openMenuPop(sel) {
   closeMenuPop();
   menuFor = sel;
-  const item = (o) => `<button type="button" role="option" data-v="${escapeHtml(o.value)}" aria-selected="${o.selected}"${o.selected ? ' class="on"' : ""}${o.title ? ` title="${escapeHtml(o.title)}"` : ""}><span>${escapeHtml(o.text)}</span>${o.dataset.hint ? `<small>${escapeHtml(o.dataset.hint)}</small>` : ""}</button>`;
+  const sw = "swatch" in sel.dataset;
+  const item = (o) => `<button type="button" role="option" data-v="${escapeHtml(o.value)}" aria-selected="${o.selected}"${o.selected ? ' class="on"' : ""}${o.title ? ` title="${escapeHtml(o.title)}"` : ""}><span>${escapeHtml(o.text)}</span>${o.dataset.hint ? `<small>${escapeHtml(o.dataset.hint)}</small>` : ""}${sw ? swatch(o.value, 8, "strip") : ""}</button>`;
   menuPop.innerHTML = (sel.querySelector("optgroup") ? "" : `<h4>${escapeHtml(sel.getAttribute("aria-label"))}</h4>`) +
     [...sel.children].map(ch => ch.tagName === "OPTGROUP" ? `<h4>${escapeHtml(ch.label)}</h4>` + [...ch.children].map(item).join("") : item(ch)).join("");
   menuPop.hidden = false;
@@ -2185,6 +2184,7 @@ function clearResults() {
   $("verdict").innerHTML = "";
   $("report").innerHTML = "";
   lastReport = null; lastPlot = null;
+  $("plotHint").hidden = true;
   try { Plotly.purge("plot"); } catch (e) { /* nothing drawn yet */ }
 }
 
@@ -2768,6 +2768,7 @@ const sigText = (p) => $("sigLabel").value === "pval" ? ("<i>P</i> " + pRel(p)) 
 const axisTitle = (id, fallback) => ($(id).value === GRAPH_DEFAULTS[id] ? fallback : $(id).value);
 function render(traces, layout) {
   setPlotBox();
+  $("plotHint").hidden = false;
   Plotly.newPlot("plot", traces, layout, { responsive: true, displayModeBar: false, edits: { axisTitleText: true } }).then(gd => {
     gd.on("plotly_relayout", onAxisTitleEdit);
     gd.on("plotly_afterplot", hintAxisTitles);
