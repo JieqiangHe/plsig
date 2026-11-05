@@ -6,7 +6,7 @@
 
 Free, in-browser statistics and scientific graphing. Paste data from Excel, pick a test, and get a report and a publication-ready figure. Nothing is uploaded; everything runs locally.
 
-**Live:** https://jieqianghe.github.io/ministat/
+**Live:** https://jieqianghe.github.io/plsig/
 
 ## What it does
 
