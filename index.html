@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<!-- ministat © 2026 Jieqiang He, GPL-3.0-or-later -->
+<!-- plsig (please be significant) © 2026 Jieqiang He, GPL-3.0-or-later -->
 <html lang="en">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="description" content="Free in-browser statistics and scientific graphing: t-tests, Mann–Whitney, Wilcoxon, ANOVA, Kruskal–Wallis, post-hoc tests and publication-ready plots." />
-<title>ministat — Statistics &amp; Scientific Graphing</title>
-<script>/* apply the saved interface theme before first paint (no flash) */try{localStorage.getItem("ministat:theme")!=="dark"&&(document.documentElement.dataset.theme="light")}catch(_){document.documentElement.dataset.theme="light"}</script>
+<title>plsig — Statistics &amp; Scientific Graphing</title>
+<script>/* apply the saved interface theme before first paint (no flash); "ministat:" keys are from before the rename */try{(localStorage.getItem("plsig:theme")||localStorage.getItem("ministat:theme"))!=="dark"&&(document.documentElement.dataset.theme="light")}catch(_){document.documentElement.dataset.theme="light"}</script>
 <style>
 /* base reset (the small part of a CSS reset this page relies on) */
 *, ::before, ::after { box-sizing: border-box; border: 0 solid var(--card-border); }
@@ -19,7 +19,7 @@ svg { display: block; }
 .relative { position: relative; }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
 
-/* ---- ministat styles ---- */
+/* ---- plsig styles ---- */
 
 /* Interface theme — light by default: the pre-paint script in <head> sets
    data-theme="light" unless "dark" was saved (theme button in the top bar;
@@ -1279,7 +1279,7 @@ return {
 })(window.jStat);
 
 /* ============================================================
-   ministat — UI: data grid, analysis controller, report, plotting
+   plsig — UI: data grid, analysis controller, report, plotting
    Statistics live in the Stats module above.
    ============================================================ */
 const S = Stats;
@@ -1307,7 +1307,7 @@ const DEMO = [
   { name: "Treatment", values: [7.2, 6.9, 7.8, 7.1, 6.5, 7.4, 7.0, 6.8] },
 ];
 const DEFAULT_ROWS = 10;
-const STORE_KEY = "ministat:v1";
+const STORE_KEY = "plsig:v1", OLD_STORE_KEY = "ministat:v1";   // the app was called ministat before
 const SETTING_IDS = ["testSelect", "posthocSelect", "dunnAdj", "mu0", "chartType", "errType", "themeSelect", "sigLabel", "xLabel", "yLabel", "plotW", "plotH", "dotSize"];
 const GRAPH_DEFAULTS = { chartType: "bar", errType: "sem", themeSelect: "prism", sigLabel: "stars", xLabel: "Group", yLabel: "Value", plotW: "300", plotH: "400", dotSize: "6" };
 
@@ -1367,7 +1367,7 @@ function scheduleSave() {
   }, 300);
 }
 function loadSaved() {
-  try { const raw = localStorage.getItem(STORE_KEY); return raw ? JSON.parse(raw) : null; } catch (e) { return null; }
+  try { const raw = localStorage.getItem(STORE_KEY) || localStorage.getItem(OLD_STORE_KEY); return raw ? JSON.parse(raw) : null; } catch (e) { return null; }
 }
 
 const undoStack = [], redoStack = [];
@@ -2557,7 +2557,7 @@ $("dlSvg").onclick = () => downloadPlot("svg", $("dlSvg"));
    SESSION EXPORT / IMPORT  (.jgz = gzip-compressed JSON)
    ============================================================ */
 async function exportJH() {
-  const payload = JSON.stringify({ app: "ministat", v: 4, savedAt: new Date().toISOString(), grid, titles, settings: collectSettings(),
+  const payload = JSON.stringify({ app: "plsig", v: 4, savedAt: new Date().toISOString(), grid, titles, settings: collectSettings(),
                                    report: lastReport ? reportTSV(lastReport) : "" });
   let blob;
   if (typeof CompressionStream !== "undefined") {
@@ -2616,7 +2616,7 @@ function escapeHtml(s) { return String(s).replace(/[&<>"']/g, c => ({ "&": "&amp
 
 /* ============================================================
    INTERFACE THEME — sun/moon button in the status bar; persisted in localStorage
-   ("ministat:theme") and applied pre-paint by the script in <head>.
+   ("plsig:theme") and applied pre-paint by the script in <head>.
    The figure always renders on white paper and is not affected.
    ============================================================ */
 const themeBtn = $("themeBtn");
@@ -2630,7 +2630,7 @@ function applyUiTheme(light) {
 themeBtn.onclick = () => {
   const light = document.documentElement.dataset.theme !== "light";
   applyUiTheme(light);
-  try { localStorage.setItem("ministat:theme", light ? "light" : "dark"); } catch (e) { /* storage unavailable */ }
+  try { localStorage.setItem("plsig:theme", light ? "light" : "dark"); } catch (e) { /* storage unavailable */ }
 };
 applyUiTheme(document.documentElement.dataset.theme === "light");
 $("helpBtn").onclick = () => $("helpDlg").showModal();
