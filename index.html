@@ -2358,8 +2358,8 @@ function drawPlot(spec) {
     traces.push({
       type: "scatter", mode: "markers",
       x: g.values.map(() => spec.paired ? i : i + (rnd() - 0.5) * spread), y: g.values,
-      marker: chart === "dot" ? { color: color(i), size: dotSize + 1, line: { color: theme.markerLine, width: 0.8 } }
-                              : { color: "rgba(0,0,0,0)", size: dotSize, line: { color: "#000000", width: 1 } },
+      // points share the group's colour; a dark edge keeps them visible on a bar of the same colour
+      marker: { color: color(i), size: chart === "dot" ? dotSize + 1 : dotSize, line: { color: theme.markerLine, width: chart === "dot" ? 0.8 : 1 } },
       text: g.values.map(() => escapeHtml(g.name)), hovertemplate: "%{text}<br>%{y:.3f}<extra></extra>",
     });
   });
@@ -2424,8 +2424,7 @@ function drawGrouped(spec, theme) {
       const rnd = mulberry32(7919 * (i + 1) + 31 * j);
       traces.push({ type: "scatter", mode: "markers", x: r[j].map(() => xOf(i, j) + (rnd() - 0.5) * w * 0.5), y: r[j], legendgroup: n,
         showlegend: chart === "dot" && i === 0, name: escapeHtml(n),
-        marker: chart === "dot" ? { color: color(j), size: dotSize, line: { color: theme.markerLine, width: 0.8 } }
-                                : { color: "rgba(0,0,0,0)", size: dotSize - 1, line: { color: "#000000", width: 1 } },
+        marker: { color: color(j), size: chart === "dot" ? dotSize : dotSize - 1, line: { color: theme.markerLine, width: chart === "dot" ? 0.8 : 1 } },
         hovertemplate: escapeHtml(n) + "<br>%{y:.3f}<extra></extra>" });
     });
   });
