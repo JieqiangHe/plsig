@@ -24,12 +24,13 @@
 :root {
   color-scheme: dark;
   /* neutrals + accent follow svguest / ocrp so the tools read as one family */
-  --bg: #1f1f1f;                   /* page + top bar */
+  --bg: #1f1f1f;                   /* menu + status bars */
   --surface: #262626;              /* cards */
   --card-border: rgba(255,255,255,.1);
   --card-shadow: 0 1px 2px rgba(0,0,0,.6);
   --grid-border: rgba(255,255,255,.12);   /* inset boxes */
   --panel: #2a2a2a;                /* neutral fills */
+  --side: #262626;                 /* side panes */
   --canvas: #383838;               /* figure view behind the white page */
   --fg: #e3e3e3;  --fg-strong: #f5f5f5;  --fg-soft: #c8c8c8;
   --fg-muted: #a6a6a6;  --fg-faint: #8c8c8c;
@@ -59,6 +60,7 @@
   --card-shadow: 0 1px 2px rgba(0,0,0,.06);
   --grid-border: rgba(0,0,0,.12);
   --panel: #f2f2f2;
+  --side: #f2f2f2;
   --canvas: #d4d4d4;
   --fg: #262626;  --fg-strong: #1a1a1a;  --fg-soft: #4a4a4a;
   --fg-muted: #595959;  --fg-faint: #8a8a8a;
@@ -86,7 +88,7 @@
 .tb-btn:disabled{opacity:.4;cursor:default}
 .tb-btn:disabled:hover{background-color:var(--btn-bg)}
 .tb-btn svg{width:14px;height:14px;flex:none;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-.field{background-color:var(--input-bg);border:1px solid var(--input-border);color:var(--fg-strong);border-radius:6px;padding:0 8px;height:30px;font-size:13px;width:100%}
+.field{background-color:var(--input-bg);border:1px solid var(--input-border);color:var(--fg-strong);border-radius:6px;padding:0 6px;height:26px;font-size:12px;width:100%}
 .field:focus{outline:none;border-color:var(--focus-border)}
 .num-field{background-color:var(--input-bg);border:1px solid var(--input-border);color:var(--fg-strong);border-radius:6px;padding:0 6px;height:26px;font-size:12px;font-variant-numeric:tabular-nums}
 .num-field:focus{outline:none;border-color:var(--focus-border)}
@@ -120,46 +122,63 @@
 .accent-neutral-400{accent-color:var(--accent)}
 
 html, body { background: var(--bg); }
-body { font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", Helvetica, Arial, sans-serif; color: var(--fg); -webkit-font-smoothing: antialiased; }
+body { margin: 0; font: 12px/1.5 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", Helvetica, Arial, sans-serif; color: var(--fg); -webkit-font-smoothing: antialiased; }
 kbd { font: 500 11px/1 ui-monospace, SFMono-Regular, Menlo, monospace; padding: 2px 5px; border: 1px solid var(--btn-border); border-bottom-width: 2px; border-radius: 4px; background: var(--panel); color: var(--fg-soft); }
 
-/* ---------- app shell: top bar + four cards (Data / Figure / Analysis / Results) ---------- */
-body { display: flex; flex-direction: column; height: 100vh; height: 100dvh; overflow: hidden; }
-#menuBar { flex: none; display: flex; align-items: center; gap: 10px; height: 42px; padding: 0 10px 0 14px; background: var(--bg); border-bottom: 1px solid var(--card-border); }
+/* ---------- app shell (svguest-style): menu bar / data sheet | canvas | properties / status bar ----------
+   Panes are separated by hairlines only — no cards, gaps or shadows. */
+body { display: grid; grid-template: auto minmax(0, 1fr) auto / minmax(260px, 340px) minmax(0, 1fr) 272px; height: 100vh; height: 100dvh; overflow: hidden; }
+#menuBar { grid-column: 1 / -1; display: flex; align-items: center; gap: 2px; padding: 4px 6px; background: var(--bg); border-bottom: 1px solid var(--card-border); overflow-x: auto; scrollbar-width: none; }
+#menuBar .tb-btn, #statusBar .tb-btn { border-color: transparent; background: transparent; color: var(--fg); height: 28px; padding: 0 8px; font-weight: 400; }
+#menuBar .tb-btn:hover:not(:disabled), #statusBar .tb-btn:hover { background: var(--btn-hover); }
+.tb-sep { flex: none; width: 1px; height: 16px; background: var(--card-border); margin: 0 5px; }
 .bar-spacer { flex: 1; }
-.privacy { display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; color: var(--fg-muted); padding: 0 10px; height: 24px; border-radius: 999px; background: var(--panel); }
+#clearBtn:hover { color: var(--danger-hover-fg) !important; }
+#menuBar #runBtn { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 14px; margin-left: 6px; border-radius: 6px; font-size: 12px; font-weight: 600; }
+#runBtn svg { width: 11px; height: 11px; fill: currentColor; }
+#runBtn:disabled { opacity: .6; }
+
+#statusBar { grid-column: 1 / -1; display: flex; align-items: center; gap: 12px; height: 26px; padding: 0 4px 0 10px; font-size: 11.5px; color: var(--fg-muted); background: var(--bg); border-top: 1px solid var(--card-border); white-space: nowrap; overflow: hidden; }
+#statusBar .tip { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.privacy { display: inline-flex; align-items: center; gap: 6px; }
 .privacy::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--ok); }
-#menuBar .tb-btn { border-color: transparent; background: transparent; color: var(--fg-muted); height: 30px; }
-#menuBar .tb-btn:hover { background: var(--btn-hover); color: var(--fg-strong); }
+#statusBar .tb-btn { height: 22px; padding: 0 6px; color: var(--fg-muted); font-size: 11.5px; }
+#statusBar .tb-btn svg { width: 13px; height: 13px; }
 
-main.quad { flex: 1 1 auto; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) minmax(0, 1fr); gap: 8px; padding: 0 8px 8px; }
-main.quad > section { display: flex; flex-direction: column; min-height: 0; overflow: hidden; background: var(--surface); border: 1px solid var(--card-border); border-radius: 10px; padding: 0; box-shadow: var(--card-shadow); }
-.card-head { flex: none; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; min-height: 46px; padding: 8px 14px; border-bottom: 1px solid var(--card-border); }
-.card-head h2 { display: flex; align-items: center; gap: 8px; margin: 0 auto 0 0; font-size: 13.5px; font-weight: 600; color: var(--fg-strong); letter-spacing: -.005em; }
-.step { display: inline-grid; place-items: center; width: 20px; height: 20px; border-radius: 6px; font-size: 11px; font-weight: 650; color: var(--accent); background: var(--accent-soft); }
-.card-body { flex: 1 1 auto; min-height: 0; overflow: auto; padding: 12px 14px 14px; }
-.toolbar { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-.btn-group { display: inline-flex; }
-.btn-group .tb-btn { border-radius: 0; margin-left: -1px; }
-.btn-group .tb-btn:first-child { border-radius: 6px 0 0 6px; margin-left: 0; }
-.btn-group .tb-btn:last-child { border-radius: 0 6px 6px 0; }
-.btn-group .tb-btn:only-child { border-radius: 6px; }
-.tb-sep { width: 1px; height: 18px; background: var(--card-border); margin: 0 2px; }
-#clearBtn:hover { color: var(--danger-hover-fg); }
-.size-ctl { display: inline-flex; align-items: center; gap: 4px; font-size: 11.5px; color: var(--fg-faint); }
-.size-ctl label { font-weight: 500; }
+/* side panes: titled sections like svguest's Properties */
+.pane { min-height: 0; overflow: auto; background: var(--side); }
+#paneData { border-right: 1px solid var(--card-border); display: flex; flex-direction: column; }
+#paneProps { border-left: 1px solid var(--card-border); }
+.pane-head { flex: none; display: flex; align-items: baseline; gap: 6px; padding: 9px 12px 7px; font-size: 13px; font-weight: 600; color: var(--fg-strong); }
+.pane-head small { font-size: 11px; font-weight: 400; color: var(--fg-faint); }
+.sect { padding: 10px 12px 12px; border-bottom: 1px solid var(--card-border); }
+.sect:last-child { border-bottom: 0; }
+.sect h3 { display: flex; align-items: baseline; gap: 6px; margin: 0 0 8px; font-size: 12.5px; font-weight: 600; color: var(--fg-strong); }
+.sect h3 small { font-size: 11px; font-weight: 400; color: var(--fg-faint); }
+.field-label { display: block; font-size: 11.5px; color: var(--fg-muted); margin: 8px 0 3px; }
+.field-label:first-child { margin-top: 0; }
+/* label-left rows ("kv"), as in svguest's Appearance block */
+.kv { display: grid; grid-template-columns: 64px minmax(0, 1fr); align-items: center; gap: 6px 8px; }
+.kv > label { font-size: 11.5px; color: var(--fg-muted); }
+.trio { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+.unit { display: flex; align-items: center; height: 26px; border: 1px solid var(--input-border); border-radius: 6px; background: var(--input-bg); padding: 0 6px; gap: 4px; }
+.unit:focus-within { border-color: var(--focus-border); box-shadow: var(--focus-ring); }
+.unit label { font-size: 11px; color: var(--fg-faint); }
+.unit .num-field { flex: 1; min-width: 0; width: auto; border: 0; height: 24px; padding: 0; background: transparent; box-shadow: none !important; }
+.pair { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.pair .tb-btn, .wide { justify-content: center; width: 100%; }
+.check { display: flex; align-items: flex-start; gap: 7px; font-size: 12px; margin-top: 8px; line-height: 1.4; }
+.check input { margin-top: 2px; }
 
-/* Data card */
-#sec-data .card-body { display: flex; flex-direction: column; }
-#sec-data .quad-fill { flex: 1 1 auto; min-height: 160px; border: 1px solid var(--grid-border); border-radius: 8px; background: var(--surface); }
-.hint { margin-top: 8px; font-size: 11.5px; color: var(--fg-faint); }
-#parseWarn { border-radius: 8px; }
-.disclosure { margin-top: 8px; }
-.disclosure > summary { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 500; color: var(--fg-muted); }
+/* data sheet */
+#paneData .sheet { flex: 1 1 auto; min-height: 120px; margin: 0 12px; border: 1px solid var(--grid-border); border-radius: 6px; background: var(--input-bg); }
+#paneData .below { flex: none; padding: 8px 12px 12px; }
+#parseWarn { border-radius: 6px; margin-bottom: 8px; }
+.disclosure > summary { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--fg-muted); }
 .disclosure > summary:hover { color: var(--fg-strong); }
-.disclosure > summary::before { content: ""; width: 6px; height: 6px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: rotate(-45deg); transition: transform .15s; }
+.disclosure > summary::before { content: ""; width: 5px; height: 5px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: rotate(-45deg); transition: transform .15s; }
 .disclosure[open] > summary::before { transform: rotate(45deg); }
-#pasteBox { border-radius: 8px; background: var(--panel); border-color: var(--grid-border); padding: 8px 10px; }
+#pasteBox { border-radius: 6px; background: var(--input-bg); border-color: var(--input-border); padding: 6px 8px; }
 
 /* Data grid — spreadsheet look: hairline grid, sticky header + row numbers */
 table.data-grid { table-layout: fixed; border-collapse: separate; border-spacing: 0; }
@@ -167,83 +186,73 @@ table.data-grid td, table.data-grid th { padding: 0; box-sizing: border-box; bor
 table.data-grid thead th { position: sticky; top: 0; z-index: 2; background: var(--thead-bg); }
 table.data-grid td.rowhdr, table.data-grid thead th:first-child { position: sticky; left: 0; z-index: 1; background: var(--thead-bg); }
 table.data-grid thead th:first-child { z-index: 3; }
-.cell-input { display: block; width: 100%; box-sizing: border-box; height: 30px; padding: 0 10px; font-size: 13px; border: 0; border-radius: 0; text-align: right; font-variant-numeric: tabular-nums; background: transparent; color: var(--fg); transition: background .12s, box-shadow .12s; }
+.cell-input { display: block; width: 100%; box-sizing: border-box; height: 28px; padding: 0 9px; font-size: 12.5px; border: 0; border-radius: 0; text-align: right; font-variant-numeric: tabular-nums; background: transparent; color: var(--fg); transition: background .12s, box-shadow .12s; }
 .cell-input:hover { background: var(--row-alt); }
 .cell-input:focus { outline: none; background: var(--cell-focus-bg); box-shadow: inset 0 0 0 2px var(--focus-border); }
 .cell-input.bad { background: var(--bad-bg); color: var(--bad-fg); box-shadow: inset 0 0 0 1px var(--bad-border); }
 /* group-name shares the exact column width of its cells; right padding clears the × button */
-.grp-name { display: block; width: 100%; box-sizing: border-box; height: 32px; padding: 0 24px 0 10px; font-size: 12.5px; font-weight: 600; text-align: right; border: 0; border-radius: 0; background: transparent; color: var(--fg-strong); }
+.grp-name { display: block; width: 100%; box-sizing: border-box; height: 30px; padding: 0 22px 0 9px; font-size: 12px; font-weight: 600; text-align: right; border: 0; border-radius: 0; background: transparent; color: var(--fg-strong); }
 .grp-name:focus { outline: none; background: var(--cell-focus-bg); box-shadow: inset 0 0 0 2px var(--focus-border); }
-.delGrp { position: absolute; top: 50%; right: 5px; transform: translateY(-50%); width: 16px; height: 16px; border-radius: 4px; font-size: 13px; line-height: 15px; color: var(--fg-faint); opacity: 0; transition: opacity .12s; }
+.delGrp { position: absolute; top: 50%; right: 4px; transform: translateY(-50%); width: 16px; height: 16px; border-radius: 4px; font-size: 13px; line-height: 15px; color: var(--fg-faint); opacity: 0; transition: opacity .12s; }
 th:hover .delGrp, th:focus-within .delGrp { opacity: 1; }
 .delGrp:hover { color: var(--err); background: var(--danger-hover-bg); }
 /* row header: shows the row number; the delete × only appears on hover / focus */
-.rowhdr { font-size: 11px; color: var(--fg-faint); text-align: center; vertical-align: middle; font-variant-numeric: tabular-nums; }
+.rowhdr { font-size: 10.5px; color: var(--fg-faint); text-align: center; vertical-align: middle; font-variant-numeric: tabular-nums; }
 .rowhdr .delRow { display: none; font-size: 14px; line-height: 1; color: var(--err); }
 tr:hover > .rowhdr .rn, tr:focus-within > .rowhdr .rn { display: none; }
 tr:hover > .rowhdr .delRow, tr:focus-within > .rowhdr .delRow { display: inline; }
 
-/* Figure card: the white figure sits on a dotted canvas */
-#sec-graph .card-body { padding: 0; }
-.canvas { min-height: 100%; box-sizing: border-box; display: flex; align-items: flex-start; justify-content: center; padding: 20px; background: var(--canvas); }
-#plot { flex: none; border-radius: 2px; overflow: hidden; background: #fff; box-shadow: var(--plot-shadow); }
+/* canvas: the figure and the report are two white pages on the gray view */
+#view { min-width: 0; min-height: 0; overflow: auto; background: var(--canvas); padding: 28px 24px 40px; display: flex; flex-direction: column; align-items: center; gap: 24px; }
+.page { flex: none; background: #fff; box-shadow: var(--plot-shadow); }
+#plot { border-radius: 1px; overflow: hidden; }
+#sheet { width: min(680px, 100%); box-sizing: border-box; padding: 22px 26px 26px; background: var(--surface); color: var(--fg); border-radius: 2px; }
+#sheet:has(#report:empty) { display: none; }
+.sheet-head { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+.sheet-head h2 { flex: 1; margin: 0; font-size: 14px; font-weight: 600; color: var(--fg-strong); }
 
-/* Analysis card */
-.field-label { display: block; font-size: 11.5px; font-weight: 500; color: var(--fg-muted); margin-bottom: 4px; }
-.form-section { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--fg-faint); margin: 16px 0 8px; }
-.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 12px; }
-.check { display: flex; align-items: flex-start; gap: 8px; font-size: 12.5px; margin: 10px 0 0; padding: 8px 10px; border-radius: 8px; background: var(--panel); }
-.check input { margin-top: 2px; }
-#sec-settings .card-body { padding-bottom: 0; }
-.run-bar { position: sticky; bottom: 0; margin: 16px -14px 0; padding: 12px 14px; background: var(--surface); border-top: 1px solid var(--card-border); }
-#runBtn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; height: 36px; border-radius: 8px; font-size: 13.5px; font-weight: 600; }
-#runBtn svg { width: 14px; height: 14px; fill: currentColor; }
-
-/* Results card */
-#verdict > div { border-radius: 8px; padding: 10px 12px 10px 14px; font-size: 13px; line-height: 1.5; border-left-width: 3px; }
+/* results */
+#verdict > div { border-radius: 6px; padding: 9px 12px; font-size: 12.5px; line-height: 1.5; }
 #verdict:empty { display: none; }
+#verdict:not(:empty) + #report { margin-top: 16px; }
 #report > div + div { margin-top: 18px; }
-main.quad .h3 { font-size: 12.5px; font-weight: 600; margin: 0 0 6px; }
-#verdict:not(:empty) + #report { margin-top: 14px; }
-main.quad .text-sm { font-size: 12.5px; }
-.stat-table { border-collapse: collapse; width: 100%; font-size: 12.5px; color: var(--fg); }
-.stat-table th, .stat-table td { border: 0; border-bottom: 1px solid var(--cell-border); padding: 6px 10px; text-align: left; }
-.stat-table thead th { background: transparent; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; color: var(--fg-faint); border-bottom-color: var(--grid-border); }
+#report .h3 { font-size: 12.5px; font-weight: 600; margin: 0 0 6px; }
+#report .text-sm { font-size: 12.5px; }
+.stat-table { border-collapse: collapse; width: 100%; font-size: 12px; color: var(--fg); }
+.stat-table th, .stat-table td { border: 0; border-bottom: 1px solid var(--cell-border); padding: 5px 8px; text-align: left; }
+.stat-table thead th { background: transparent; font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; color: var(--fg-faint); border-bottom-color: var(--grid-border); }
 .stat-table td.num, .stat-table th.num { text-align: right; font-variant-numeric: tabular-nums; }
 .stat-table tbody tr:hover td { background: var(--row-alt); }
 .stat-table td.font-medium { color: var(--fg-soft); font-weight: 500; }
 .pill { display: inline-block; padding: 1px 7px; border-radius: 999px; font-size: 11px; font-weight: 600; }
 
 /* misc */
-.scroll-thin::-webkit-scrollbar, main.quad ::-webkit-scrollbar { height: 8px; width: 8px; }
-.scroll-thin::-webkit-scrollbar-thumb, main.quad ::-webkit-scrollbar-thumb { background: var(--scrollbar); border-radius: 4px; }
-main.quad ::-webkit-scrollbar-track { background: transparent; }
+.scroll-thin::-webkit-scrollbar, .pane::-webkit-scrollbar, #view::-webkit-scrollbar { height: 8px; width: 8px; }
+.scroll-thin::-webkit-scrollbar-thumb, .pane::-webkit-scrollbar-thumb, #view::-webkit-scrollbar-thumb { background: var(--scrollbar); border-radius: 4px; }
 details > summary { cursor: pointer; list-style: none; }
 details > summary::-webkit-details-marker { display: none; }
 select option, select optgroup { background: var(--option-bg); color: var(--fg); }
 input::placeholder, textarea::placeholder { color: var(--fg-faint); }
-#sec-settings select, #sec-settings input:not([type="checkbox"]):not([type="file"]),
-#sec-graph input[type="number"], #sec-data textarea { transition: border-color .15s, background-color .15s, box-shadow .15s; }
-#sec-settings select:hover, #sec-settings input:not([type="checkbox"]):not([type="file"]):hover { border-color: var(--input-hover-border); background-color: var(--input-hover-bg); }
-#sec-settings select:focus, #sec-settings input:not([type="checkbox"]):not([type="file"]):focus,
-#sec-graph input[type="number"]:focus, #sec-data textarea:focus { outline: none; border-color: var(--focus-border); box-shadow: var(--focus-ring); }
-button { transition: background-color .15s, color .15s, border-color .15s, transform .08s; }
-button:active:not(:disabled) { transform: scale(.97); }
+#paneProps select, #paneProps input:not([type="checkbox"]):not([type="file"]), #paneData textarea { transition: border-color .15s, background-color .15s, box-shadow .15s; }
+#paneProps select:hover, #paneProps .field:hover { border-color: var(--input-hover-border); }
+#paneProps .field:focus, #paneData textarea:focus { outline: none; border-color: var(--focus-border); box-shadow: var(--focus-ring); }
+button { transition: background-color .15s, color .15s, border-color .15s; }
 :focus-visible { outline: 2px solid var(--focus-border); outline-offset: 1px; }
 
+@media (max-width: 1100px) { body { grid-template-columns: minmax(240px, 300px) minmax(0, 1fr) 244px; } }
 @media (max-width: 880px) {
-  body { display: block; height: auto; overflow: auto; }
-  #menuBar { position: sticky; top: 0; z-index: 10; padding: 0 12px; }
-  .privacy { display: none; }
-  main.quad { display: flex; flex-direction: column; padding: 10px; gap: 10px; }
-  main.quad > section { overflow: visible; min-height: auto; }
-  .card-body { overflow: visible; }
-  #sec-data .quad-fill { min-height: auto; max-height: 60vh; }
-  .canvas { overflow-x: auto; justify-content: flex-start; padding: 16px; }
-  #sec-graph #plot { margin: 0 auto; }
-  .run-bar { position: static; }
+  body { display: flex; flex-direction: column; height: auto; overflow: auto; }
+  #menuBar { position: sticky; top: 0; z-index: 10; flex-wrap: wrap; overflow: visible; }
+  .pane, #view { overflow: visible; border: 0; }
+  #paneData { border-bottom: 1px solid var(--card-border); }
+  #paneData .sheet { max-height: 55vh; overflow: auto; }
+  #paneProps { order: 1; border-top: 1px solid var(--card-border); }
+  #view { order: 2; padding: 20px 12px; align-items: stretch; }
+  #view > .page:first-child { align-self: center; max-width: 100%; overflow-x: auto; }
+  #sheet { width: 100%; padding: 16px; }
+  #statusBar { order: 3; }
+  #statusBar .tip { display: none; }
 }
-@media (max-width: 480px) { .form-grid { grid-template-columns: 1fr; } }
 
 /* help dialog */
 dialog { border: 1px solid var(--card-border); border-radius: 12px; padding: 0; background: var(--surface); color: var(--fg); box-shadow: 0 20px 50px rgba(0,0,0,.25); }
@@ -261,187 +270,160 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
 </head>
 
 <body class="bg-black text-neutral-200">
+  <!-- ============ MENU BAR ============ -->
   <header id="menuBar">
+    <button id="undoBtn" class="tb-btn" title="Undo (⌘/Ctrl+Z)" aria-label="Undo" disabled><svg viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-3"/></svg></button>
+    <button id="redoBtn" class="tb-btn" title="Redo (⌘/Ctrl+Shift+Z)" aria-label="Redo" disabled><svg viewBox="0 0 24 24"><path d="m15 14 5-5-5-5"/><path d="M20 9H9a5 5 0 0 0 0 10h3"/></svg></button>
+    <span class="tb-sep"></span>
+    <button id="addRowBtn" class="tb-btn">Add row</button>
+    <button id="addGroupBtn" class="tb-btn">Add group</button>
+    <button id="clearBtn" class="tb-btn hover:bg-red-900 hover:text-red-200" title="Clear all data">Clear</button>
+    <span class="tb-sep"></span>
+    <label for="importJH" id="importLabel" class="tb-btn cursor-pointer" title="Open a saved .jgz session">Import .jgz</label>
+    <input id="importJH" type="file" accept=".jgz,.jh" class="hidden" />
+    <button id="exportBtn" class="tb-btn" title="Save this session as a .jgz file">Export .jgz</button>
+    <button id="copyData" class="tb-btn" title="Copy the grid as TSV (paste into Excel/Sheets)">Copy data</button>
+    <span class="bar-spacer"></span>
+    <button id="helpBtn" class="tb-btn">Help</button>
+    <button id="runBtn" class="bg-neutral-200 text-neutral-900 hover:bg-white" title="Run the selected test on the data"><svg viewBox="0 0 16 16"><path d="M4 2.5v11a.5.5 0 0 0 .77.42l8.5-5.5a.5.5 0 0 0 0-.84l-8.5-5.5A.5.5 0 0 0 4 2.5Z"/></svg>Analyze</button>
+  </header>
+
+  <!-- ============ DATA SHEET (left) ============ -->
+  <aside id="paneData" class="pane">
+    <div class="pane-head">Data <small>one column per group</small></div>
+    <div class="sheet overflow-auto scroll-thin">
+      <table class="data-grid text-sm" id="dataTable" aria-label="Data grid"></table>
+    </div>
+    <div class="below">
+      <div id="parseWarn" class="hidden text-xs text-amber-300 bg-amber-500/10 border border-amber-500/30 px-3 py-2" role="status"></div>
+      <details class="disclosure">
+        <summary class="select-none">Paste / import TSV or CSV</summary>
+        <div class="mt-2">
+          <label for="pasteBox" class="sr-only">Delimited data to import</label>
+          <textarea id="pasteBox" rows="5" placeholder="Optionally include a header row of group names.&#10;Control&#9;Drug A&#9;Drug B&#10;5.1&#9;7.2&#9;9.8&#10;4.8&#9;6.9&#9;10.2" class="w-full text-xs font-mono border text-neutral-100 focus:outline-none"></textarea>
+          <div class="pair mt-2">
+            <button id="importBtn" class="tb-btn">Import into grid</button>
+            <button id="loadDemoBtn" class="tb-btn">Reset to demo</button>
+          </div>
+        </div>
+      </details>
+    </div>
+  </aside>
+
+  <!-- ============ CANVAS (center): figure page + report page ============ -->
+  <main id="view">
+    <div class="page"><div id="plot" style="height: 400px;"></div></div>
+    <article id="sheet" class="page">
+      <div class="sheet-head">
+        <h2>Results</h2>
+        <button id="copyStats" class="tb-btn" title="Copy all result tables as TSV"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>Copy table</button>
+      </div>
+      <div id="verdict"></div>
+      <div id="report" class="overflow-x-auto scroll-thin"></div>
+    </article>
+  </main>
+
+  <!-- ============ PROPERTIES (right) ============ -->
+  <aside id="paneProps" class="pane">
+    <section class="sect">
+      <h3>Test</h3>
+      <label for="testSelect" class="sr-only">Statistical test</label>
+      <select id="testSelect" class="field">
+        <optgroup label="Two groups — independent">
+          <option value="ttest">Unpaired t-test (Student's / Welch's)</option>
+          <option value="mwu">Mann–Whitney U / Wilcoxon rank-sum</option>
+        </optgroup>
+        <optgroup label="Two groups — paired (matched rows)">
+          <option value="paired">Paired t-test</option>
+          <option value="wilcoxon">Wilcoxon signed-rank</option>
+        </optgroup>
+        <optgroup label="Two or more groups">
+          <option value="anova">One-way ANOVA + post-hoc</option>
+          <option value="kruskal">Kruskal–Wallis + Dunn's post-hoc</option>
+        </optgroup>
+      </select>
+      <div id="opt_ttest" class="test-opts">
+        <label class="check">
+          <input type="checkbox" id="welchChk" class="accent-neutral-400" checked />
+          <span>Welch's correction <span class="text-neutral-500">(does not assume equal variances)</span></span>
+        </label>
+      </div>
+      <div id="opt_anova" class="test-opts hidden">
+        <label for="posthocSelect" class="field-label">Post-hoc</label>
+        <select id="posthocSelect" class="field">
+          <option value="tukey">Tukey's HSD (all pairs)</option>
+          <option value="holm">Holm pairwise t-tests (all pairs)</option>
+          <option value="bonferroni">Bonferroni pairwise t-tests (all pairs)</option>
+          <option value="dunnett">Dunnett (each group vs. the first group)</option>
+        </select>
+      </div>
+      <div id="opt_kruskal" class="test-opts hidden">
+        <label for="dunnAdj" class="field-label">Dunn's p-value adjustment</label>
+        <select id="dunnAdj" class="field">
+          <option value="holm">Holm</option>
+          <option value="bonferroni">Bonferroni</option>
+        </select>
+      </div>
+    </section>
+
+    <section class="sect">
+      <h3>Plot</h3>
+      <div class="kv">
+        <label for="chartType">Chart</label>
+        <select id="chartType" class="field">
+          <option value="bar">Bar + error bars</option>
+          <option value="box">Box &amp; whisker</option>
+        </select>
+        <label for="errType">Error bars</label>
+        <select id="errType" class="field">
+          <option value="sd">Mean ± SD</option>
+          <option value="sem" selected>Mean ± SEM</option>
+          <option value="ci">Mean ± 95% CI</option>
+        </select>
+        <label for="themeSelect">Colors</label>
+        <select id="themeSelect" class="field">
+          <option value="prism">Classic Prism</option>
+          <option value="pastel">Pastel</option>
+          <option value="vibrant">Vibrant</option>
+        </select>
+        <label for="sigLabel">Significance</label>
+        <select id="sigLabel" class="field">
+          <option value="stars">Asterisks (*)</option>
+          <option value="pval">p-value</option>
+        </select>
+        <label for="xLabel">X title</label>
+        <input id="xLabel" value="Group" class="field" />
+        <label for="yLabel">Y title</label>
+        <input id="yLabel" value="Value" class="field" />
+      </div>
+    </section>
+
+    <section class="sect">
+      <h3>Size <small>px</small></h3>
+      <div class="trio">
+        <span class="unit"><label for="plotW">W</label><input id="plotW" type="number" min="220" step="20" value="300" class="num-field" /></span>
+        <span class="unit"><label for="plotH">H</label><input id="plotH" type="number" min="220" step="20" value="400" class="num-field" /></span>
+        <span class="unit"><label for="dotSize">Dot</label><input id="dotSize" type="number" min="2" max="20" step="1" value="6" class="num-field" /></span>
+      </div>
+      <button id="resetGraph" class="tb-btn wide mt-2" title="Restore graph to default options, size &amp; view">Reset figure</button>
+    </section>
+
+    <section class="sect">
+      <h3>Export</h3>
+      <div class="pair">
+        <button id="dlPng" class="tb-btn" title="PNG at 5× the on-screen size (≈ 300 dpi for a 2–3 inch figure)">PNG 300 dpi</button>
+        <button id="dlSvg" class="tb-btn" title="Download as vector SVG">SVG</button>
+      </div>
+    </section>
+  </aside>
+
+  <!-- ============ STATUS BAR ============ -->
+  <footer id="statusBar">
+    <span class="tip">Paste from Excel/Sheets into any cell (⌘/Ctrl+V) · Enter / arrows move · hover a row number or column header to delete it</span>
     <span class="bar-spacer"></span>
     <span class="privacy" title="All calculations run in this browser; your data never leaves this machine">Runs locally · nothing uploaded</span>
     <button id="themeBtn" class="tb-btn" title="Switch between light and dark interface">Theme</button>
-    <button id="helpBtn" class="tb-btn"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.6"/><path d="M12 17h.01"/></svg>Help</button>
-  </header>
-
-  <main class="quad">
-
-    <!-- ============ DATA (top-left) ============ -->
-    <section id="sec-data">
-      <div class="card-head">
-        <h2><span class="step">1</span>Data</h2>
-        <div class="toolbar">
-          <div class="btn-group">
-            <button id="undoBtn" class="tb-btn" title="Undo (⌘/Ctrl+Z)" aria-label="Undo" disabled><svg viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-3"/></svg></button>
-            <button id="redoBtn" class="tb-btn" title="Redo (⌘/Ctrl+Shift+Z)" aria-label="Redo" disabled><svg viewBox="0 0 24 24"><path d="m15 14 5-5-5-5"/><path d="M20 9H9a5 5 0 0 0 0 10h3"/></svg></button>
-          </div>
-          <div class="btn-group">
-            <button id="addRowBtn" class="tb-btn"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Row</button>
-            <button id="addGroupBtn" class="tb-btn"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Group</button>
-          </div>
-          <div class="btn-group">
-            <label for="importJH" id="importLabel" class="tb-btn cursor-pointer" title="Open a saved .jgz session">Import</label>
-            <button id="exportBtn" class="tb-btn" title="Save this session as a .jgz file">Export</button>
-            <button id="copyData" class="tb-btn" title="Copy the grid as TSV (paste into Excel/Sheets)">Copy</button>
-          </div>
-          <input id="importJH" type="file" accept=".jgz,.jh" class="hidden" />
-          <button id="clearBtn" class="tb-btn hover:bg-red-900 hover:text-red-200" title="Clear all data" aria-label="Clear all data"><svg viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/></svg></button>
-        </div>
-      </div>
-      <div class="card-body">
-        <div class="overflow-auto scroll-thin quad-fill">
-          <table class="data-grid text-sm" id="dataTable" aria-label="Data grid"></table>
-        </div>
-        <p class="hint">Paste from Excel/Sheets into any cell (⌘/Ctrl+V) · hover a row number or column header to delete it.</p>
-
-        <div id="parseWarn" class="hidden mt-2 text-xs text-amber-300 bg-amber-500/10 border border-amber-500/30 px-3 py-2" role="status"></div>
-
-        <details class="disclosure">
-          <summary class="select-none">Paste / import TSV or CSV</summary>
-          <div class="mt-2">
-            <label for="pasteBox" class="sr-only">Delimited data to import</label>
-            <textarea id="pasteBox" rows="5" placeholder="Optionally include a header row of group names.&#10;Control&#9;Drug A&#9;Drug B&#10;5.1&#9;7.2&#9;9.8&#10;4.8&#9;6.9&#9;10.2" class="w-full text-xs font-mono border text-neutral-100 focus:outline-none"></textarea>
-            <div class="flex gap-2 mt-2">
-              <button id="importBtn" class="tb-btn">Import into grid</button>
-              <button id="loadDemoBtn" class="tb-btn">Reset to demo data</button>
-            </div>
-          </div>
-        </details>
-      </div>
-    </section>
-
-    <!-- ============ FIGURE (top-right) ============ -->
-    <section id="sec-graph">
-      <div class="card-head">
-        <h2><span class="step">3</span>Figure</h2>
-        <div class="toolbar">
-          <span class="size-ctl"><label for="plotW">W</label><input id="plotW" type="number" min="220" step="20" value="300" class="num-field w-14" /></span>
-          <span class="size-ctl"><label for="plotH">H</label><input id="plotH" type="number" min="220" step="20" value="400" class="num-field w-14" /></span>
-          <span class="size-ctl"><label for="dotSize">Dot</label><input id="dotSize" type="number" min="2" max="20" step="1" value="6" class="num-field w-12" /></span>
-          <button id="resetGraph" class="tb-btn" title="Restore graph to default options, size &amp; view">Reset</button>
-          <span class="tb-sep"></span>
-          <div class="btn-group">
-            <button id="dlPng" class="tb-btn" title="PNG at 5× the on-screen size (≈ 300 dpi for a 2–3 inch figure)"><svg viewBox="0 0 24 24"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14"/></svg>PNG</button>
-            <button id="dlSvg" class="tb-btn" title="Download as vector SVG">SVG</button>
-          </div>
-        </div>
-      </div>
-      <div class="card-body scroll-thin">
-        <div class="canvas"><div id="plot" style="height: 400px;"></div></div>
-      </div>
-    </section>
-
-    <!-- ============ ANALYSIS SETTINGS (bottom-left) ============ -->
-    <section id="sec-settings">
-      <div class="card-head">
-        <h2><span class="step">2</span>Analysis</h2>
-      </div>
-      <div class="card-body scroll-thin">
-        <label for="testSelect" class="field-label">Statistical test</label>
-        <select id="testSelect" class="field">
-          <optgroup label="Two groups — independent">
-            <option value="ttest">Unpaired t-test (Student's / Welch's)</option>
-            <option value="mwu">Mann–Whitney U / Wilcoxon rank-sum</option>
-          </optgroup>
-          <optgroup label="Two groups — paired (matched rows)">
-            <option value="paired">Paired t-test</option>
-            <option value="wilcoxon">Wilcoxon signed-rank</option>
-          </optgroup>
-          <optgroup label="Two or more groups">
-            <option value="anova">One-way ANOVA + post-hoc</option>
-            <option value="kruskal">Kruskal–Wallis + Dunn's post-hoc</option>
-          </optgroup>
-        </select>
-
-        <div id="opt_ttest" class="test-opts">
-          <label class="check">
-            <input type="checkbox" id="welchChk" class="accent-neutral-400" checked />
-            <span>Welch's correction <span class="text-neutral-400">— recommended; does not assume equal variances</span></span>
-          </label>
-        </div>
-
-        <div id="opt_anova" class="test-opts hidden mt-3">
-          <label for="posthocSelect" class="field-label">Post-hoc test</label>
-          <select id="posthocSelect" class="field">
-            <option value="tukey">Tukey's HSD (all pairs)</option>
-            <option value="holm">Holm pairwise t-tests (all pairs)</option>
-            <option value="bonferroni">Bonferroni pairwise t-tests (all pairs)</option>
-            <option value="dunnett">Dunnett (each group vs. the first group)</option>
-          </select>
-        </div>
-
-        <div id="opt_kruskal" class="test-opts hidden mt-3">
-          <label for="dunnAdj" class="field-label">Dunn's test p-value adjustment</label>
-          <select id="dunnAdj" class="field">
-            <option value="holm">Holm</option>
-            <option value="bonferroni">Bonferroni</option>
-          </select>
-        </div>
-
-        <div class="form-section">Plot</div>
-        <div class="form-grid">
-          <div>
-            <label for="chartType" class="field-label">Chart type</label>
-            <select id="chartType" class="field">
-              <option value="bar">Bar + error bars</option>
-              <option value="box">Box &amp; whisker</option>
-            </select>
-          </div>
-          <div>
-            <label for="errType" class="field-label">Error bars</label>
-            <select id="errType" class="field">
-              <option value="sd">Mean ± SD</option>
-              <option value="sem" selected>Mean ± SEM</option>
-              <option value="ci">Mean ± 95% CI</option>
-            </select>
-          </div>
-          <div>
-            <label for="themeSelect" class="field-label">Color theme</label>
-            <select id="themeSelect" class="field">
-              <option value="prism">Classic Prism</option>
-              <option value="pastel">Pastel</option>
-              <option value="vibrant">Vibrant</option>
-            </select>
-          </div>
-          <div>
-            <label for="sigLabel" class="field-label">Significance</label>
-            <select id="sigLabel" class="field">
-              <option value="stars">Asterisks (*)</option>
-              <option value="pval">p-value</option>
-            </select>
-          </div>
-          <div>
-            <label for="xLabel" class="field-label">X-axis title</label>
-            <input id="xLabel" value="Group" class="field" />
-          </div>
-          <div>
-            <label for="yLabel" class="field-label">Y-axis title</label>
-            <input id="yLabel" value="Value" class="field" />
-          </div>
-        </div>
-
-        <div class="run-bar">
-          <button id="runBtn" class="bg-neutral-200 text-neutral-900 hover:bg-white"><svg viewBox="0 0 16 16"><path d="M4 2.5v11a.5.5 0 0 0 .77.42l8.5-5.5a.5.5 0 0 0 0-.84l-8.5-5.5A.5.5 0 0 0 4 2.5Z"/></svg>Analyze</button>
-        </div>
-      </div>
-    </section>
-
-    <!-- ============ REPORT (bottom-right) ============ -->
-    <section id="sec-report">
-      <div class="card-head">
-        <h2><span class="step">4</span>Results</h2>
-        <button id="copyStats" class="tb-btn" title="Copy all result tables as TSV"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>Copy table</button>
-      </div>
-      <div class="card-body scroll-thin">
-        <div id="verdict"></div>
-        <div id="report" class="overflow-x-auto scroll-thin"></div>
-      </div>
-    </section>
-  </main>
+  </footer>
 
   <dialog id="helpDlg"><form method="dialog">
     <header><h3>Tips</h3><button type="submit" value="" aria-label="Close">×</button></header>
@@ -452,7 +434,7 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
       <dt>Undo</dt><dd><kbd>⌘/Ctrl</kbd> <kbd>Z</kbd>; add <kbd>Shift</kbd> for redo.</dd>
       <dt>Session</dt><dd>Saved in this browser automatically; Export / Import (.jgz) moves a session between machines.</dd>
       <dt>Export</dt><dd>PNG at 5× the on-screen size (≈ 300 dpi for a 2–3 inch figure); SVG is vector.</dd>
-      <dt>Theme</dt><dd>The sun / moon button in the top bar switches between light and dark.</dd>
+      <dt>Theme</dt><dd>The sun / moon button at the right of the status bar switches between light and dark.</dd>
     </dl>
   </form></dialog>
 
@@ -1930,7 +1912,7 @@ function flash(btn, msg) {
 function escapeHtml(s) { return String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
 
 /* ============================================================
-   INTERFACE THEME — sun/moon button in the top bar; persisted in localStorage
+   INTERFACE THEME — sun/moon button in the status bar; persisted in localStorage
    ("ministat:theme") and applied pre-paint by the script in <head>.
    The figure always renders on white paper and is not affected.
    ============================================================ */
