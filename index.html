@@ -30,66 +30,67 @@ svg { display: block; }
    figure itself always renders on white paper (see THEMES) and is unaffected. */
 :root {
   color-scheme: dark;
-  /* neutrals + accent follow svguest / ocrp so the tools read as one family */
-  --bg: #1f1f1f;                   /* menu + status bars */
-  --surface: #262626;              /* cards */
-  --card-border: rgba(255,255,255,.1);
+  /* Claude palette (shared with ocrp): warm charcoal, ivory text, terracotta accent */
+  --bg: #1f1e1d;                   /* ribbon + status bar */
+  --surface: #262624;              /* results */
+  --card-border: #3a3935;
   --card-shadow: 0 1px 2px rgba(0,0,0,.6);
-  --grid-border: rgba(255,255,255,.12);   /* inset boxes */
-  --panel: #2a2a2a;                /* neutral fills */
-  --side: #262626;                 /* side panes */
-  --seg-bg: rgba(255,255,255,.07);  --seg-on: #3d3d3d;
-  --canvas: #383838;               /* figure view behind the white page */
-  --fg: #e3e3e3;  --fg-strong: #f5f5f5;  --fg-soft: #c8c8c8;
-  --fg-muted: #a6a6a6;  --fg-faint: #8c8c8c;
-  --btn-bg: #303030;  --btn-hover: #3a3a3a;  --btn-border: rgba(255,255,255,.12);
-  --input-bg: #1f1f1f;  --input-border: rgba(255,255,255,.14);
-  --input-hover-bg: #1f1f1f;  --input-hover-border: rgba(255,255,255,.26);
-  --focus-border: #4c8df6;  --focus-ring: 0 0 0 3px rgba(76,141,246,.22);
-  --cell-border: rgba(255,255,255,.08);  --cell-focus-bg: #1f1f1f;
-  --bad-bg: rgba(240,122,112,.14);  --bad-border: #f07a70;  --bad-fg: #ffd2cd;
-  --thead-bg: #2b2b2b;  --row-alt: rgba(255,255,255,.03);
-  --scrollbar: rgba(255,255,255,.18);  --option-bg: #262626;
-  --accent: #4c8df6;  --accent-soft: rgba(76,141,246,.2);
-  --run-bg: #e3e3e3;  --run-fg: #1f1f1f;  --run-hover: #ffffff;   /* Analyze */
-  --danger-hover-bg: rgba(240,122,112,.12);  --danger-hover-fg: #f07a70;   /* Clear */
-  --ok: #4fc27e;  --ok-bg: rgba(79,194,126,.16);                  /* significant */
-  --ok-box-bg: rgba(79,194,126,.08);  --ok-box-border: rgba(79,194,126,.35);
+  --grid-border: #3a3935;          /* inset boxes */
+  --panel: #2a2926;                /* neutral fills */
+  --side: #1f1e1d;                 /* figure area */
+  --seg-bg: rgba(245,244,239,.07);  --seg-on: #3a3935;
+  --canvas: #141413;
+  --fg: #f5f4ef;  --fg-strong: #faf9f5;  --fg-soft: #d6d4cc;
+  --fg-muted: #a3a196;  --fg-faint: #8f8d84;
+  --btn-bg: #2a2926;  --btn-hover: #35332f;  --btn-border: #3a3935;
+  --input-bg: #191817;  --input-border: #3a3935;
+  --input-hover-bg: #191817;  --input-hover-border: #57554f;
+  --focus-border: #e08a6a;  --focus-ring: 0 0 0 3px rgba(224,138,106,.25);
+  --cell-border: #2f2e2b;  --cell-focus-bg: #191817;
+  --bad-bg: rgba(224,112,95,.14);  --bad-border: #e0705f;  --bad-fg: #f6c9c1;
+  --thead-bg: #242321;  --row-alt: rgba(245,244,239,.03);
+  --scrollbar: rgba(245,244,239,.18);  --option-bg: #262624;
+  --accent: #e08a6a;  --accent-soft: rgba(217,119,87,.22);
+  --run-bg: #d97757;  --run-fg: #1f1e1d;  --run-hover: #e08a6a;   /* Analyze */
+  --danger-hover-bg: rgba(224,112,95,.12);  --danger-hover-fg: #e0705f;   /* Clear */
+  --ok: #7fbf8f;  --ok-bg: rgba(127,191,143,.16);                 /* significant */
+  --ok-box-bg: rgba(127,191,143,.08);  --ok-box-border: rgba(127,191,143,.35);
   --warn: #e2a33c;  --warn-bg: rgba(226,163,60,.1);  --warn-border: rgba(226,163,60,.32);
-  --err: #f07a70;
-  --ns-pill-bg: #383838;  --ns-pill-fg: #c8c8c8;                  /* "ns" pill */
-  --plot-shadow: 0 0 0 1px rgba(0,0,0,.4), 0 8px 24px -6px rgba(0,0,0,.8);
+  --err: #e0705f;
+  --ns-pill-bg: #35332f;  --ns-pill-fg: #d6d4cc;                  /* "ns" pill */
+  --plot-shadow: 0 0 0 1px #3a3935, 0 8px 24px -6px rgba(0,0,0,.8);
 }
 [data-theme="light"] {
   color-scheme: light;
-  --bg: #e9e9e9;
-  --surface: #ffffff;
-  --card-border: rgba(0,0,0,.1);
-  --card-shadow: 0 1px 2px rgba(0,0,0,.06);
-  --grid-border: rgba(0,0,0,.12);
-  --panel: #f2f2f2;
-  --side: #f2f2f2;
-  --seg-bg: rgba(0,0,0,.06);  --seg-on: #ffffff;
-  --canvas: #d4d4d4;
-  --fg: #262626;  --fg-strong: #1a1a1a;  --fg-soft: #4a4a4a;
-  --fg-muted: #595959;  --fg-faint: #8a8a8a;
-  --btn-bg: #fafafa;  --btn-hover: #efefef;  --btn-border: rgba(0,0,0,.13);
-  --input-bg: #ffffff;  --input-border: rgba(0,0,0,.15);
-  --input-hover-bg: #ffffff;  --input-hover-border: rgba(0,0,0,.3);
-  --focus-border: #1a73e8;  --focus-ring: 0 0 0 3px rgba(26,115,232,.15);
-  --cell-border: rgba(0,0,0,.08);  --cell-focus-bg: #ffffff;
-  --bad-bg: rgba(204,65,54,.08);  --bad-border: #cc4136;  --bad-fg: #8f2a22;
-  --thead-bg: #f7f7f7;  --row-alt: #fafafa;
-  --scrollbar: rgba(0,0,0,.2);  --option-bg: #ffffff;
-  --accent: #1a73e8;  --accent-soft: rgba(26,115,232,.12);
-  --run-bg: #262626;  --run-fg: #ffffff;  --run-hover: #000000;
-  --danger-hover-bg: rgba(204,65,54,.08);  --danger-hover-fg: #cc4136;
-  --ok: #2f8f55;  --ok-bg: rgba(47,143,85,.12);
-  --ok-box-bg: rgba(47,143,85,.06);  --ok-box-border: rgba(47,143,85,.32);
+  /* Claude palette (shared with ocrp): ivory paper, near-black ink, terracotta accent */
+  --bg: #f0eee6;
+  --surface: #faf9f5;
+  --card-border: #d9d6cd;
+  --card-shadow: 0 1px 2px rgba(20,20,19,.08);
+  --grid-border: #d9d6cd;
+  --panel: #f0eee6;
+  --side: #f0eee6;
+  --seg-bg: rgba(20,20,19,.06);  --seg-on: #fffefb;
+  --canvas: #e8e5dc;
+  --fg: #141413;  --fg-strong: #141413;  --fg-soft: #3d3c38;
+  --fg-muted: #63615a;  --fg-faint: #8a877d;
+  --btn-bg: #faf9f5;  --btn-hover: #e8e5dc;  --btn-border: #d9d6cd;
+  --input-bg: #fdfcf9;  --input-border: #d9d6cd;
+  --input-hover-bg: #fdfcf9;  --input-hover-border: #bfbbb0;
+  --focus-border: #c96442;  --focus-ring: 0 0 0 3px rgba(201,100,66,.16);
+  --cell-border: #e6e3da;  --cell-focus-bg: #ffffff;
+  --bad-bg: rgba(191,77,67,.08);  --bad-border: #bf4d43;  --bad-fg: #8f342c;
+  --thead-bg: #f0eee6;  --row-alt: #f5f3ec;
+  --scrollbar: rgba(20,20,19,.2);  --option-bg: #faf9f5;
+  --accent: #c96442;  --accent-soft: rgba(217,119,87,.15);
+  --run-bg: #c96442;  --run-fg: #ffffff;  --run-hover: #b5573a;
+  --danger-hover-bg: rgba(191,77,67,.08);  --danger-hover-fg: #bf4d43;
+  --ok: #3f8f5f;  --ok-bg: rgba(63,143,95,.12);
+  --ok-box-bg: rgba(63,143,95,.06);  --ok-box-border: rgba(63,143,95,.3);
   --warn: #b4761a;  --warn-bg: rgba(180,118,26,.08);  --warn-border: rgba(180,118,26,.3);
-  --err: #cc4136;
-  --ns-pill-bg: #ededed;  --ns-pill-fg: #595959;
-  --plot-shadow: 0 0 0 1px rgba(0,0,0,.1), 0 8px 24px -6px rgba(0,0,0,.3);
+  --err: #bf4d43;
+  --ns-pill-bg: #e8e5dc;  --ns-pill-fg: #63615a;
+  --plot-shadow: 0 0 0 1px #d9d6cd, 0 8px 24px -6px rgba(20,20,19,.3);
 }
 /* controls */
 .tb-btn{display:inline-flex;align-items:center;gap:5px;height:26px;padding:0 9px;background-color:var(--btn-bg);color:var(--fg);border:1px solid var(--btn-border);border-radius:6px;box-shadow:0 1px 1px rgba(0,0,0,.04);font-size:12px;line-height:1;white-space:nowrap;cursor:pointer}
