@@ -110,8 +110,8 @@ select.field{-webkit-appearance:none;appearance:none;padding-right:22px;backgrou
 input[type=checkbox] { accent-color: var(--accent); }
 
 html, body { background: var(--bg); }
-body { margin: 0; font: 12px/1.5 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", Helvetica, Arial, sans-serif; color: var(--fg); -webkit-font-smoothing: antialiased; }
-kbd { font: 500 11px/1 ui-monospace, SFMono-Regular, Menlo, monospace; padding: 2px 5px; border: 1px solid var(--btn-border); border-bottom-width: 2px; border-radius: 4px; background: var(--panel); color: var(--fg-soft); }
+body { margin: 0; font: 12px/1.5 Arial, Helvetica, "PingFang SC", "Microsoft YaHei", sans-serif; color: var(--fg); -webkit-font-smoothing: antialiased; }
+kbd { font: 500 11px/1 Arial, Helvetica, sans-serif; padding: 2px 5px; border: 1px solid var(--btn-border); border-bottom-width: 2px; border-radius: 4px; background: var(--panel); color: var(--fg-soft); }
 
 /* ---------- app shell: ribbon / sheet | graph + results / status bar ----------
    The data table is the centre of the app (Excel / Prism style). */
@@ -179,7 +179,7 @@ body { display: grid; grid-template-rows: auto minmax(0, 1fr); grid-template-col
 .disclosure > summary:hover { color: var(--fg-strong); }
 .disclosure > summary::before { content: ""; width: 5px; height: 5px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: rotate(-45deg); transition: transform .15s; }
 .disclosure[open] > summary::before { transform: rotate(45deg); }
-#pasteBox { display: block; width: 100%; max-width: 560px; padding: 6px 8px; border: 1px solid var(--input-border); border-radius: 6px; background: var(--input-bg); color: var(--fg-strong); font: 12px/1.45 ui-monospace, SFMono-Regular, Menlo, monospace; resize: vertical; }
+#pasteBox { display: block; width: 100%; max-width: 560px; padding: 6px 8px; border: 1px solid var(--input-border); border-radius: 6px; background: var(--input-bg); color: var(--fg-strong); font: 12px/1.45 Arial, Helvetica, sans-serif; resize: vertical; }
 
 /* Data grid — spreadsheet look: column letters, hairline grid, sticky header + row numbers */
 table.data-grid { table-layout: fixed; border-collapse: separate; border-spacing: 0; }
@@ -2293,6 +2293,8 @@ function baseLayout(theme, xTitle, yTitle) {
     annotations: [], shapes: [],
   };
 }
+/* a darker tone of a group colour: error bars and mean lines stay matched to their bar yet visible on it */
+const shade = (hex, f = 0.55) => { const n = parseInt(hex.slice(1), 16); return `rgb(${[16, 8, 0].map(b => Math.round(((n >> b) & 255) * f)).join(",")})`; };
 const sigText = (p) => $("sigLabel").value === "pval" ? ("<i>P</i> " + pRel(p)) : starsFor(p);
 /* the axis titles default to "Group" / "Value"; XY and contingency plots use better defaults until edited */
 const axisTitle = (id, fallback) => ($(id).value === GRAPH_DEFAULTS[id] ? fallback : $(id).value);
@@ -2329,14 +2331,20 @@ function drawPlot(spec) {
   const tops = groups.map((g, i) => Math.max(...g.values, meanErr ? descs[i].mean + errOf(descs[i]) : -Infinity));
   let yMax = Math.max(...tops), yMin = Math.min(...groups.map((g, i) => Math.min(...g.values, meanErr ? descs[i].mean - errOf(descs[i]) : Infinity)));
   if (spec.ref != null) { yMax = Math.max(yMax, spec.ref); yMin = Math.min(yMin, spec.ref); }
-  const errorBars = { type: "data", array: descs.map(errOf), visible: true, color: theme.line, thickness: 1.6, width: 6 };
+  // mean ± error for group i, in a darker tone of its colour (dot plots add the mean line)
+  const errTrace = (i, dot) => ({
+    type: "scatter", mode: "markers", x: [i], y: [descs[i].mean], hoverinfo: "skip",
+    error_y: { type: "data", array: [errOf(descs[i])], visible: true, color: shade(color(i)), thickness: 1.6, width: dot ? 9 : 6 },
+    marker: dot ? { symbol: "line-ew-open", size: 30, color: shade(color(i)), line: { color: shade(color(i)), width: 2.2 } } : { opacity: 0 },
+  });
 
   if (chart === "bar") {
     traces.push({
-      type: "bar", x: xIdx, y: descs.map(d => d.mean), width: 0.6, error_y: errorBars,
+      type: "bar", x: xIdx, y: descs.map(d => d.mean), width: 0.6,
       marker: { color: xIdx.map(color), line: { color: theme.markerLine, width: 1.5 } },
       customdata: names.map(escapeHtml), hovertemplate: "%{customdata}<br>mean %{y:.3f}<extra></extra>",
     });
+    xIdx.forEach(i => traces.push(errTrace(i, false)));
   } else if (chart === "box" || chart === "violin") {
     groups.forEach((g, i) => traces.push(chart === "box"
       ? { type: "box", y: g.values, x: g.values.map(() => i), boxpoints: false, width: 0.5,
@@ -2363,10 +2371,7 @@ function drawPlot(spec) {
       text: g.values.map(() => escapeHtml(g.name)), hovertemplate: "%{text}<br>%{y:.3f}<extra></extra>",
     });
   });
-  if (chart === "dot") traces.push({          // mean line + error bars drawn over the points
-    type: "scatter", mode: "markers", x: xIdx, y: descs.map(d => d.mean), error_y: Object.assign({}, errorBars, { width: 9 }),
-    marker: { symbol: "line-ew-open", size: 30, color: theme.line, line: { color: theme.line, width: 2.2 } }, hoverinfo: "skip",
-  });
+  if (chart === "dot") xIdx.forEach(i => traces.push(errTrace(i, true)));   // mean line + error bars over the points
 
   if (chart === "bar") yMin = Math.min(0, yMin);             // bars start at 0; other charts hug the data
   const span = (yMax - yMin) || Math.abs(yMax) || 1;
@@ -2410,11 +2415,11 @@ function drawGrouped(spec, theme) {
   const traces = [];
   names.forEach((n, j) => {
     const xs = levels.map((_, i) => xOf(i, j)), means = levels.map((_, i) => desc[i][j].mean);
-    const err = { type: "data", array: levels.map((_, i) => errOf(desc[i][j])), visible: true, color: theme.line, thickness: 1.5, width: 4 };
+    const err = { type: "data", array: levels.map((_, i) => errOf(desc[i][j])), visible: true, color: shade(color(j)), thickness: 1.5, width: 4 };
     if (chart === "bar") traces.push({ type: "bar", name: escapeHtml(n), legendgroup: n, x: xs, y: means, width: w * 0.88, error_y: err,
       marker: { color: color(j), line: { color: theme.markerLine, width: 1.3 } }, hovertemplate: escapeHtml(n) + "<br>mean %{y:.3f}<extra></extra>" });
     else if (chart === "dot") traces.push({ type: "scatter", mode: "markers", name: escapeHtml(n), legendgroup: n, x: xs, y: means, error_y: Object.assign(err, { width: 6 }),
-      marker: { symbol: "line-ew-open", size: 22, color: theme.line, line: { color: theme.line, width: 2 } }, showlegend: false, hoverinfo: "skip" });
+      marker: { symbol: "line-ew-open", size: 22, color: shade(color(j)), line: { color: shade(color(j)), width: 2 } }, showlegend: false, hoverinfo: "skip" });
     else levels.forEach((_, i) => traces.push(Object.assign({
       y: cells[i][j], x: cells[i][j].map(() => xOf(i, j)), name: escapeHtml(n), legendgroup: n, showlegend: i === 0,
       fillcolor: color(j), line: { color: theme.markerLine, width: 1.3 }, hoverinfo: "y" },
