@@ -147,8 +147,14 @@ body { display: grid; grid-template-rows: auto minmax(0, 1fr); grid-template-col
 .rg .row { display: flex; align-items: center; gap: 6px; }
 .rg-end { margin-left: auto; }
 .rg .tb-btn.icon { justify-content: center; padding: 0 6px; }
-#runBtn { grid-row: span 2; background: var(--run-bg); color: var(--run-fg); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; width: 62px; height: 56px; border: 0; border-radius: 8px; font-size: 12px; font-weight: 600; box-shadow: 0 1px 2px rgba(0,0,0,.18); cursor: pointer; }
-#runBtn svg { width: 13px; height: 13px; fill: currentColor; }
+/* Analysis: test + Run on top, the test's option underneath; results also re-run by themselves on every edit */
+.rg-analysis { grid-template-columns: 214px 58px; }
+.rg-analysis > select { grid-area: 1 / 1; }
+.rg-analysis #runBtn { grid-area: 1 / 2; }
+.rg-analysis .opts { grid-area: 2 / 1 / 3 / 3; }
+.rg-analysis .opts .field { width: 100%; }
+#runBtn { display: flex; align-items: center; justify-content: center; gap: 5px; height: 26px; background: var(--run-bg); color: var(--run-fg); border: 0; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; }
+#runBtn svg { width: 10px; height: 10px; fill: currentColor; }
 #runBtn:hover:not(:disabled) { background: var(--run-hover); }
 #runBtn:disabled { opacity: .6; }
 #clearBtn:hover { color: var(--danger-hover-fg) !important; }
@@ -160,7 +166,7 @@ body { display: grid; grid-template-rows: auto minmax(0, 1fr); grid-template-col
 /* the sheet: full-bleed spreadsheet; empty gridlines continue past the data */
 #vData { display: flex; flex-direction: column; min-height: 0; background: var(--input-bg); }
 #vData { border-right: 1px solid var(--card-border); }
-#sheetWrap { flex: 1 1 auto; min-height: 0; overflow: auto;
+#sheetWrap { position: relative; flex: 1 1 auto; min-height: 0; overflow: auto; cursor: cell;
   --cw: 118px; --rn: 34px; --rw: 130px; --hh: 50px; --rh: 29px;
   background:   /* repeating gradients drawn once from their origin, so no lines spill left of / above the grid */
     repeating-linear-gradient(to right, transparent 0 calc(var(--cw) - 1px), var(--cell-border) calc(var(--cw) - 1px) var(--cw)) var(--rw) 0 / 100% 100% no-repeat local,
@@ -203,11 +209,26 @@ table.data-grid thead .title-col { z-index: 3; }
 .delGrp { position: absolute; top: 50%; right: 4px; transform: translateY(-50%); width: 16px; height: 16px; border-radius: 4px; font-size: 13px; line-height: 15px; color: var(--fg-faint); opacity: 0; transition: opacity .12s; }
 th:hover .delGrp, th:focus-within .delGrp { opacity: 1; }
 .delGrp:hover { color: var(--err); background: var(--danger-hover-bg); }
-/* row header: shows the row number; the delete × only appears on hover / focus */
+/* selection: a box around a range; the row numbers and column letters of the selection light up */
+#selBox { position: absolute; z-index: 0; pointer-events: none; border: 2px solid var(--focus-border); background: var(--accent-soft); opacity: .9; }
+.cell-input, .row-title { cursor: cell; caret-color: var(--focus-border); }
+.cell-input::selection, .row-title::selection { background: transparent; }   /* select mode: the cell ring shows it, not a text highlight */
+.cell-input.editing::selection, .row-title.editing::selection { background: var(--accent-soft); }
+td.rowhdr, .col-letter { cursor: default; user-select: none; }
+td.rowhdr:hover, .col-letter:hover { color: var(--fg-strong); }
+td.rowhdr.hd-on { color: var(--accent); font-weight: 600; box-shadow: inset -2px 0 0 var(--focus-border); }
+th.hd-on .col-letter { color: var(--accent); font-weight: 600; box-shadow: inset 0 -2px 0 var(--focus-border); }
+/* right-click menu */
+#ctxMenu { position: fixed; z-index: 50; min-width: 210px; padding: 4px; border: 1px solid var(--card-border); border-radius: 8px; background: var(--surface); box-shadow: 0 8px 28px rgba(0,0,0,.18), 0 1px 3px rgba(0,0,0,.1); }
+#ctxMenu button { display: flex; align-items: center; width: 100%; height: 26px; padding: 0 8px; border-radius: 5px; font-size: 12px; color: var(--fg); text-align: left; }
+#ctxMenu button span { flex: 1; }
+#ctxMenu button:hover:not(:disabled) { background: var(--accent); color: #fff; }
+#ctxMenu button:hover:not(:disabled) kbd { color: rgba(255,255,255,.85); }
+#ctxMenu button:disabled { opacity: .4; }
+#ctxMenu kbd { border: 0; background: none; padding: 0; font-size: 11px; color: var(--fg-faint); }
+#ctxMenu hr { margin: 4px 6px; border: 0; border-top: 1px solid var(--card-border); }
+/* row header: the row number (click selects the row; right-click inserts / deletes) */
 .rowhdr { font-size: 10.5px; color: var(--fg-faint); text-align: center; vertical-align: middle; font-variant-numeric: tabular-nums; }
-.rowhdr .delRow { display: none; font-size: 14px; line-height: 1; color: var(--err); }
-tr:hover > .rowhdr .rn, tr:focus-within > .rowhdr .rn { display: none; }
-tr:hover > .rowhdr .delRow, tr:focus-within > .rowhdr .delRow { display: inline; }
 
 /* output: figure (white paper) + results */
 #vOut { min-height: 0; overflow: auto; background: var(--side); }
@@ -246,8 +267,11 @@ details > summary { cursor: pointer; list-style: none; }
 details > summary::-webkit-details-marker { display: none; }
 select option, select optgroup { background: var(--option-bg); color: var(--fg); }
 input::placeholder, textarea::placeholder { color: var(--fg-faint); }
-#ribbon .field { transition: border-color .15s, box-shadow .15s; }
-#ribbon .field:hover { border-color: var(--input-hover-border); }
+/* ribbon fields are soft fills, not outlined form boxes: the outline only appears on hover / focus */
+#ribbon .field, #ribbon .unit { background-color: var(--seg-bg); border-color: transparent; transition: border-color .15s, box-shadow .15s, background-color .15s; }
+#ribbon .field:hover, #ribbon .unit:hover { border-color: var(--input-hover-border); }
+#ribbon .field:focus, #ribbon .unit:focus-within { background-color: var(--input-bg); }
+.tb-btn:active:not(:disabled), .seg button:active, #runBtn:active:not(:disabled) { transform: translateY(1px); }
 #ribbon .field:focus, #pasteBox:focus { outline: none; border-color: var(--focus-border); box-shadow: var(--focus-ring); }
 button { transition: background-color .15s, color .15s, border-color .15s; }
 :focus-visible { outline: 2px solid var(--focus-border); outline-offset: 1px; }
@@ -293,9 +317,9 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
 
     <div class="rg rg-flat rg-eq">
       <div class="rg-body">
-        <label for="importJH" id="importLabel" class="tb-btn" title="Open a saved .jgz session file"><svg viewBox="0 0 24 24"><path d="M12 15V3m-4 8 4 4 4-4"/><path d="M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/></svg>Import</label>
-        <button id="exportBtn" class="tb-btn" title="Save this session (data + settings) as a .jgz file"><svg viewBox="0 0 24 24"><path d="M12 3v12m-4-8 4-4 4 4"/><path d="M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/></svg>Export</button>
-        <button id="copyData" class="tb-btn" title="Copy the grid as TSV (paste into Excel/Sheets)"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>Copy</button>
+        <label for="importJH" id="importLabel" class="tb-btn" title="Open a saved .jgz session (data + settings)"><svg viewBox="0 0 24 24"><path d="M12 15V3m-4 8 4 4 4-4"/><path d="M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/></svg>Open</label>
+        <button id="exportBtn" class="tb-btn" title="Save this session (data + settings) as a .jgz file"><svg viewBox="0 0 24 24"><path d="M12 3v12m-4-8 4-4 4 4"/><path d="M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/></svg>Save</button>
+        <button id="copyData" class="tb-btn" title="Copy the whole sheet as TSV (paste into Excel / Sheets)"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>Copy</button>
         <button id="pasteBtn" class="tb-btn" title="Paste or type TSV / CSV text to import into the sheet"><svg viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="17" rx="2"/><path d="M9 4V3h6v1M9 10h6M9 14h6M9 18h3"/></svg>Paste</button>
       </div>
       <input id="importJH" type="file" accept=".jgz,.jh" class="hidden" />
@@ -303,8 +327,8 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
     </div>
 
     <div class="rg">
-      <div class="rg-body">
-        <select id="testSelect" class="field" style="width:196px" aria-label="Statistical test">
+      <div class="rg-body rg-analysis">
+        <select id="testSelect" class="field" aria-label="Statistical test">
           <optgroup label="Column statistics">
             <option value="desc">Descriptive statistics + normality</option>
             <option value="onet">One-sample t-test</option>
@@ -336,15 +360,15 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
             <option value="chisq">Chi-square / Fisher's exact test</option>
           </optgroup>
         </select>
-        <div>
+        <div class="opts">
           <div id="opt_ttest" class="test-opts">
             <label class="check" title="Recommended; does not assume equal variances"><input type="checkbox" id="welchChk" checked />Welch's correction</label>
           </div>
           <div id="opt_onesample" class="test-opts hidden">
-            <span class="unit txt wide"><label for="mu0">Hypothetical value</label><input id="mu0" type="number" step="any" value="0" class="num-field" /></span>
+            <span class="unit txt wide"><label for="mu0">Hypothetical mean</label><input id="mu0" type="number" step="any" value="0" class="num-field" /></span>
           </div>
           <div id="opt_anova" class="test-opts hidden">
-            <select id="posthocSelect" class="field" aria-label="Post-hoc test" style="width:226px">
+            <select id="posthocSelect" class="field" aria-label="Post-hoc test">
               <option value="tukey">Post-hoc: Tukey's HSD (all pairs)</option>
               <option value="holm">Post-hoc: Holm pairwise t-tests</option>
               <option value="bonferroni">Post-hoc: Bonferroni pairwise t-tests</option>
@@ -352,13 +376,13 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
             </select>
           </div>
           <div id="opt_kruskal" class="test-opts hidden">
-            <select id="dunnAdj" class="field" aria-label="Dunn's test p-value adjustment" style="width:226px">
+            <select id="dunnAdj" class="field" aria-label="Dunn's test p-value adjustment">
               <option value="holm">Dunn's adjustment: Holm</option>
               <option value="bonferroni">Dunn's adjustment: Bonferroni</option>
             </select>
           </div>
         </div>
-        <button id="runBtn" title="Run the selected test on the sheet"><svg viewBox="0 0 16 16"><path d="M4 2.5v11a.5.5 0 0 0 .77.42l8.5-5.5a.5.5 0 0 0 0-.84l-8.5-5.5A.5.5 0 0 0 4 2.5Z"/></svg>Analyze</button>
+        <button id="runBtn" title="Results update as you edit the sheet; click to run again"><svg viewBox="0 0 16 16"><path d="M4 2.5v11a.5.5 0 0 0 .77.42l8.5-5.5a.5.5 0 0 0 0-.84l-8.5-5.5A.5.5 0 0 0 4 2.5Z"/></svg>Run</button>
       </div>
       <div class="rg-cap">Analysis</div>
     </div>
@@ -383,8 +407,8 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
           <option value="vibrant">Vibrant</option>
         </select>
         <select id="sigLabel" class="field as-seg" aria-label="Significance label">
-          <option value="stars" data-short="✱">Asterisks (*)</option>
-          <option value="pval" data-short="P">p-value</option>
+          <option value="stars" data-short="***">Asterisks (*)</option>
+          <option value="pval" data-short="P =">p-value</option>
         </select>
         <span class="unit txt"><label for="xLabel">X</label><input id="xLabel" value="Group" class="num-field" /></span>
         <span class="unit txt"><label for="yLabel">Y</label><input id="yLabel" value="Value" class="num-field" /></span>
@@ -397,7 +421,7 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
         <span class="unit"><label for="plotW">W</label><input id="plotW" type="number" min="220" step="20" value="300" class="num-field" /></span>
         <span class="unit"><label for="dotSize">Dot</label><input id="dotSize" type="number" min="2" max="20" step="1" value="6" class="num-field" /></span>
         <span class="unit"><label for="plotH">H</label><input id="plotH" type="number" min="220" step="20" value="400" class="num-field" /></span>
-        <button id="resetGraph" class="tb-btn" title="Restore graph to default options, size &amp; view"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>Reset</button>
+        <span class="flat"><button id="resetGraph" class="tb-btn" title="Restore graph to default options, size &amp; view"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>Reset</button></span>
         <span class="flat"><button id="dlPng" class="tb-btn" title="PNG at 5× the on-screen size (≈ 300 dpi for a 2–3 inch figure)"><svg viewBox="0 0 24 24"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14"/></svg>PNG</button></span>
         <span class="flat"><button id="dlSvg" class="tb-btn" title="Download as vector SVG"><svg viewBox="0 0 24 24"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14"/></svg>SVG</button></span>
       </div>
@@ -419,6 +443,7 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
     <!-- ============ DATA SHEET ============ -->
     <section id="vData">
       <div id="sheetWrap">
+        <div id="selBox" hidden></div>
         <table class="data-grid" id="dataTable" aria-label="Data grid"></table>
       </div>
       <div class="sheet-foot">
@@ -452,16 +477,19 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
   </div>
 
 
+  <div id="ctxMenu" role="menu" hidden></div>
+
   <dialog id="helpDlg"><form method="dialog">
     <header><h3>Tips</h3><button type="submit" value="" aria-label="Close">×</button></header>
     <dl>
       <dt>Layout</dt><dd>One column per group. Paired, repeated-measures and Friedman tests match values by row (one subject per row). Correlation uses column A as X and B as Y. Contingency tables hold counts: columns are groups, rows are outcomes (named by the row titles).</dd>
       <dt>Two-way</dt><dd>Columns are the levels of one factor (e.g. Control / Drug); the row title names the level of the other (e.g. Male / Female). Put each replicate on its own row and repeat the row title.</dd>
       <dt>Paste</dt><dd>Paste a block from Excel/Sheets into any cell (<kbd>⌘/Ctrl</kbd> <kbd>V</kbd>); the grid expands to fit. Paste in the ribbon imports TSV / CSV text, optionally with a header row.</dd>
-      <dt>Move</dt><dd><kbd>Enter</kbd> / <kbd>↑</kbd> <kbd>↓</kbd> move between rows; <kbd>←</kbd> <kbd>→</kbd> move between groups at a cell's edge.</dd>
-      <dt>Delete</dt><dd>Hover a row number and click × to delete the row; hover a column header and click × to delete the column (group).</dd>
+      <dt>Select</dt><dd>Click a cell and just type to replace it; double-click or <kbd>F2</kbd> to edit inside it. Drag, or <kbd>Shift</kbd> + click / arrows, to select a block; click a row number or column letter for a whole row or column; <kbd>⌘/Ctrl</kbd> <kbd>A</kbd> selects everything. Click the empty grid to add rows and columns there.</dd>
+      <dt>Move</dt><dd>Arrows, <kbd>Tab</kbd> and <kbd>Enter</kbd> move between cells (<kbd>Enter</kbd> on the last row adds one); <kbd>⌘/Ctrl</kbd> + arrow jumps to the edge.</dd>
+      <dt>Edit</dt><dd>Copy, cut and paste work on blocks; one copied value pasted onto a block fills it. <kbd>Delete</kbd> clears the block, <kbd>⌘/Ctrl</kbd> <kbd>D</kbd> fills down, <kbd>Esc</kbd> cancels a change. Right-click for insert / delete rows and columns. Results update as you type.</dd>
       <dt>Undo</dt><dd><kbd>⌘/Ctrl</kbd> <kbd>Z</kbd>; add <kbd>Shift</kbd> for redo.</dd>
-      <dt>Session</dt><dd>Saved in this browser automatically; Export / Import (.jgz) moves a session between machines.</dd>
+      <dt>Session</dt><dd>Saved in this browser automatically; Save / Open (.jgz) moves a session between machines.</dd>
       <dt>Export</dt><dd>PNG at 5× the on-screen size (≈ 300 dpi for a 2–3 inch figure); SVG is vector.</dd>
       <dt>Theme</dt><dd>The sun / moon button in the ribbon's View group switches between light and dark.</dd>
       <dt>Privacy</dt><dd>Everything runs in this browser; your data is never uploaded.</dd>
@@ -1382,16 +1410,21 @@ function pushHistory(snap) {
   updateHistoryButtons();
 }
 function restore(from, to) {
+  commitEdit();
   if (!from.length) return;
   to.push(snapshot());
   ({ grid, titles } = JSON.parse(from.pop()));
-  renderGrid(); scheduleSave(); updateHistoryButtons();
+  renderGrid(); scheduleSave(); scheduleRun(); updateHistoryButtons();
 }
 const undo = () => restore(undoStack, redoStack);
 const redo = () => restore(redoStack, undoStack);
 function updateHistoryButtons() { $("undoBtn").disabled = !undoStack.length; $("redoBtn").disabled = !redoStack.length; }
 /* structural edit: snapshot → change → re-render → save */
-function mutate(fn) { pushHistory(); fn(); renderGrid(); scheduleSave(); }
+function mutate(fn) {
+  const hadFocus = document.activeElement && document.activeElement.matches(".cell-input, .row-title");
+  pushHistory(); fn(); renderGrid(); scheduleSave(); scheduleRun();
+  if (hadFocus && sel) focusCell(sel.ag, sel.ar, true);
+}
 
 /* ============================================================
    DATA GRID
@@ -1434,7 +1467,7 @@ function renderGrid() {
   });
   html += "</tr></thead><tbody>";
   for (let r = 0; r < rows; r++) {
-    html += `<tr><td class="rowhdr"><span class="rn">${r + 1}</span><button class="delRow" data-r="${r}" title="Delete row ${r + 1}" aria-label="Delete row ${r + 1}">×</button></td>`;
+    html += `<tr><td class="rowhdr" title="Click to select the row; right-click to insert or delete rows">${r + 1}</td>`;
     html += `<td class="title-col"><input class="row-title" data-r="${r}" value="${escapeHtml(titles[r])}" aria-label="Title of row ${r + 1}" /></td>`;
     grid.forEach((g, gi) => {
       const v = g.cells[r];
@@ -1444,6 +1477,8 @@ function renderGrid() {
   }
   $("dataTable").innerHTML = html + "</tbody>";
   sizeSheetBackground();
+  if (sel) { sel.ag = clampG(sel.ag); sel.fg = clampG(sel.fg); sel.ar = clampR(sel.ar); sel.fr = clampR(sel.fr); }
+  paintSel();
 }
 
 /* spreadsheet column letters: A … Z, AA, AB … */
@@ -1459,15 +1494,133 @@ function sizeSheetBackground() {
   if (row) wrap.style.setProperty("--rh", row.offsetHeight + "px");
 }
 
-function focusCell(g, r) {   // g = -1 → the row-title cell
-  const el = $("dataTable").querySelector(g < 0 ? `.row-title[data-r="${r}"]` : `.cell-input[data-g="${g}"][data-r="${r}"]`);
-  if (el) { el.focus(); el.select(); }
+/* ---------- selection: Excel-style ----------
+   sel = anchor (ag, ar: the active cell, which holds keyboard focus) + far
+   corner (fg, fr). g = -1 is the row-title column. A cell is in one of two
+   modes: "select" (the default after a click or arrow key: the whole value is
+   selected, typing replaces it, arrows move between cells) or "edit"
+   (double-click / F2: arrows move the caret). */
+let sel = null, editing = false, editOrig = "", dragging = false;
+function startEditing(t) { editing = true; t.classList.add("editing"); const n = t.value.length; t.setSelectionRange(n, n); }
+function stopEditing() { editing = false; document.querySelectorAll("#dataTable .editing").forEach(el => el.classList.remove("editing")); }
+const gOf = (t) => t.classList.contains("row-title") ? -1 : +t.dataset.g;
+const cellEl = (g, r) => $("dataTable").querySelector(g < 0 ? `.row-title[data-r="${r}"]` : `.cell-input[data-g="${g}"][data-r="${r}"]`);
+const getVal = (g, r) => g < 0 ? (titles[r] ?? "") : (grid[g]?.cells[r] ?? "");
+function setVal(g, r, v) { if (g < 0) titles[r] = v; else if (grid[g]) grid[g].cells[r] = v; }
+const selRect = () => sel && { g0: Math.min(sel.ag, sel.fg), g1: Math.max(sel.ag, sel.fg), r0: Math.min(sel.ar, sel.fr), r1: Math.max(sel.ar, sel.fr) };
+const selMulti = () => !!sel && (sel.ag !== sel.fg || sel.ar !== sel.fr);
+const clampG = (g) => Math.max(-1, Math.min(grid.length - 1, g));
+const clampR = (r) => Math.max(0, Math.min(nRows() - 1, r));
+
+function focusCell(g, r, keepRange) {   // g = -1 → the row-title cell
+  g = clampG(g); r = clampR(r);
+  if (!keepRange || !sel) sel = { ag: g, ar: r, fg: g, fr: r };
+  stopEditing();
+  const el = cellEl(g, r);
+  if (el) { el.focus({ preventScroll: true }); el.select(); scrollCellIntoView(el); }
+  paintSel();
+}
+/* keep a cell visible below the sticky header and right of the sticky row-title column */
+function scrollCellIntoView(el) {
+  const wrap = $("sheetWrap"), td = el.closest("td"), t = $("dataTable");
+  const top = t.offsetTop + td.offsetTop, left = t.offsetLeft + td.offsetLeft;
+  const hh = t.tHead.offsetHeight, rw = td.classList.contains("title-col") ? 0 : t.tHead.rows[0].cells[0].offsetWidth + t.tHead.rows[0].cells[1].offsetWidth;
+  if (top - hh < wrap.scrollTop) wrap.scrollTop = top - hh;
+  else if (top + td.offsetHeight > wrap.scrollTop + wrap.clientHeight) wrap.scrollTop = top + td.offsetHeight - wrap.clientHeight;
+  if (rw && left - rw < wrap.scrollLeft) wrap.scrollLeft = left - rw;
+  else if (left + td.offsetWidth > wrap.scrollLeft + wrap.clientWidth) wrap.scrollLeft = left + td.offsetWidth - wrap.clientWidth;
+}
+/* draw the selection: a box around a multi-cell range, highlighted row numbers and column letters */
+function paintSel() {
+  const t = $("dataTable"), box = $("selBox");
+  t.querySelectorAll(".hd-on").forEach(el => el.classList.remove("hd-on"));
+  if (!sel || !t.tBodies[0]) { box.hidden = true; return; }
+  const R = selRect();
+  for (let r = R.r0; r <= R.r1; r++) { const tr = t.tBodies[0].rows[r]; if (tr) tr.cells[0].classList.add("hd-on"); }
+  const heads = t.tHead.rows[0].cells;
+  for (let g = R.g0; g <= R.g1; g++) { const th = heads[g + 2]; if (th) th.classList.add("hd-on"); }
+  const a = cellEl(R.g0, R.r0), b = cellEl(R.g1, R.r1);
+  if (!selMulti() || !a || !b) { box.hidden = true; return; }
+  const ta = a.closest("td"), tb = b.closest("td");
+  box.hidden = false;
+  box.style.left = t.offsetLeft + ta.offsetLeft + "px";
+  box.style.top = t.offsetTop + ta.offsetTop + "px";
+  box.style.width = tb.offsetLeft + tb.offsetWidth - ta.offsetLeft + "px";
+  box.style.height = tb.offsetTop + tb.offsetHeight - ta.offsetTop + "px";
+}
+function extendSel(g, r) {
+  if (!sel) return;
+  sel.fg = clampG(g); sel.fr = clampR(r);
+  paintSel();
+  const el = cellEl(sel.fg, sel.fr);
+  if (el) scrollCellIntoView(el);
+}
+function selectAllCells() {
+  const last = nRows() - 1;
+  if (last < 0) return;
+  focusCell(hasTitles() ? -1 : 0, 0);
+  extendSel(grid.length - 1, last);
+}
+function selTSV() {
+  const R = selRect(), out = [];
+  for (let r = R.r0; r <= R.r1; r++) { const row = []; for (let g = R.g0; g <= R.g1; g++) row.push(getVal(g, r)); out.push(row.join("\t")); }
+  return out.join("\n");
+}
+function clearSel() {
+  const R = selRect();
+  if (!R) return;
+  mutate(() => { for (let r = R.r0; r <= R.r1; r++) for (let g = R.g0; g <= R.g1; g++) setVal(g, r, ""); });
+}
+/* Ctrl+D: copy the top row of the range down through it (a one-row range copies the row above) */
+function fillDown() {
+  const R = selRect();
+  if (!R) return;
+  const src = R.r0 === R.r1 ? R.r0 - 1 : R.r0;
+  if (src < 0) return;
+  mutate(() => { for (let r = src + 1; r <= R.r1; r++) for (let g = R.g0; g <= R.g1; g++) setVal(g, r, getVal(g, src)); });
+}
+/* paste text at the selection: a single value fills the whole range; a block lands at its top-left */
+function pasteText(text) {
+  const R = selRect();
+  if (!R) return;
+  const single = !/[\t\n]/.test(text.replace(/\r?\n$/, ""));
+  if (single) {
+    const v = text.replace(/\r?\n$/, "").trim();
+    mutate(() => { for (let r = R.r0; r <= R.r1; r++) for (let g = R.g0; g <= R.g1; g++) setVal(g, r, v); });
+    return;
+  }
+  pasteBlock(text, R.g0, R.r0);
+}
+const insertRows = (at, n = 1) => mutate(() => {
+  grid.forEach(g => g.cells.splice(at, 0, ...Array(n).fill("")));
+  titles.splice(at, 0, ...Array(n).fill(""));
+});
+const insertCols = (at, n = 1) => mutate(() => {
+  for (let i = 0; i < n; i++) grid.splice(at + i, 0, { name: nextGroupName(), cells: Array(nRows()).fill("") });
+});
+function deleteRows(r0, r1) {
+  mutate(() => {
+    grid.forEach(g => g.cells.splice(r0, r1 - r0 + 1));
+    titles.splice(r0, r1 - r0 + 1);
+    if (!nRows()) { grid.forEach(g => g.cells.push("")); titles.push(""); }
+  });
+}
+function deleteCols(g0, g1) {
+  g0 = Math.max(0, g0);
+  if (g1 < g0 || g1 - g0 + 1 >= grid.length) return;   // always keep one group
+  mutate(() => grid.splice(g0, g1 - g0 + 1));
 }
 
 /* --- all grid events are delegated to the table (one listener each) --- */
 const table = $("dataTable");
 table.addEventListener("focusin", e => {
-  if (e.target.matches(".cell-input, .grp-name, .row-title")) editSnapshot = snapshot();
+  const t = e.target;
+  if (t.matches(".cell-input, .grp-name, .row-title")) editSnapshot = snapshot();
+  if (t.matches(".cell-input, .row-title")) {
+    const g = gOf(t), r = +t.dataset.r;
+    if (!sel || sel.ag !== g || sel.ar !== r) { sel = { ag: g, ar: r, fg: g, fr: r }; paintSel(); }
+    editOrig = t.value;
+  } else if (t.matches(".grp-name")) { sel = null; paintSel(); }
 });
 table.addEventListener("change", () => { commitEdit(); editSnapshot = snapshot(); });
 table.addEventListener("input", e => {
@@ -1480,17 +1633,67 @@ table.addEventListener("input", e => {
   } else if (t.classList.contains("row-title")) {
     titles[+t.dataset.r] = t.value;
   }
-  scheduleSave();
+  if (selMulti() && t.matches(".cell-input, .row-title")) { sel.fg = sel.ag; sel.fr = sel.ar; paintSel(); }   // typing collapses the range
+  scheduleSave(); scheduleRun();
 });
 table.addEventListener("click", e => {
   const b = e.target.closest("button");
   if (!b) return;
-  if (b.classList.contains("delRow")) mutate(() => { grid.forEach(g => g.cells.splice(+b.dataset.r, 1)); titles.splice(+b.dataset.r, 1); });
-  else if (b.classList.contains("delGrp")) mutate(() => grid.splice(+b.dataset.g, 1));
+  if (b.classList.contains("delGrp")) deleteCols(+b.dataset.g, +b.dataset.g);
+});
+/* mouse: click selects a cell (not a caret position), drag or Shift+click selects a range,
+   double-click edits; click a row number / column letter to select the whole row / column */
+table.addEventListener("mousedown", e => {
+  if (e.button !== 0) return;
+  const t = e.target.closest(".cell-input, .row-title");
+  if (t) {
+    if (editing && document.activeElement === t) return;   // place the caret while editing
+    e.preventDefault();
+    const g = gOf(t), r = +t.dataset.r;
+    if (e.shiftKey && sel) extendSel(g, r); else focusCell(g, r);
+    dragging = true;
+    return;
+  }
+  if (e.target.closest("button, input")) return;
+  const rh = e.target.closest("td.rowhdr"), letter = e.target.closest(".col-letter");
+  if (rh) {
+    e.preventDefault();
+    const r = rh.parentElement.rowIndex - 1;
+    if (e.shiftKey && sel) { sel.fr = r; sel.ag = hasTitles() ? -1 : 0; sel.fg = grid.length - 1; paintSel(); return; }
+    focusCell(hasTitles() ? -1 : 0, r); extendSel(grid.length - 1, r);
+  } else if (letter) {
+    e.preventDefault();
+    const g = letter.closest("th").cellIndex - 2;
+    if (g < 0) return;
+    if (e.shiftKey && sel) { sel.fg = g; sel.ar = 0; sel.fr = nRows() - 1; paintSel(); return; }
+    focusCell(g, 0); extendSel(g, nRows() - 1);
+  }
+});
+table.addEventListener("mouseover", e => {
+  if (!dragging) return;
+  const t = e.target.closest(".cell-input, .row-title");
+  if (t) extendSel(gOf(t), +t.dataset.r);
+});
+addEventListener("mouseup", () => { dragging = false; });
+table.addEventListener("dblclick", e => {
+  const t = e.target.closest(".cell-input, .row-title");
+  if (t) startEditing(t);
+});
+table.addEventListener("focusout", e => { if (e.target.classList.contains("editing")) stopEditing(); });
+table.addEventListener("copy", e => {
+  if (!selMulti() || editing) return;
+  e.preventDefault(); e.clipboardData.setData("text/plain", selTSV());
+});
+table.addEventListener("cut", e => {
+  if (!selMulti() || editing) return;
+  e.preventDefault(); e.clipboardData.setData("text/plain", selTSV()); clearSel();
 });
 table.addEventListener("paste", e => {
-  if (e.target.classList.contains("cell-input")) onCellPaste(e, +e.target.dataset.g, +e.target.dataset.r);
-  else if (e.target.classList.contains("row-title")) onCellPaste(e, -1, +e.target.dataset.r);
+  if (!e.target.matches(".cell-input, .row-title") || editing) return;
+  const text = (e.clipboardData || window.clipboardData).getData("text");
+  if (!selMulti() && !/[\t\n]/.test(text.replace(/\r?\n$/, ""))) return;   // one value into one cell: the browser's own paste
+  e.preventDefault();
+  pasteText(text);
 });
 table.addEventListener("keydown", e => {
   const t = e.target;
@@ -1499,33 +1702,152 @@ table.addEventListener("keydown", e => {
     return;
   }
   if (!t.matches(".cell-input, .row-title")) return;
-  const g = t.classList.contains("row-title") ? -1 : +t.dataset.g, r = +t.dataset.r;
-  // ← → leave the cell at the text edge, or when the whole value is selected (just navigated in)
-  const all = t.selectionStart === 0 && t.selectionEnd === t.value.length;
-  const atStart = all || (t.selectionStart === 0 && t.selectionEnd === 0);
-  const atEnd = all || (t.selectionStart === t.value.length && t.selectionEnd === t.value.length);
-  let target = null;
-  if (e.key === "Enter") {
-    target = [g, e.shiftKey ? r - 1 : r + 1];
-    if (!e.shiftKey && r + 1 >= nRows()) { commitEdit(); grid.forEach(gr => gr.cells.push("")); renderGrid(); scheduleSave(); }
+  const g = gOf(t), r = +t.dataset.r, mod = (e.metaKey || e.ctrlKey) && !e.altKey, k = e.key;
+  if (editing) {
+    if (k === "Escape") { e.preventDefault(); cancelEdit(t); return; }
+    if (["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"].includes(k) || mod) return;   // caret / text shortcuts
   }
-  else if (e.key === "ArrowDown") target = [g, r + 1];
-  else if (e.key === "ArrowUp") target = [g, r - 1];
-  else if (e.key === "ArrowLeft" && atStart && g >= 0) target = [g - 1, r];
-  else if (e.key === "ArrowRight" && atEnd) target = [g + 1, r];
-  else if (e.key === "Escape") { t.blur(); return; }
-  if (!target) return;
+  if (k === "Escape") {
+    e.preventDefault();
+    if (t.value !== editOrig) cancelEdit(t); else if (selMulti()) focusCell(g, r); else t.blur();
+    return;
+  }
+  if (mod && (k.toLowerCase() === "z" || k.toLowerCase() === "y")) {   // the sheet's undo, not the input's
+    e.preventDefault();
+    if (k.toLowerCase() === "y" || e.shiftKey) redo(); else undo();
+    if (sel) focusCell(sel.ag, sel.ar, true);
+    return;
+  }
+  if (mod && k.toLowerCase() === "a") { e.preventDefault(); selectAllCells(); return; }
+  if (mod && k.toLowerCase() === "d") { e.preventDefault(); fillDown(); return; }
+  if ((k === "Delete" || k === "Backspace") && selMulti()) { e.preventDefault(); clearSel(); return; }
+  if (k === "F2") { e.preventDefault(); startEditing(t); return; }
+
+  const step = { ArrowUp: [0, -1], ArrowDown: [0, 1], ArrowLeft: [-1, 0], ArrowRight: [1, 0] }[k];
+  if (step) {
+    e.preventDefault();
+    const [dg, dr] = step;
+    const fg = e.shiftKey && sel ? sel.fg : g, fr = e.shiftKey && sel ? sel.fr : r;
+    // Ctrl/⌘ + arrow jumps to the edge of the sheet
+    const ng = mod ? (dg < 0 ? -1 : dg > 0 ? grid.length - 1 : fg) : fg + dg;
+    const nr = mod ? (dr < 0 ? 0 : dr > 0 ? nRows() - 1 : fr) : fr + dr;
+    if (e.shiftKey) extendSel(ng, nr); else focusCell(ng, nr);
+    return;
+  }
+  if (k === "Tab") {
+    e.preventDefault();
+    if (e.shiftKey) { if (g > -1) focusCell(g - 1, r); else if (r > 0) focusCell(grid.length - 1, r - 1); }
+    else if (g < grid.length - 1) focusCell(g + 1, r);
+    else focusCell(hasTitles() ? -1 : 0, r + 1);
+    return;
+  }
+  if (k === "Enter") {
+    e.preventDefault();
+    if (e.shiftKey) { focusCell(g, r - 1); return; }
+    if (r + 1 >= nRows()) { commitEdit(); pushHistory(); grid.forEach(gr => gr.cells.push("")); titles.push(""); renderGrid(); scheduleSave(); }
+    focusCell(g, r + 1);
+  }
+});
+function cancelEdit(t) {
+  t.value = editOrig;
+  t.dispatchEvent(new Event("input", { bubbles: true }));
+  stopEditing(); t.select();
+}
+
+/* click the empty gridlines past the data: the sheet grows to that cell */
+$("sheetWrap").addEventListener("mousedown", e => {
+  const wrap = e.currentTarget;
+  if (e.target !== wrap || e.button !== 0) return;
+  const rect = wrap.getBoundingClientRect();
+  if (e.clientX - rect.left > wrap.clientWidth || e.clientY - rect.top > wrap.clientHeight) return;   // the scrollbar
+  const t = $("dataTable"), css = getComputedStyle(wrap), px = (v) => parseFloat(css.getPropertyValue(v));
+  const x = e.clientX - rect.left + wrap.scrollLeft, y = e.clientY - rect.top + wrap.scrollTop;
+  const rw = px("--rw"), cw = px("--cw"), hh = px("--hh"), rh = px("--rh");
+  const g = x < rw ? (x < px("--rn") ? 0 : -1) : Math.floor((x - rw) / cw);
+  const inHead = y < hh, r = inHead ? 0 : Math.floor((y - hh) / rh);
+  if (g >= grid.length + 20 || r >= nRows() + 200) return;
   e.preventDefault();
-  focusCell(target[0], target[1]);
+  mutate(() => {
+    while (grid.length <= g) grid.push({ name: nextGroupName(), cells: [] });
+    while (titles.length <= r) titles.push("");
+    const need = nRows();
+    grid.forEach(gr => { while (gr.cells.length < need) gr.cells.push(""); });
+  });
+  if (inHead && g >= 0) { const n = t.querySelector(`.grp-name[data-g="${g}"]`); n.focus(); n.select(); }
+  else focusCell(g, r);
 });
 
-/* Paste a block copied from Excel/Sheets directly into the grid, starting at
-   the focused cell. Expands rows & groups as needed and detects a leading
-   header row of group names on a paste into the first row. */
-function onCellPaste(e, startG, startR) {
-  const text = (e.clipboardData || window.clipboardData).getData("text");
-  if (!/[\t\n]/.test(text)) return; // single value → let the browser handle it
+/* ---------- right-click menu on the sheet ---------- */
+const isMac = /Mac|iP(hone|ad)/.test(navigator.platform);
+const kb = (k) => (isMac ? "⌘" : "Ctrl+") + k;
+const ctxMenu = $("ctxMenu");
+function closeMenu() { ctxMenu.hidden = true; }
+table.addEventListener("contextmenu", e => {
+  const t = e.target.closest(".cell-input, .row-title"), rh = e.target.closest("td.rowhdr"), th = e.target.closest("thead th");
+  if (!t && !rh && !th) return;
   e.preventDefault();
+  if (t) {
+    const g = gOf(t), r = +t.dataset.r, R = selRect();
+    if (!R || g < R.g0 || g > R.g1 || r < R.r0 || r > R.r1) focusCell(g, r);
+  } else if (rh) {
+    const r = rh.parentElement.rowIndex - 1, R = selRect();
+    if (!R || r < R.r0 || r > R.r1 || !selMulti()) { focusCell(hasTitles() ? -1 : 0, r); extendSel(grid.length - 1, r); }
+  } else {
+    const g = th.cellIndex - 2;
+    if (g < 0) return;
+    const R = selRect();
+    if (!R || g < R.g0 || g > R.g1 || R.r1 - R.r0 + 1 < nRows()) { focusCell(g, 0); extendSel(g, nRows() - 1); }
+  }
+  const R = selRect(), nr = R.r1 - R.r0 + 1, gs = Math.max(0, R.g0), ng = R.g1 - gs + 1;
+  const rowsWord = nr > 1 ? `${nr} rows` : "row", colsWord = ng > 1 ? `${ng} columns` : "column";
+  const items = [
+    ["cut", "Cut", kb("X")], ["copy", "Copy", kb("C")], ["paste", "Paste", kb("V")], "-",
+    ["rowAbove", `Insert ${rowsWord} above`], ["rowBelow", `Insert ${rowsWord} below`],
+    ["colLeft", `Insert ${colsWord} left`], ["colRight", `Insert ${colsWord} right`], "-",
+    ["delRows", `Delete ${rowsWord}`], ["delCols", `Delete ${colsWord}`, "", ng < 1 || ng >= grid.length], "-",
+    ["fill", "Fill down", kb("D")], ["clear", "Clear contents", "Del"],
+  ];
+  ctxMenu.innerHTML = items.map(it => it === "-" ? `<hr>` :
+    `<button type="button" data-act="${it[0]}"${it[3] ? " disabled" : ""}><span>${it[1]}</span><kbd>${it[2] || ""}</kbd></button>`).join("");
+  ctxMenu.hidden = false;
+  const w = ctxMenu.offsetWidth, h = ctxMenu.offsetHeight;
+  ctxMenu.style.left = Math.min(e.clientX, innerWidth - w - 6) + "px";
+  ctxMenu.style.top = Math.min(e.clientY, innerHeight - h - 6) + "px";
+});
+ctxMenu.addEventListener("click", async e => {
+  const b = e.target.closest("button[data-act]");
+  if (!b) return;
+  closeMenu();
+  const R = selRect(), nr = R.r1 - R.r0 + 1, gs = Math.max(0, R.g0), ng = R.g1 - gs + 1;
+  switch (b.dataset.act) {
+    case "cut": case "copy":
+      try { await navigator.clipboard.writeText(selTSV()); } catch (_) { /* clipboard blocked */ }
+      if (b.dataset.act === "cut") clearSel();
+      break;
+    case "paste":
+      try { pasteText(await navigator.clipboard.readText()); }
+      catch (_) { alert(`The browser blocked reading the clipboard here. Use ${kb("V")} instead.`); }
+      return;
+    case "rowAbove": insertRows(R.r0, nr); break;
+    case "rowBelow": insertRows(R.r1 + 1, nr); sel.ar = sel.fr = R.r1 + 1; break;
+    case "colLeft": insertCols(gs, ng); break;
+    case "colRight": insertCols(R.g1 + 1, ng); sel.ag = sel.fg = R.g1 + 1; break;
+    case "delRows": deleteRows(R.r0, R.r1); sel.fr = sel.ar = Math.min(R.r0, nRows() - 1); sel.fg = sel.ag; break;
+    case "delCols": deleteCols(gs, R.g1); sel.ag = sel.fg = Math.min(gs, grid.length - 1); sel.fr = sel.ar; break;
+    case "fill": fillDown(); break;
+    case "clear": clearSel(); break;
+  }
+  if (sel) focusCell(sel.ag, sel.ar);
+});
+addEventListener("mousedown", e => { if (!ctxMenu.hidden && !ctxMenu.contains(e.target)) closeMenu(); }, true);
+addEventListener("keydown", e => { if (e.key === "Escape" && !ctxMenu.hidden) { closeMenu(); e.stopPropagation(); } }, true);
+addEventListener("blur", closeMenu);
+$("sheetWrap").addEventListener("scroll", closeMenu);
+
+/* Paste a block copied from Excel/Sheets directly into the grid, starting at
+   (startG, startR). Expands rows & groups as needed and detects a leading
+   header row of group names on a paste into the first row. */
+function pasteBlock(text, startG, startR) {
   let matrix = text.replace(/\r/g, "").replace(/\n+$/, "").split("\n").map(l => l.split("\t"));
   mutate(() => {
     // a text first column (pasted on the title column, or on column A) fills the row titles
@@ -1673,15 +1995,18 @@ function syncTestOptions() {
 // analysis options: re-run immediately if results are already on screen
 ["testSelect", "posthocSelect", "dunnAdj", "welchChk", "mu0"].forEach(id => $(id).addEventListener("change", () => {
   syncTestOptions(); scheduleSave();
-  if (lastReport) run();
+  run(true);
 }));
 // graph options: restyle the existing figure without recomputing statistics
 ["chartType", "errType", "themeSelect", "sigLabel"].forEach(id => $(id).addEventListener("change", () => { scheduleSave(); redraw(); }));
 ["xLabel", "yLabel", "dotSize"].forEach(id => $(id).addEventListener("input", () => { scheduleSave(); redraw(); }));
 const redraw = () => { if (lastPlot) drawPlot(lastPlot); };
 
-$("runBtn").onclick = run;
-function run() {
+$("runBtn").onclick = () => run();
+/* results follow the data: any edit re-runs the analysis shortly after typing stops */
+let runTimer = null;
+function scheduleRun() { clearTimeout(runTimer); runTimer = setTimeout(() => run(true), 350); }
+function run(quiet) {
   const { groups: raw, warns, decimalComma } = collectGroups();
   let groups = raw.filter(g => g.values.length > 0);
   const test = $("testSelect").value;
@@ -1693,9 +2018,10 @@ function run() {
     problems.push(`This analysis uses 2 columns — using “${groups[0].name}” and “${groups[1].name}”.`);
     groups = groups.slice(0, 2);
   }
-  if (groups.length < minGroups) { showWarnings(problems, decimalComma); clearResults(); return; }
+  if (groups.length < minGroups) { showWarnings(quiet ? warns : problems, decimalComma); clearResults(); return; }
 
-  const btn = $("runBtn"), label = btn.innerHTML; btn.disabled = true; btn.textContent = "Analyzing…";
+  const btn = $("runBtn"), label = btn.innerHTML;
+  if (!quiet) { btn.disabled = true; btn.textContent = "Analyzing…"; }
   setTimeout(() => {   // let the button repaint before a potentially slow post-hoc
     try {
       const res = ANALYSES[test](groups, problems);
@@ -1709,7 +2035,7 @@ function run() {
       showWarnings(problems, decimalComma);
       $("report").innerHTML = `<div class="err">Error: ${escapeHtml(err.message)}</div>`;
       console.error(err);
-    } finally { btn.disabled = false; btn.innerHTML = label; }
+    } finally { if (!quiet) { btn.disabled = false; btn.innerHTML = label; } }
   }, 20);
 }
 
