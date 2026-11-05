@@ -34,6 +34,7 @@ The project was called ministat until Nov 2026, when the repository was renamed.
   - `titles`: the row titles, which name the row-factor levels for two-way ANOVA and the outcomes of contingency tables.
 
   Both are kept in undo, in localStorage and in `.jgz` files.
+- The sheet behaves like Excel (user's request, Nov 2026): `sel` holds the active cell and the far corner of a range; a click selects a cell (typing replaces it), double-click or F2 edits inside it; drag / Shift selects blocks for copy, cut, paste, Delete and fill-down; right-click opens insert / delete for rows and columns; clicking the empty grid grows the sheet. The sheet owns ⌘/Ctrl+Z, because a cell input always holds focus. Results re-run by themselves after every edit (`scheduleRun`).
 
 ## Checking changes
 
