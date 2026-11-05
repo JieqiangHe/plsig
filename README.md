@@ -1,4 +1,6 @@
-# ministat
+# plsig
+
+**pl**ease be **sig**nificant — 求显著. Every bench scientist has whispered it at a p-value.
 
 > I'd used GraphPad Prism and knew how great it was, but I couldn't afford it; besides, my day-to-day data exploration never gets that complicated, and at heart I've always loved lightweight tools, so I simply built my own with AI.
 
