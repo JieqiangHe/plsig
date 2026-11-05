@@ -147,8 +147,6 @@ body { display: grid; grid-template-rows: auto minmax(0, 1fr); grid-template-col
 .rg-flat .tb-btn:hover:not(:disabled), .rg .flat .tb-btn:hover { background: var(--btn-hover); }
 .rg-flat .tb-btn svg, .rg .flat .tb-btn svg { color: var(--fg-muted); }
 .rg-flat .tb-btn:hover:not(:disabled) svg { color: var(--fg-strong); }
-.rg .check { display: flex; align-items: center; gap: 6px; padding-left: 2px; font-size: 12px; white-space: nowrap; }
-.rg .check input { width: 13px; height: 13px; margin: 0; }
 .unit { display: inline-flex; align-items: center; height: 26px; border: 1px solid var(--input-border); border-radius: 6px; background: var(--input-bg); padding: 0 7px; gap: 5px; transition: border-color .15s, box-shadow .15s; }
 .unit:hover { border-color: var(--input-hover-border); }
 .unit:focus-within { border-color: var(--focus-border); box-shadow: var(--focus-ring); }
@@ -160,11 +158,37 @@ body { display: grid; grid-template-rows: auto minmax(0, 1fr); grid-template-col
 .rg-end { margin-left: auto; }
 .rg .tb-btn.icon { justify-content: center; padding: 0 6px; }
 /* Analysis: test + Run on top, the test's option underneath; results also re-run by themselves on every edit */
-.rg-analysis { grid-template-columns: 206px 52px; }
-.rg-analysis > select { grid-area: 1 / 1; }
+.rg-analysis { grid-template-columns: 242px 52px; }
+.rg-analysis > .menu-btn { grid-area: 1 / 1; }
 .rg-analysis #runBtn { grid-area: 1 / 2; }
 .rg-analysis .opts { grid-area: 2 / 1 / 3 / 3; }
-.rg-analysis .opts .field { width: 100%; }
+/* menu buttons (test, post-hoc): flat, the value in bold, a chevron at the right; the list opens in #menuPop */
+#ribbon .menu-btn { justify-content: flex-start; gap: 6px; padding: 0 7px; border-color: transparent; background: transparent; box-shadow: none; }
+#ribbon .menu-btn:hover, #ribbon .menu-btn.open { background: var(--btn-hover); }
+#ribbon .menu-btn svg { color: var(--fg-muted); }
+.menu-btn .lbl { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; text-align: left; }
+.menu-btn .val { font-weight: 600; color: var(--fg-strong); }
+.menu-btn .k { color: var(--fg-faint); margin-right: 5px; }
+.menu-btn svg.chev { width: 9px; height: 9px; stroke-width: 1.6; }
+#menuPop { position: fixed; z-index: 60; width: max-content; max-width: 360px; overflow-y: auto; padding: 5px; border: 1px solid var(--card-border); border-radius: 8px; background: var(--surface); box-shadow: 0 8px 28px rgba(0,0,0,.18), 0 1px 3px rgba(0,0,0,.1); }
+#menuPop h4 { margin: 7px 8px 3px; font-size: 9.5px; font-weight: 500; letter-spacing: .07em; text-transform: uppercase; color: var(--fg-faint); }
+#menuPop h4:first-child { margin-top: 3px; }
+#menuPop button { display: flex; align-items: baseline; gap: 18px; width: 100%; height: 26px; padding: 0 9px; border-radius: 5px; font-size: 12px; color: var(--fg); text-align: left; white-space: nowrap; }
+#menuPop button span { flex: 1; }
+#menuPop button small { font-size: 11px; color: var(--fg-faint); }
+#menuPop button.on { font-weight: 600; color: var(--accent); }
+#menuPop button:hover, #menuPop button:focus-visible { outline: none; background: var(--accent); color: #fff; }
+#menuPop button:hover small, #menuPop button:focus-visible small { color: rgba(255,255,255,.8); }
+/* on / off button (Welch's correction) */
+#ribbon .toggle { width: auto; padding: 0 8px 0 6px; border-color: transparent; background: transparent; box-shadow: none; }
+#ribbon .toggle:hover { background: var(--btn-hover); }
+#ribbon .toggle svg { color: var(--fg-muted); }
+#ribbon .toggle:not(.on) .ck { display: none; }
+#ribbon .toggle.on { background: var(--accent-soft); color: var(--fg-strong); }
+#ribbon .toggle.on svg { color: var(--accent); }
+/* axis titles on the figure are editable: show it on hover */
+#plot .xtitle, #plot .ytitle { cursor: text !important; }
+#plot .xtitle:hover, #plot .ytitle:hover { text-decoration: underline dotted; }
 #runBtn { display: flex; align-items: center; justify-content: center; gap: 5px; height: 24px; background: var(--run-bg); color: var(--run-fg); border: 0; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; }
 #runBtn svg { width: 10px; height: 10px; fill: currentColor; }
 #runBtn:hover:not(:disabled) { background: var(--run-hover); }
@@ -281,7 +305,10 @@ select option, select optgroup { background: var(--option-bg); color: var(--fg);
 input::placeholder, textarea::placeholder { color: var(--fg-faint); }
 /* ribbon fields are soft fills, not outlined form boxes: the outline only appears on hover / focus */
 #ribbon .field, #ribbon .unit { background-color: var(--seg-bg); border-color: transparent; transition: border-color .15s, box-shadow .15s, background-color .15s; }
-#ribbon .field:hover, #ribbon .unit:hover { border-color: var(--input-hover-border); }
+#ribbon .field:hover { border-color: var(--input-hover-border); }
+#ribbon .unit { background-color: transparent; cursor: text; }   /* number fields look like flat buttons until hovered / clicked */
+#ribbon .unit:hover { background-color: var(--btn-hover); }
+#ribbon .unit .num-field { cursor: text; }
 #ribbon .field:focus, #ribbon .unit:focus-within { background-color: var(--input-bg); }
 .tb-btn:active:not(:disabled), .seg button:active, #runBtn:active:not(:disabled) { transform: translateY(1px); }
 #ribbon .field:focus, #pasteBox:focus { outline: none; border-color: var(--focus-border); box-shadow: var(--focus-ring); }
@@ -338,57 +365,58 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
 
     <div class="rg">
       <div class="rg-body rg-analysis">
-        <select id="testSelect" class="field" aria-label="Statistical test">
+        <select id="testSelect" class="field as-menu" data-icon="test" aria-label="Statistical test">
           <optgroup label="Column statistics">
-            <option value="desc">Descriptive statistics + normality</option>
-            <option value="onet">One-sample t-test</option>
-            <option value="onew" title="One-sample Wilcoxon signed-rank test">One-sample Wilcoxon test</option>
+            <option value="desc" data-hint="mean, SD, normality">Descriptive statistics + normality</option>
+            <option value="onet" data-hint="parametric">One-sample t-test</option>
+            <option value="onew" data-hint="rank-based" title="One-sample Wilcoxon signed-rank test">One-sample Wilcoxon test</option>
           </optgroup>
           <optgroup label="Two groups — independent">
-            <option value="ttest" selected>Unpaired t-test</option>
-            <option value="mwu" title="Mann–Whitney U / Wilcoxon rank-sum">Mann–Whitney U test</option>
+            <option value="ttest" data-hint="parametric" selected>Unpaired t-test</option>
+            <option value="mwu" data-hint="rank-based" title="Mann–Whitney U / Wilcoxon rank-sum">Mann–Whitney U test</option>
           </optgroup>
           <optgroup label="Two groups — paired (matched rows)">
-            <option value="paired">Paired t-test</option>
-            <option value="wilcoxon">Wilcoxon signed-rank</option>
+            <option value="paired" data-hint="parametric">Paired t-test</option>
+            <option value="wilcoxon" data-hint="rank-based">Wilcoxon signed-rank</option>
           </optgroup>
           <optgroup label="Three or more groups">
-            <option value="anova">One-way ANOVA + post-hoc</option>
-            <option value="kruskal">Kruskal–Wallis + Dunn's</option>
+            <option value="anova" data-hint="parametric">One-way ANOVA + post-hoc</option>
+            <option value="kruskal" data-hint="rank-based">Kruskal–Wallis + Dunn's</option>
           </optgroup>
           <optgroup label="Three or more — repeated measures (matched rows)">
-            <option value="rmanova">Repeated-measures ANOVA</option>
-            <option value="friedman">Friedman + Dunn's post-hoc</option>
+            <option value="rmanova" data-hint="parametric">Repeated-measures ANOVA</option>
+            <option value="friedman" data-hint="rank-based">Friedman + Dunn's post-hoc</option>
           </optgroup>
           <optgroup label="Grouped — row titles × columns">
-            <option value="twoway">Two-way ANOVA + post-hoc</option>
+            <option value="twoway" data-hint="parametric">Two-way ANOVA + post-hoc</option>
           </optgroup>
           <optgroup label="XY — column A = X, column B = Y">
-            <option value="corr">Correlation + linear regression</option>
+            <option value="corr" data-hint="Pearson + Spearman">Correlation + linear regression</option>
           </optgroup>
           <optgroup label="Contingency — counts (rows = outcomes)">
-            <option value="chisq">Chi-square / Fisher's exact test</option>
+            <option value="chisq" data-hint="counts">Chi-square / Fisher's exact test</option>
           </optgroup>
         </select>
         <div class="opts">
           <div id="opt_ttest" class="test-opts">
-            <label class="check" title="Recommended; does not assume equal variances"><input type="checkbox" id="welchChk" checked />Welch's correction</label>
+            <input type="checkbox" id="welchChk" checked hidden />
+            <button type="button" id="welchBtn" class="tb-btn toggle" aria-pressed="true" title="Welch's correction: recommended; does not assume equal variances. Click to switch on / off."><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="4"/><path class="ck" d="m8 12.5 3 3 5-6.5"/></svg>Welch's correction</button>
           </div>
           <div id="opt_onesample" class="test-opts hidden">
             <span class="unit txt wide"><label for="mu0">Hypothetical mean</label><input id="mu0" type="number" step="any" value="0" class="num-field" /></span>
           </div>
           <div id="opt_anova" class="test-opts hidden">
-            <select id="posthocSelect" class="field" aria-label="Post-hoc test">
-              <option value="tukey">Post-hoc: Tukey's HSD (all pairs)</option>
-              <option value="holm">Post-hoc: Holm pairwise t-tests</option>
-              <option value="bonferroni">Post-hoc: Bonferroni pairwise t-tests</option>
-              <option value="dunnett">Post-hoc: Dunnett (each vs. first group)</option>
+            <select id="posthocSelect" class="field as-menu" data-prefix="Post-hoc" aria-label="Post-hoc test">
+              <option value="tukey" data-hint="all pairs">Tukey's HSD</option>
+              <option value="holm" data-hint="all pairs">Holm pairwise t-tests</option>
+              <option value="bonferroni" data-hint="all pairs">Bonferroni pairwise t-tests</option>
+              <option value="dunnett" data-hint="each vs. first group">Dunnett</option>
             </select>
           </div>
           <div id="opt_kruskal" class="test-opts hidden">
-            <select id="dunnAdj" class="field" aria-label="Dunn's test p-value adjustment">
-              <option value="holm">Dunn's adjustment: Holm</option>
-              <option value="bonferroni">Dunn's adjustment: Bonferroni</option>
+            <select id="dunnAdj" class="field as-menu" data-prefix="Dunn's adjustment" aria-label="Dunn's test P-value adjustment">
+              <option value="holm">Holm</option>
+              <option value="bonferroni">Bonferroni</option>
             </select>
           </div>
         </div>
@@ -420,9 +448,9 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
           <option value="stars" data-short="***">Asterisks (*)</option>
           <option value="pval" data-short="P =">p-value</option>
         </select>
-        <span class="unit txt"><label for="xLabel">X</label><input id="xLabel" value="Group" class="num-field" /></span>
-        <span class="unit txt"><label for="yLabel">Y</label><input id="yLabel" value="Value" class="num-field" /></span>
       </div>
+      <!-- axis titles are edited by clicking them on the figure; these hold the values -->
+      <input id="xLabel" value="Group" hidden /><input id="yLabel" value="Value" hidden />
       <div class="rg-cap">Graph</div>
     </div>
 
@@ -500,6 +528,7 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
       <dt>Edit</dt><dd>Copy, cut and paste work on blocks; one copied value pasted onto a block fills it. <kbd>Delete</kbd> clears the block, <kbd>⌘/Ctrl</kbd> <kbd>D</kbd> fills down, <kbd>Esc</kbd> cancels a change. Type a value with a block selected and press <kbd>⌘/Ctrl</kbd> <kbd>Enter</kbd> to put it in every cell. Right-click for insert / delete rows and columns. Results update as you type.</dd>
       <dt>Undo</dt><dd><kbd>⌘/Ctrl</kbd> <kbd>Z</kbd>; add <kbd>Shift</kbd> for redo.</dd>
       <dt>Session</dt><dd>Saved in this browser automatically; Save / Open (.jgz) moves a session between machines.</dd>
+      <dt>Axes</dt><dd>Click an axis title on the figure to rename it; <kbd>Enter</kbd> keeps the change. Reset in the ribbon restores the default titles.</dd>
       <dt>Export</dt><dd>PNG at 5× the on-screen size (≈ 300 dpi for a 2–3 inch figure); SVG is vector.</dd>
       <dt>Theme</dt><dd>The sun / moon button in the ribbon's View group switches between light and dark.</dd>
       <dt>Privacy</dt><dd>Everything runs in this browser; your data is never uploaded.</dd>
@@ -1361,6 +1390,14 @@ function syncSegs() {
   document.querySelectorAll("select.as-seg").forEach(sel => {
     sel.nextElementSibling.querySelectorAll("button").forEach(b => b.classList.toggle("on", b.dataset.v === sel.value));
   });
+  document.querySelectorAll("select.as-menu").forEach(sel => {
+    const o = sel.selectedOptions[0];
+    if (!sel._btn || !o) return;
+    sel._btn.querySelector(".lbl").innerHTML = (sel.dataset.prefix ? `<span class="k">${escapeHtml(sel.dataset.prefix)}</span>` : "") + `<span class="val">${escapeHtml(o.text)}</span>`;
+    sel._btn.title = (sel.dataset.prefix ? sel.dataset.prefix + ": " : "") + (o.title || o.text) + " — click to choose";
+  });
+  const on = $("welchChk").checked, wb = $("welchBtn");
+  wb.classList.toggle("on", on); wb.setAttribute("aria-pressed", on);
 }
 /* some segments show a picture instead of a word: small chart glyphs, and colour-theme swatches */
 const SEG_ICONS = {
@@ -1390,6 +1427,74 @@ document.querySelectorAll("select.as-seg").forEach(sel => {
   });
   sel.hidden = true; sel.after(seg);
 });
+
+/* menus (class "as-menu"): a flat ribbon button opens a grouped list with a hint per item;
+   as with segments, the hidden <select> holds the value */
+const MENU_ICONS = { test: '<svg viewBox="0 0 24 24"><path d="M3 20h18M6 20v-6M11 20V6M16 20v-9M21 20V3" /></svg>' };
+const menuPop = document.createElement("div");
+menuPop.id = "menuPop"; menuPop.setAttribute("role", "listbox"); menuPop.hidden = true;
+document.body.appendChild(menuPop);
+let menuFor = null;
+document.querySelectorAll("select.as-menu").forEach(sel => {
+  const b = document.createElement("button");
+  b.type = "button"; b.className = "tb-btn menu-btn";
+  b.setAttribute("aria-haspopup", "listbox"); b.setAttribute("aria-expanded", "false"); b.setAttribute("aria-label", sel.getAttribute("aria-label"));
+  b.innerHTML = (MENU_ICONS[sel.dataset.icon] || "") + '<span class="lbl"></span><svg class="chev" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4"/></svg>';
+  b.onclick = () => (menuFor === sel ? closeMenuPop() : openMenuPop(sel));
+  b.onkeydown = e => { if (e.key === "ArrowDown" || e.key === "ArrowUp") { e.preventDefault(); openMenuPop(sel); } };
+  sel._btn = b; sel.hidden = true; sel.after(b);
+});
+function openMenuPop(sel) {
+  closeMenuPop();
+  menuFor = sel;
+  const item = (o) => `<button type="button" role="option" data-v="${escapeHtml(o.value)}" aria-selected="${o.selected}"${o.selected ? ' class="on"' : ""}${o.title ? ` title="${escapeHtml(o.title)}"` : ""}><span>${escapeHtml(o.text)}</span>${o.dataset.hint ? `<small>${escapeHtml(o.dataset.hint)}</small>` : ""}</button>`;
+  menuPop.innerHTML = (sel.querySelector("optgroup") ? "" : `<h4>${escapeHtml(sel.getAttribute("aria-label"))}</h4>`) +
+    [...sel.children].map(ch => ch.tagName === "OPTGROUP" ? `<h4>${escapeHtml(ch.label)}</h4>` + [...ch.children].map(item).join("") : item(ch)).join("");
+  menuPop.hidden = false;
+  const r = sel._btn.getBoundingClientRect();
+  menuPop.style.minWidth = Math.max(220, r.width) + "px";
+  menuPop.style.maxHeight = innerHeight - r.bottom - 12 + "px";
+  menuPop.style.top = r.bottom + 4 + "px";
+  menuPop.style.left = Math.max(6, Math.min(r.left, innerWidth - menuPop.offsetWidth - 6)) + "px";
+  sel._btn.classList.add("open"); sel._btn.setAttribute("aria-expanded", "true");
+  const cur = menuPop.querySelector("button.on") || menuPop.querySelector("button");
+  cur.focus({ preventScroll: true }); cur.scrollIntoView({ block: "nearest" });
+}
+function closeMenuPop(refocus) {
+  if (!menuFor) return;
+  const b = menuFor._btn;
+  b.classList.remove("open"); b.setAttribute("aria-expanded", "false");
+  menuFor = null; menuPop.hidden = true;
+  if (refocus) b.focus();
+}
+menuPop.addEventListener("click", e => {
+  const b = e.target.closest("button[data-v]");
+  if (!b) return;
+  const sel = menuFor;
+  closeMenuPop(true);
+  if (sel.value === b.dataset.v) return;
+  sel.value = b.dataset.v; syncSegs();
+  sel.dispatchEvent(new Event("change"));
+});
+menuPop.addEventListener("keydown", e => {
+  const items = [...menuPop.querySelectorAll("button[data-v]")], i = items.indexOf(document.activeElement);
+  const go = (j) => { e.preventDefault(); items[Math.max(0, Math.min(items.length - 1, j))].focus(); };
+  if (e.key === "ArrowDown") go(i + 1);
+  else if (e.key === "ArrowUp") go(i - 1);
+  else if (e.key === "Home") go(0);
+  else if (e.key === "End") go(items.length - 1);
+  else if (e.key === "Escape" || e.key === "Tab") { e.preventDefault(); e.stopPropagation(); closeMenuPop(true); }
+});
+addEventListener("mousedown", e => { if (menuFor && !menuPop.contains(e.target) && !menuFor._btn.contains(e.target)) closeMenuPop(); }, true);
+addEventListener("resize", () => closeMenuPop());
+addEventListener("blur", () => closeMenuPop());
+
+/* Welch's correction: an on / off button over the hidden checkbox */
+$("welchBtn").onclick = () => {
+  const c = $("welchChk");
+  c.checked = !c.checked; syncSegs();
+  c.dispatchEvent(new Event("change"));
+};
 function applySettings(s) {
   if (!s) return;
   SETTING_IDS.forEach(id => {
@@ -2663,7 +2768,29 @@ const sigText = (p) => $("sigLabel").value === "pval" ? ("<i>P</i> " + pRel(p)) 
 const axisTitle = (id, fallback) => ($(id).value === GRAPH_DEFAULTS[id] ? fallback : $(id).value);
 function render(traces, layout) {
   setPlotBox();
-  Plotly.newPlot("plot", traces, layout, { responsive: true, displayModeBar: false });
+  Plotly.newPlot("plot", traces, layout, { responsive: true, displayModeBar: false, edits: { axisTitleText: true } }).then(gd => {
+    gd.on("plotly_relayout", onAxisTitleEdit);
+    gd.on("plotly_afterplot", hintAxisTitles);
+    hintAxisTitles();
+  });
+}
+/* an axis title typed on the figure becomes the stored X / Y title (saved with the session) */
+function onAxisTitleEdit(ev) {
+  let changed = false;
+  [["xaxis", "xLabel"], ["yaxis", "yLabel"]].forEach(([ax, id]) => {
+    const v = ev[ax + ".title.text"] ?? (typeof ev[ax + ".title"] === "string" ? ev[ax + ".title"] : undefined);
+    if (v === undefined) return;
+    $(id).value = String(v).trim(); changed = true;
+  });
+  if (changed) scheduleSave();
+}
+function hintAxisTitles() {
+  document.querySelectorAll("#plot .xtitle, #plot .ytitle").forEach(t => {
+    if (t.querySelector("title")) return;
+    const tip = document.createElementNS("http://www.w3.org/2000/svg", "title");
+    tip.textContent = "Click to rename this axis";
+    t.appendChild(tip);
+  });
 }
 
 function drawPlot(spec) {
