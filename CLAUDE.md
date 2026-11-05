@@ -21,6 +21,7 @@ The project was called ministat until Nov 2026, when the repository was renamed.
   - right: the figure, with the results below it.
 - No status bar (removed Nov 2026). Theme and Help are icon buttons in the ribbon's View group at the far right; the tips and the "runs locally" note live in the Help dialog.
 - Ribbon buttons are equal width and symmetric. Short options are segmented controls; the real `<select>` behind each stays hidden and holds the value.
+- Compact ribbon (user's request, Nov 2026): every control is 24px high, captions are small uppercase labels, and ribbon fields are soft fills that only show an outline on hover / focus. Chart type is a segment of small chart glyphs and the colour theme a segment of colour swatches (`SEG_ICONS` / `segContent`). The Sheet group puts undo / redo / clear on one row of icons and +Row / +Col below. Results re-run on every edit, so Run is a small button beside the test. Natural width is about 1180px.
 - The user rejected a four-card quadrant layout, a three-pane canvas layout, and a Prism-style tabs layout.
 - The ribbon must fit at 1280px wide.
 
