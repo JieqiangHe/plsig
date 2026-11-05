@@ -12,7 +12,7 @@ The project was called ministat until Nov 2026, when the repository was renamed.
 ## Interface: the user's choices
 
 - No logo and no app name anywhere in the interface. The only place the name appears is the tab title, `plsig — please be significant`.
-- The look follows the user's svguest project: neutral greys, 6px radii, the blue accent `#1a73e8` (`#4c8df6` in dark mode), and light and dark themes. The figure itself is always drawn on white paper.
+- The layout and controls follow the user's svguest project (6px radii, flat ribbon buttons). The colours are the Claude palette shared with ocrp, the user's choice from Nov 2026. Light mode: ivory paper `#faf9f5` / `#f0eee6`, ink `#141413`, terracotta accent `#c96442`. Dark mode: warm charcoal `#1f1e1d` / `#262624`, accent `#e08a6a`. The figure itself is always drawn on white paper.
 - Layout:
   - top: a ribbon of labeled groups (Sheet, File, Analysis, Graph, Size & export);
   - left: the data sheet, a full-bleed spreadsheet;
