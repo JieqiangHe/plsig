@@ -1,7 +1,5 @@
 # plsig
 
-**pl**ease be **sig**nificant — 求显著. Every bench scientist has whispered it at a p-value.
-
 > I'd used GraphPad Prism and knew how great it was, but I couldn't afford it; besides, my day-to-day data exploration never gets that complicated, and at heart I've always loved lightweight tools, so I simply built my own with AI.
 
 Free, in-browser statistics and scientific graphing. Paste data from Excel, pick a test, and get a report and a publication-ready figure. Nothing is uploaded; everything runs locally.
