@@ -159,12 +159,13 @@ body { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; grid-templat
 #vData { display: flex; flex-direction: column; min-height: 0; background: var(--input-bg); }
 #vData { border-right: 1px solid var(--card-border); }
 #sheetWrap { flex: 1 1 auto; min-height: 0; overflow: auto;
-  --cw: 118px; --rw: 34px; --hh: 50px; --rh: 29px;
-  background:
-    linear-gradient(to right, transparent calc(var(--cw) - 1px), var(--cell-border) 0) var(--rw) 0 / var(--cw) 100% repeat-x local,
+  --cw: 118px; --rn: 34px; --rw: 130px; --hh: 50px; --rh: 29px;
+  background:   /* repeating gradients drawn once from their origin, so no lines spill left of / above the grid */
+    repeating-linear-gradient(to right, transparent 0 calc(var(--cw) - 1px), var(--cell-border) calc(var(--cw) - 1px) var(--cw)) var(--rw) 0 / 100% 100% no-repeat local,
     linear-gradient(to bottom, transparent 20px, var(--cell-border) 20px, var(--cell-border) 21px, transparent 21px) 0 0 / 100% var(--hh) no-repeat local,
     linear-gradient(to bottom, var(--thead-bg) calc(var(--hh) - 1px), var(--grid-border) 0) 0 0 / 100% var(--hh) no-repeat local,
-    linear-gradient(to bottom, transparent calc(var(--rh) - 1px), var(--cell-border) 0) 0 var(--hh) / 100% var(--rh) repeat-y local,
+    repeating-linear-gradient(to bottom, transparent 0 calc(var(--rh) - 1px), var(--cell-border) calc(var(--rh) - 1px) var(--rh)) 0 var(--hh) / 100% 100% no-repeat local,
+    linear-gradient(to right, transparent calc(var(--rn) - 1px), var(--cell-border) 0) 0 0 / var(--rn) 100% no-repeat local,
     linear-gradient(to right, var(--thead-bg) calc(var(--rw) - 1px), var(--cell-border) 0) 0 0 / var(--rw) 100% no-repeat local,
     var(--input-bg); }
 .sheet-foot { flex: none; padding: 6px 10px; border-top: 1px solid var(--card-border); background: var(--side); }
@@ -184,6 +185,11 @@ table.data-grid td, table.data-grid th { padding: 0; box-sizing: border-box; bor
 table.data-grid thead th { position: sticky; top: 0; z-index: 2; background: var(--thead-bg); border-bottom-color: var(--grid-border); }
 table.data-grid td.rowhdr, table.data-grid thead th:first-child { position: sticky; left: 0; z-index: 1; background: var(--thead-bg); }
 table.data-grid thead th:first-child { z-index: 3; }
+table.data-grid .title-col { position: sticky; left: var(--rn, 34px); z-index: 1; background: var(--thead-bg); }
+table.data-grid thead .title-col { z-index: 3; }
+.title-head { height: 29px; line-height: 29px; padding: 0 9px; font-size: 11.5px; font-weight: 500; color: var(--fg-muted); white-space: nowrap; }
+.row-title { display: block; width: 100%; height: 28px; padding: 0 9px; border: 0; background: transparent; color: var(--fg-strong); font-size: 12px; font-weight: 500; }
+.row-title:focus { outline: none; background: var(--cell-focus-bg); box-shadow: inset 0 0 0 2px var(--focus-border); }
 .col-letter { height: 20px; line-height: 20px; font-size: 10.5px; font-weight: 500; color: var(--fg-faint); text-align: center; border-bottom: 1px solid var(--cell-border); }
 .cell-input { display: block; width: 100%; box-sizing: border-box; height: 28px; padding: 0 9px; font-size: 12.5px; border: 0; border-radius: 0; text-align: right; font-variant-numeric: tabular-nums; background: transparent; color: var(--fg); transition: background .12s, box-shadow .12s; }
 .cell-input:hover { background: var(--row-alt); }
@@ -329,6 +335,9 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
             <option value="rmanova">Repeated-measures ANOVA</option>
             <option value="friedman">Friedman + Dunn's post-hoc</option>
           </optgroup>
+          <optgroup label="Grouped — row titles × columns">
+            <option value="twoway">Two-way ANOVA + post-hoc</option>
+          </optgroup>
           <optgroup label="XY — column A = X, column B = Y">
             <option value="corr">Correlation + linear regression</option>
           </optgroup>
@@ -454,7 +463,8 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
   <dialog id="helpDlg"><form method="dialog">
     <header><h3>Tips</h3><button type="submit" value="" aria-label="Close">×</button></header>
     <dl>
-      <dt>Layout</dt><dd>One column per group. Paired, repeated-measures and Friedman tests match values by row (one subject per row). Correlation uses column A as X and B as Y. Contingency tables hold counts: columns are groups, rows are outcomes.</dd>
+      <dt>Layout</dt><dd>One column per group. Paired, repeated-measures and Friedman tests match values by row (one subject per row). Correlation uses column A as X and B as Y. Contingency tables hold counts: columns are groups, rows are outcomes (named by the row titles).</dd>
+      <dt>Two-way</dt><dd>Columns are the levels of one factor (e.g. Control / Drug); the row title names the level of the other (e.g. Male / Female). Put each replicate on its own row and repeat the row title.</dd>
       <dt>Paste</dt><dd>Paste a block from Excel/Sheets into any cell (<kbd>⌘/Ctrl</kbd> <kbd>V</kbd>); the grid expands to fit. Paste in the ribbon imports TSV / CSV text, optionally with a header row.</dd>
       <dt>Move</dt><dd><kbd>Enter</kbd> / <kbd>↑</kbd> <kbd>↓</kbd> move between rows; <kbd>←</kbd> <kbd>→</kbd> move between groups at a cell's edge.</dd>
       <dt>Delete</dt><dd>Hover a row number and click × to delete the row; hover a column header and click × to delete the column (group).</dd>
@@ -1135,6 +1145,69 @@ function correlation(x, y) {
 }
 
 /* ============================================================
+   TWO-WAY ANOVA  (cells[i][j] = replicate values for row level i × column level j)
+   General linear model with effect (sum-to-zero) coding; each effect's SS is
+   Type III — the rise in residual SS when its columns are dropped — so
+   unbalanced designs are handled. With one value per cell the additive model
+   (no interaction) is fitted.
+   ============================================================ */
+function solveSSE(X, y) {
+  const p = X[0].length, A = Array.from({ length: p }, () => new Float64Array(p + 1));
+  X.forEach((row, n) => { for (let i = 0; i < p; i++) { A[i][p] += row[i] * y[n]; for (let j = 0; j < p; j++) A[i][j] += row[i] * row[j]; } });
+  for (let c = 0; c < p; c++) {                       // Gauss–Jordan with partial pivoting
+    let piv = c;
+    for (let r = c + 1; r < p; r++) if (Math.abs(A[r][c]) > Math.abs(A[piv][c])) piv = r;
+    [A[c], A[piv]] = [A[piv], A[c]];
+    if (Math.abs(A[c][c]) < 1e-12) continue;
+    for (let r = 0; r < p; r++) if (r !== c) { const f = A[r][c] / A[c][c]; for (let k = c; k <= p; k++) A[r][k] -= f * A[c][k]; }
+  }
+  const beta = A.map((r, i) => Math.abs(r[i]) < 1e-12 ? 0 : r[p] / r[i]);
+  return X.reduce((s, row, n) => { let f = 0; for (let i = 0; i < p; i++) f += row[i] * beta[i]; return s + (y[n] - f) ** 2; }, 0);
+}
+function twoWayAnova(cells) {
+  const a = cells.length, b = cells[0].length;
+  const additive = cells.every(r => r.every(c => c.length === 1));
+  const code = (lvl, L) => Array.from({ length: L - 1 }, (_, q) => lvl === L - 1 ? -1 : (lvl === q ? 1 : 0));
+  const rowsX = [], y = [], parts = { A: [], B: [], AB: [] };
+  cells.forEach((r, i) => r.forEach((c, j) => c.forEach(v => {
+    const ca = code(i, a), cb = code(j, b), cab = additive ? [] : ca.flatMap(u => cb.map(w => u * w));
+    rowsX.push([1, ...ca, ...cb, ...cab]); y.push(v);
+  })));
+  let k = 1;
+  parts.A = Array.from({ length: a - 1 }, () => k++);
+  parts.B = Array.from({ length: b - 1 }, () => k++);
+  if (!additive) parts.AB = Array.from({ length: (a - 1) * (b - 1) }, () => k++);
+  const N = y.length, grand = jStat.mean(y);
+  const sseFull = solveSSE(rowsX, y);
+  const ssDrop = (cols) => { const keep = rowsX[0].map((_, q) => q).filter(q => !cols.includes(q));
+    return solveSSE(rowsX.map(r => keep.map(q => r[q])), y) - sseFull; };
+  const dfE = N - k, msE = sseFull / dfE;
+  const effect = (cols) => { const ss = Math.max(0, ssDrop(cols)), df = cols.length, F = ss / df / msE;
+    return { ss, df, ms: ss / df, F, p: pFUpper(F, df, dfE), eta2p: ss / (ss + sseFull) }; };
+  const desc = cells.map(r => r.map(describe));
+  const resid = [];
+  cells.forEach((r, i) => r.forEach((c, j) => c.forEach(v => resid.push(v - desc[i][j].mean))));
+  return { a, b, N, additive, row: effect(parts.A), col: effect(parts.B), inter: additive ? null : effect(parts.AB),
+           ssE: sseFull, dfE, msE, ssT: y.reduce((s, v) => s + (v - grand) ** 2, 0), desc, resid };
+}
+/* multiple comparisons between columns within each row level (pooled residual MS) */
+function twoWayPosthoc(tw, method) {
+  const all = [];
+  tw.desc.forEach((rowDesc, i) => {
+    anovaPosthoc({ k: tw.b, desc: rowDesc, msW: tw.msE, dfW: tw.dfE }, method).forEach(pr => all.push(Object.assign(pr, { row: i })));
+  });
+  if (method === "holm" || method === "bonferroni") {         // one family across all rows
+    const adj = adjustP(all.map(pr => pr.praw), method);
+    all.forEach((pr, q) => { pr.p = adj[q]; });
+    if (method === "bonferroni") {
+      const t = jStat.studentt.inv(1 - 0.025 / all.length, tw.dfE);
+      all.forEach(pr => { const se = Math.sqrt(tw.msE * (1 / tw.desc[pr.row][pr.i].n + 1 / tw.desc[pr.row][pr.j].n)); pr.ci = [pr.diff - t * se, pr.diff + t * se]; });
+    }
+  }
+  return all;
+}
+
+/* ============================================================
    CONTINGENCY TABLES  (rows × columns of counts)
    ============================================================ */
 const lnFact = (n) => jStat.gammaln(n + 1);
@@ -1199,7 +1272,7 @@ return {
   tTest, pairedTTest, mannWhitney, wilcoxonSignedRank,
   anova, anovaPosthoc, kruskalWallis, dunnTest, adjustP,
   shapiroWilk, brownForsythe, compactLetters,
-  shape, oneSampleT, oneSampleWilcoxon, rmAnova, friedman, friedmanDunn, correlation, contingency, fisherExact,
+  shape, oneSampleT, oneSampleWilcoxon, rmAnova, friedman, friedmanDunn, correlation, contingency, fisherExact, twoWayAnova, twoWayPosthoc,
   ptukey, qtukey, pdunnett, qdunnett,
   starsFor, fmt, fmtP,
 };
@@ -1239,6 +1312,7 @@ const SETTING_IDS = ["testSelect", "posthocSelect", "dunnAdj", "mu0", "chartType
 const GRAPH_DEFAULTS = { chartType: "bar", errType: "sem", themeSelect: "prism", sigLabel: "stars", xLabel: "Group", yLabel: "Value", plotW: "300", plotH: "400", dotSize: "6" };
 
 let grid = [];          // array of groups: {name, cells:[string,...]}
+let titles = [];        // row titles (text, left of the data; the row factor / outcome names)
 let lastReport = null;  // report model of the most recent analysis (drives screen + TSV)
 let lastPlot = null;    // plot spec of the most recent analysis (drives live re-styling)
 
@@ -1278,6 +1352,8 @@ function applySettings(s) {
   if (typeof s.welchChk === "boolean") $("welchChk").checked = s.welchChk;
   syncTestOptions(); syncSegs();
 }
+const sanitizeTitles = (t) => Array.isArray(t) ? t.map(v => String(v ?? "")) : [];
+const hasTitles = () => titles.some(t => t.trim());
 function sanitizeGrid(g) {
   return g.map((c, i) => ({ name: String(c && c.name != null ? c.name : groupLabel(i)),
                             cells: (c && Array.isArray(c.cells) ? c.cells : []).map(v => String(v ?? "")) }));
@@ -1287,7 +1363,7 @@ let saveTimer = null;
 function scheduleSave() {
   clearTimeout(saveTimer);
   saveTimer = setTimeout(() => {
-    try { localStorage.setItem(STORE_KEY, JSON.stringify({ grid, settings: collectSettings() })); } catch (e) { /* storage unavailable */ }
+    try { localStorage.setItem(STORE_KEY, JSON.stringify({ grid, titles, settings: collectSettings() })); } catch (e) { /* storage unavailable */ }
   }, 300);
 }
 function loadSaved() {
@@ -1295,7 +1371,7 @@ function loadSaved() {
 }
 
 const undoStack = [], redoStack = [];
-const snapshot = () => JSON.stringify(grid);
+const snapshot = () => JSON.stringify({ grid, titles });
 let editSnapshot = null;   // grid state when a grid field gained focus → one undo step per edit
 /* record any pending in-cell edit as its own undo step */
 function commitEdit() {
@@ -1313,7 +1389,7 @@ function pushHistory(snap) {
 function restore(from, to) {
   if (!from.length) return;
   to.push(snapshot());
-  grid = JSON.parse(from.pop());
+  ({ grid, titles } = JSON.parse(from.pop()));
   renderGrid(); scheduleSave(); updateHistoryButtons();
 }
 const undo = () => restore(undoStack, redoStack);
@@ -1331,16 +1407,18 @@ function nextGroupName() {
   const used = new Set(grid.map(g => g.name));
   for (let i = grid.length; ; i++) if (!used.has(groupLabel(i))) return groupLabel(i);
 }
-const nRows = () => (grid.length ? Math.max(...grid.map(g => g.cells.length)) : 0);
+const nRows = () => Math.max(titles.length, ...grid.map(g => g.cells.length), 0);
 const isBad = (v) => v.trim() !== "" && !isFinite(S.parseNum(v));
 const looksLikeHeader = (row) => row.some(c => /[a-z]/i.test(c)) && row.every(c => c.trim() === "" || !isFinite(S.parseNum(c)));
 
 function seedFromDemo() {
   const maxLen = Math.max(...DEMO.map(g => g.values.length));
   grid = DEMO.map(g => ({ name: g.name, cells: Array.from({ length: maxLen }, (_, i) => (g.values[i] != null ? String(g.values[i]) : "")) }));
+  titles = [];
   renderGrid();
 }
 function seedBlank() {
+  titles = [];
   grid = [
     { name: groupLabel(0), cells: Array(DEFAULT_ROWS).fill("") },
     { name: groupLabel(1), cells: Array(DEFAULT_ROWS).fill("") },
@@ -1351,7 +1429,8 @@ function seedBlank() {
 function renderGrid() {
   const rows = nRows();
   grid.forEach(g => { while (g.cells.length < rows) g.cells.push(""); });
-  let html = "<thead><tr><th style='width:34px'></th>";
+  while (titles.length < rows) titles.push("");
+  let html = `<thead><tr><th style="width:34px"></th><th class="title-col" style="width:96px"><div class="col-letter">&nbsp;</div><div class="title-head" title="Row titles: the levels of the row factor (two-way ANOVA) or the outcome names (contingency tables)">Row title</div></th>`;
   grid.forEach((g, gi) => {
     html += `<th style="width:118px"><div class="col-letter">${colLetter(gi)}</div><div class="relative">
         <input class="grp-name" data-g="${gi}" value="${escapeHtml(g.name)}" aria-label="Name of group ${gi + 1}" />
@@ -1361,6 +1440,7 @@ function renderGrid() {
   html += "</tr></thead><tbody>";
   for (let r = 0; r < rows; r++) {
     html += `<tr><td class="rowhdr"><span class="rn">${r + 1}</span><button class="delRow" data-r="${r}" title="Delete row ${r + 1}" aria-label="Delete row ${r + 1}">×</button></td>`;
+    html += `<td class="title-col"><input class="row-title" data-r="${r}" value="${escapeHtml(titles[r])}" aria-label="Title of row ${r + 1}" /></td>`;
     grid.forEach((g, gi) => {
       const v = g.cells[r];
       html += `<td><input class="cell-input${isBad(v) ? " bad" : ""}" data-g="${gi}" data-r="${r}" value="${escapeHtml(v)}" aria-label="${escapeHtml(g.name)}, row ${r + 1}" inputmode="decimal" /></td>`;
@@ -1376,22 +1456,23 @@ function colLetter(i) { let s = ""; for (i++; i > 0; i = Math.floor((i - 1) / 26
 /* the empty gridlines past the data are a CSS background; match them to the real cell sizes */
 function sizeSheetBackground() {
   const t = $("dataTable"), wrap = $("sheetWrap"), ths = t.tHead && t.tHead.rows[0].cells, row = t.tBodies[0] && t.tBodies[0].rows[0];
-  if (!ths || ths.length < 2 || !t.offsetWidth) return;
-  wrap.style.setProperty("--rw", ths[0].offsetWidth + "px");
-  wrap.style.setProperty("--cw", ths[1].offsetWidth + "px");
+  if (!ths || ths.length < 3 || !t.offsetWidth) return;
+  wrap.style.setProperty("--rn", ths[0].offsetWidth + "px");
+  wrap.style.setProperty("--rw", ths[0].offsetWidth + ths[1].offsetWidth + "px");
+  wrap.style.setProperty("--cw", ths[2].offsetWidth + "px");
   wrap.style.setProperty("--hh", t.tHead.offsetHeight + "px");
   if (row) wrap.style.setProperty("--rh", row.offsetHeight + "px");
 }
 
-function focusCell(g, r) {
-  const el = $("dataTable").querySelector(`.cell-input[data-g="${g}"][data-r="${r}"]`);
+function focusCell(g, r) {   // g = -1 → the row-title cell
+  const el = $("dataTable").querySelector(g < 0 ? `.row-title[data-r="${r}"]` : `.cell-input[data-g="${g}"][data-r="${r}"]`);
   if (el) { el.focus(); el.select(); }
 }
 
 /* --- all grid events are delegated to the table (one listener each) --- */
 const table = $("dataTable");
 table.addEventListener("focusin", e => {
-  if (e.target.matches(".cell-input, .grp-name")) editSnapshot = snapshot();
+  if (e.target.matches(".cell-input, .grp-name, .row-title")) editSnapshot = snapshot();
 });
 table.addEventListener("change", () => { commitEdit(); editSnapshot = snapshot(); });
 table.addEventListener("input", e => {
@@ -1401,17 +1482,20 @@ table.addEventListener("input", e => {
     t.classList.toggle("bad", isBad(t.value));
   } else if (t.classList.contains("grp-name")) {
     grid[gi].name = t.value;
+  } else if (t.classList.contains("row-title")) {
+    titles[+t.dataset.r] = t.value;
   }
   scheduleSave();
 });
 table.addEventListener("click", e => {
   const b = e.target.closest("button");
   if (!b) return;
-  if (b.classList.contains("delRow")) mutate(() => grid.forEach(g => g.cells.splice(+b.dataset.r, 1)));
+  if (b.classList.contains("delRow")) mutate(() => { grid.forEach(g => g.cells.splice(+b.dataset.r, 1)); titles.splice(+b.dataset.r, 1); });
   else if (b.classList.contains("delGrp")) mutate(() => grid.splice(+b.dataset.g, 1));
 });
 table.addEventListener("paste", e => {
   if (e.target.classList.contains("cell-input")) onCellPaste(e, +e.target.dataset.g, +e.target.dataset.r);
+  else if (e.target.classList.contains("row-title")) onCellPaste(e, -1, +e.target.dataset.r);
 });
 table.addEventListener("keydown", e => {
   const t = e.target;
@@ -1419,8 +1503,8 @@ table.addEventListener("keydown", e => {
     if (e.key === "Enter" || e.key === "ArrowDown") { e.preventDefault(); focusCell(+t.dataset.g, 0); }
     return;
   }
-  if (!t.classList.contains("cell-input")) return;
-  const g = +t.dataset.g, r = +t.dataset.r;
+  if (!t.matches(".cell-input, .row-title")) return;
+  const g = t.classList.contains("row-title") ? -1 : +t.dataset.g, r = +t.dataset.r;
   // ← → leave the cell at the text edge, or when the whole value is selected (just navigated in)
   const all = t.selectionStart === 0 && t.selectionEnd === t.value.length;
   const atStart = all || (t.selectionStart === 0 && t.selectionEnd === 0);
@@ -1432,7 +1516,7 @@ table.addEventListener("keydown", e => {
   }
   else if (e.key === "ArrowDown") target = [g, r + 1];
   else if (e.key === "ArrowUp") target = [g, r - 1];
-  else if (e.key === "ArrowLeft" && atStart) target = [g - 1, r];
+  else if (e.key === "ArrowLeft" && atStart && g >= 0) target = [g - 1, r];
   else if (e.key === "ArrowRight" && atEnd) target = [g + 1, r];
   else if (e.key === "Escape") { t.blur(); return; }
   if (!target) return;
@@ -1449,6 +1533,14 @@ function onCellPaste(e, startG, startR) {
   e.preventDefault();
   let matrix = text.replace(/\r/g, "").replace(/\n+$/, "").split("\n").map(l => l.split("\t"));
   mutate(() => {
+    // a text first column (pasted on the title column, or on column A) fills the row titles
+    if (startG < 0 || (startG === 0 && isTitleColumn(matrix, startR === 0))) {
+      const hdr = startR === 0 && matrix.length > 1 && matrix[0].length > 1 && looksLikeHeader(matrix[0].slice(1)) ? 1 : 0;
+      matrix.slice(hdr).forEach((row, r) => { titles[startR + r] = String(row[0]).trim(); });
+      matrix = matrix.map(row => row.slice(1));
+      startG = 0;
+      if (!matrix[0].length) return;
+    }
     const width = Math.max(...matrix.map(r => r.length));
     while (grid.length < startG + width) grid.push({ name: nextGroupName(), cells: [] });
     if (startR === 0 && matrix.length > 1 && looksLikeHeader(matrix[0])) {
@@ -1461,12 +1553,21 @@ function onCellPaste(e, startG, startR) {
   });
 }
 
+/* first column is row titles when its data cells are text (not numbers) */
+function isTitleColumn(matrix, mayHaveHeader) {
+  const body = mayHaveHeader && matrix.length > 1 && looksLikeHeader(matrix[0].slice(1)) ? matrix.slice(1) : matrix;
+  const first = body.map(r => String(r[0] ?? "").trim()).filter(Boolean);
+  return first.length > 0 && first.every(c => !isFinite(S.parseNum(c))) && body.some(r => r.length > 1);
+}
 function importPaste(text) {
-  const rows = S.parseDelimited(text);
-  if (!rows.length) return;
+  const all = S.parseDelimited(text);
+  if (!all.length) return;
   mutate(() => {
-    let names = [], dataRows = rows;
-    if (looksLikeHeader(rows[0])) { names = rows[0]; dataRows = rows.slice(1); }
+    const withTitles = isTitleColumn(all, true);
+    const rows = withTitles ? all.map(r => r.slice(1)) : all;
+    const hdr = looksLikeHeader(rows[0]) ? 1 : 0;
+    const names = hdr ? rows[0] : [], dataRows = rows.slice(hdr);
+    titles = withTitles ? all.slice(hdr).map(r => String(r[0] ?? "").trim()) : [];
     const nCols = Math.max(...rows.map(r => r.length));
     grid = [];
     for (let c = 0; c < nCols; c++) grid.push({ name: names[c] || groupLabel(c), cells: dataRows.map(r => r[c] ?? "") });
@@ -1569,7 +1670,7 @@ function showWarnings(list, decimalComma) {
    ============================================================ */
 const TWO_GROUP = new Set(["ttest", "mwu", "paired", "wilcoxon", "corr"]);
 const ONE_GROUP = new Set(["desc", "onet", "onew"]);   // these work on a single column
-const OPTION_PANELS = { opt_ttest: ["ttest"], opt_onesample: ["onet", "onew"], opt_anova: ["anova", "rmanova"], opt_kruskal: ["kruskal", "friedman"] };
+const OPTION_PANELS = { opt_ttest: ["ttest"], opt_onesample: ["onet", "onew"], opt_anova: ["anova", "rmanova", "twoway"], opt_kruskal: ["kruskal", "friedman"] };
 function syncTestOptions() {
   const t = $("testSelect").value;
   Object.entries(OPTION_PANELS).forEach(([id, tests]) => $(id).classList.toggle("hidden", !tests.includes(t)));
@@ -2009,6 +2110,62 @@ const ANALYSES = {
     };
   },
 
+  /* ---- grouped: row titles = row factor, columns = column factor, rows = replicates ---- */
+  twoway(groups, problems) {
+    const levels = [], idx = new Map();
+    let untitled = 0;
+    groups.forEach(g => g.rows.forEach(r => {
+      const t = (titles[r] || "").trim();
+      if (!t) { untitled++; return; }
+      if (!idx.has(t)) { idx.set(t, levels.length); levels.push(t); }
+    }));
+    if (untitled) problems.push(`${untitled} value(s) in rows without a row title were skipped — the row title names the row-factor level.`);
+    if (levels.length < 2) { problems.push("Two-way ANOVA needs row titles with at least 2 levels (e.g. Male / Female), with the replicates of each level in rows sharing that title."); return null; }
+    const cells = levels.map(() => groups.map(() => []));
+    groups.forEach((g, j) => g.values.forEach((v, q) => {
+      const t = (titles[g.rows[q]] || "").trim();
+      if (t) cells[idx.get(t)][j].push(v);
+    }));
+    const empty = [];
+    cells.forEach((r, i) => r.forEach((c, j) => { if (!c.length) empty.push(`${levels[i]} × ${groups[j].name}`); }));
+    if (empty.length) { problems.push(`Every row-title × column cell needs data — empty: ${empty.slice(0, 4).join(", ")}${empty.length > 4 ? "…" : ""}.`); return null; }
+    const tw = S.twoWayAnova(cells);
+    if (!(tw.dfE >= 1) || !(tw.msE > 0)) { problems.push("Not enough replicates to estimate the residual variation."); return null; }
+    if (tw.additive) problems.push("One value per cell: fitted without the interaction term (the interaction cannot be tested without replicates).");
+    const names = groups.map(g => g.name);
+    const method = $("posthocSelect").value;
+    const pairs = names.length > 1 ? S.twoWayPosthoc(tw, method) : [];
+    const METHOD_NAMES = { tukey: "Tukey", bonferroni: "Bonferroni", holm: "Holm", dunnett: `Dunnett (vs. ${names[0]})` };
+    const pct = (ss) => fmt(100 * ss / tw.ssT, 2) + "%";
+    const src = [
+      ...(tw.inter ? [["Interaction", tw.inter]] : []), ["Row factor (row titles)", tw.row], ["Column factor (columns)", tw.col],
+    ];
+    const sw = S.shapiroWilk(tw.resid);
+    const sections = [
+      { title: "Cell means", head: ["Row title", "Column", "N", "Mean", "SD", "SEM"],
+        rows: levels.flatMap((l, i) => names.map((n, j) => { const d = tw.desc[i][j]; return [l, n, String(d.n), fmt(d.mean), fmt(d.sd), fmt(d.sem)]; })) },
+      { title: "Two-way ANOVA", note: tw.additive ? "(no replicates: additive model)" : "(Type III sums of squares)",
+        head: ["Source of variation", "% of total", "SS", "df", "MS", "F", "P", "Sig."], rows: [
+          ...src.map(([l, e]) => [l, pct(e.ss), fmt(e.ss), String(e.df), fmt(e.ms), fmt(e.F, 3), bold(fmtP(e.p)), sigCell(e.p)]),
+          ["Residual", pct(tw.ssE), fmt(tw.ssE), String(tw.dfE), fmt(tw.msE), "—", "—", ""],
+        ] },
+      { title: "Effect size", rows: src.map(([l, e]) => [`Partial η² — ${l}`, fmt(e.eta2p, 3)]) },
+    ];
+    if (pairs.length) sections.push({ title: `Multiple comparisons — columns within each row title, ${METHOD_NAMES[method]}`,
+      note: method === "holm" || method === "bonferroni" ? "(adjusted across all comparisons)" : "(family = each row title)",
+      head: ["Row title", "Comparison", "Mean diff.", ...(method !== "holm" ? ["95% CI"] : []), "Adj. P", "Sig."],
+      rows: pairs.map(pr => [levels[pr.row], `${names[pr.i]} vs ${names[pr.j]}`, fmt(pr.diff), ...(method !== "holm" ? [ciText(pr.ci)] : []), fmtP(pr.p), sigCell(pr.p)]) });
+    sections.push({ title: "Assumption checks", head: ["Check", "Statistic", "P", "Result"], rows: [
+      ["Normality of residuals (Shapiro–Wilk)", sw ? "W = " + fmt(sw.W) : "—", sw ? fmtP(sw.p) : "—", sw ? (sw.p < 0.05 ? "Not normal" : "Passed") : "not tested"],
+    ] });
+    const effects = src.map(([l, e]) => `${l.split(" (")[0].toLowerCase()} <i>P</i> ${pRel(e.p)}`).join("; ");
+    return {
+      verdict: { sig: src.some(([, e]) => e.p < 0.05), html: `Two-way ANOVA: ${effects}.` },
+      report: { test: "Two-way ANOVA", sections },
+      plot: { mode: "grouped", levels, names, cells, pairs, method },
+    };
+  },
+
   /* ---- contingency: columns = groups, rows = outcomes (counts) ---- */
   chisq(groups, problems) {
     const rows = [...new Set(groups.flatMap(g => g.rows))].sort((p, q) => p - q)
@@ -2018,7 +2175,7 @@ const ANALYSES = {
     if (t.some(r => r.some(v => v < 0 || !Number.isInteger(v)))) { problems.push("Contingency tables hold counts — whole numbers ≥ 0."); return null; }
     const ct = S.contingency(t);
     if (ct.rows.some(x => x === 0) || ct.cols.some(x => x === 0)) { problems.push("Every row and column of the table needs a non-zero total."); return null; }
-    const names = groups.map(g => g.name), rowNames = rows.map(r => `Row ${r + 1}`);
+    const names = groups.map(g => g.name), rowNames = rows.map(r => (titles[r] || "").trim() || `Row ${r + 1}`);
     const is22 = ct.R === 2 && ct.C === 2;
     const pMain = is22 ? ct.pFisher : ct.p;
     if (ct.minE < 5) problems.push(`Some expected counts are below 5 (smallest ${fmt(ct.minE, 2)})${is22 ? " — Fisher's exact test is the one to report." : " — the χ² approximation may be inaccurate."}`);
@@ -2115,6 +2272,7 @@ function cldSection(names, stat, statLabel, letters) {
    spec: { groups:[{name, values}], mode: "two"|"letters"|"control"|"each"|"none",
            p?, letters?, ps? (per-group P), paired? (rows matched), ref? (reference line) }
          | { mode: "xy", x, y, xName, yName, fit } | { mode: "counts", names, rowNames, table, p }
+         | { mode: "grouped", levels, names, cells, pairs, method }
    ============================================================ */
 /* small deterministic PRNG so jitter is identical on every redraw/export */
 function mulberry32(a) {
@@ -2152,6 +2310,7 @@ function drawPlot(spec) {
   const theme = THEMES[$("themeSelect").value] || THEMES.prism;
   if (spec.mode === "xy") return drawXY(spec, theme);
   if (spec.mode === "counts") return drawCounts(spec, theme);
+  if (spec.mode === "grouped") return drawGrouped(spec, theme);
   const { groups } = spec;
   const errType = $("errType").value;
   const chart = $("chartType").value;          // bar | dot | box | violin
@@ -2237,6 +2396,72 @@ function drawPlot(spec) {
   render(traces, layout);
 }
 
+/* grouped: one cluster per row title, one colour per column (legend) */
+function drawGrouped(spec, theme) {
+  const { levels, names, cells, pairs } = spec;
+  const chart = $("chartType").value, errType = $("errType").value;
+  const meanErr = chart === "bar" || chart === "dot";
+  const dotSize = Math.max(2, parseInt($("dotSize").value, 10) || 6);
+  const b = names.length, w = 0.8 / b;
+  const xOf = (i, j) => i + (j - (b - 1) / 2) * w;
+  const color = (j) => theme.colors[j % theme.colors.length];
+  const desc = cells.map(r => r.map(c => S.describe(c)));
+  const errOf = (d) => { const e = errType === "sd" ? d.sd : errType === "ci" ? d.ciHi - d.mean : d.sem; return Number.isFinite(e) ? e : 0; };
+  const layout = baseLayout(theme, axisTitle("xLabel", ""), $("yLabel").value);
+  Object.assign(layout.xaxis, { tickvals: levels.map((_, i) => i), ticktext: levels.map(escapeHtml), range: [-0.6, levels.length - 0.4], showgrid: false });
+  Object.assign(layout, { showlegend: true, legend: { orientation: "h", traceorder: "normal", x: 0, y: -0.16, font: { size: 12 } } });
+  layout.margin.b = 78;
+  const traces = [];
+  names.forEach((n, j) => {
+    const xs = levels.map((_, i) => xOf(i, j)), means = levels.map((_, i) => desc[i][j].mean);
+    const err = { type: "data", array: levels.map((_, i) => errOf(desc[i][j])), visible: true, color: theme.line, thickness: 1.5, width: 4 };
+    if (chart === "bar") traces.push({ type: "bar", name: escapeHtml(n), legendgroup: n, x: xs, y: means, width: w * 0.88, error_y: err,
+      marker: { color: color(j), line: { color: theme.markerLine, width: 1.3 } }, hovertemplate: escapeHtml(n) + "<br>mean %{y:.3f}<extra></extra>" });
+    else if (chart === "dot") traces.push({ type: "scatter", mode: "markers", name: escapeHtml(n), legendgroup: n, x: xs, y: means, error_y: Object.assign(err, { width: 6 }),
+      marker: { symbol: "line-ew-open", size: 22, color: theme.line, line: { color: theme.line, width: 2 } }, showlegend: false, hoverinfo: "skip" });
+    else levels.forEach((_, i) => traces.push(Object.assign({
+      y: cells[i][j], x: cells[i][j].map(() => xOf(i, j)), name: escapeHtml(n), legendgroup: n, showlegend: i === 0,
+      fillcolor: color(j), line: { color: theme.markerLine, width: 1.3 }, hoverinfo: "y" },
+      chart === "box" ? { type: "box", boxpoints: false, width: w * 0.8 }
+                      : { type: "violin", points: false, width: w * 0.95, spanmode: "hard", opacity: 1, box: { visible: true, width: 0.15, fillcolor: "#ffffff" } })));
+    cells.forEach((r, i) => {
+      const rnd = mulberry32(7919 * (i + 1) + 31 * j);
+      traces.push({ type: "scatter", mode: "markers", x: r[j].map(() => xOf(i, j) + (rnd() - 0.5) * w * 0.5), y: r[j], legendgroup: n,
+        showlegend: chart === "dot" && i === 0, name: escapeHtml(n),
+        marker: chart === "dot" ? { color: color(j), size: dotSize, line: { color: theme.markerLine, width: 0.8 } }
+                                : { color: "rgba(0,0,0,0)", size: dotSize - 1, line: { color: "#000000", width: 1 } },
+        hovertemplate: escapeHtml(n) + "<br>%{y:.3f}<extra></extra>" });
+    });
+  });
+  // axis range, then a bracket per significant comparison (stacked within each cluster)
+  const all = cells.flat(2);
+  const top = (i, j) => Math.max(...cells[i][j], meanErr ? desc[i][j].mean + errOf(desc[i][j]) : -Infinity);
+  let yMax = Math.max(...all, ...levels.flatMap((_, i) => names.map((_, j) => top(i, j))));
+  let yMin = Math.min(...all, ...(meanErr ? levels.flatMap((_, i) => names.map((_, j) => desc[i][j].mean - errOf(desc[i][j]))) : []));
+  if (chart === "bar") yMin = Math.min(0, yMin);
+  const span = (yMax - yMin) || 1, line = { color: theme.line, width: 1.2 };
+  // brackets: all for 2 columns or Dunnett, otherwise the significant ones; shortest lowest,
+  // and brackets that don't overlap share a level
+  const shown = (spec.method === "dunnett" || b === 2 ? pairs : pairs.filter(pr => pr.p < 0.05))
+    .slice().sort((p, q) => Math.abs(p.i - p.j) - Math.abs(q.i - q.j));
+  const used = levels.map(() => []);           // per row title: occupied [lo, hi] column spans per level
+  let highest = yMax;
+  shown.forEach(pr => {
+    const i = pr.row, lo = Math.min(pr.i, pr.j), hi = Math.max(pr.i, pr.j);
+    let lv = 0;
+    while ((used[i][lv] || []).some(([a, z]) => lo <= z && hi >= a)) lv++;
+    (used[i][lv] = used[i][lv] || []).push([lo, hi]);
+    const base = Math.max(...names.map((_, j) => top(i, j)));
+    const y = base + span * (0.07 + 0.09 * lv), x0 = xOf(i, pr.i), x1 = xOf(i, pr.j);
+    layout.shapes.push({ type: "line", x0, x1, y0: y, y1: y, line },
+                       { type: "line", x0, x1: x0, y0: y - span * 0.025, y1: y, line }, { type: "line", x0: x1, x1, y0: y - span * 0.025, y1: y, line });
+    layout.annotations.push({ x: (x0 + x1) / 2, y, text: sigText(pr.p), showarrow: false, yanchor: "bottom", font: { size: 12, color: theme.font } });
+    highest = Math.max(highest, y + span * 0.07);
+  });
+  layout.yaxis.range = [chart === "bar" && yMin === 0 ? 0 : yMin - span * 0.05, highest + span * 0.04];
+  render(traces, layout);
+}
+
 /* XY: points, least-squares line and its 95% confidence band */
 function drawXY(spec, theme) {
   const { x, y, fit } = spec;
@@ -2304,8 +2529,9 @@ $("copyStats").onclick = async () => {
   catch { flash($("copyStats"), "Copy failed"); }
 };
 $("copyData").onclick = async () => {
-  const tsv = [grid.map(g => g.name).join("\t")].concat(
-    Array.from({ length: nRows() }, (_, r) => grid.map(g => g.cells[r] ?? "").join("\t"))
+  const t = hasTitles(), lead = (v) => t ? [v] : [];
+  const tsv = [[...lead(""), ...grid.map(g => g.name)].join("\t")].concat(
+    Array.from({ length: nRows() }, (_, r) => [...lead(titles[r] ?? ""), ...grid.map(g => g.cells[r] ?? "")].join("\t"))
   ).join("\n");
   try { await navigator.clipboard.writeText(tsv); flash($("copyData"), "✓ Copied"); }
   catch { flash($("copyData"), "Copy failed"); }
@@ -2331,7 +2557,7 @@ $("dlSvg").onclick = () => downloadPlot("svg", $("dlSvg"));
    SESSION EXPORT / IMPORT  (.jgz = gzip-compressed JSON)
    ============================================================ */
 async function exportJH() {
-  const payload = JSON.stringify({ app: "ministat", v: 3, savedAt: new Date().toISOString(), grid, settings: collectSettings(),
+  const payload = JSON.stringify({ app: "ministat", v: 4, savedAt: new Date().toISOString(), grid, titles, settings: collectSettings(),
                                    report: lastReport ? reportTSV(lastReport) : "" });
   let blob;
   if (typeof CompressionStream !== "undefined") {
@@ -2369,6 +2595,7 @@ $("importJH").onchange = async (e) => {
     if (!data || !Array.isArray(data.grid)) throw new Error("not a valid .jgz analysis file");
     pushHistory();
     grid = sanitizeGrid(data.grid);
+    titles = sanitizeTitles(data.titles);
     renderGrid();
     applySettings(data.settings);
     scheduleSave();
@@ -2417,6 +2644,7 @@ $("pasteBtn").onclick = () => { document.querySelector("#vData .disclosure").ope
   const saved = loadSaved();
   if (saved && Array.isArray(saved.grid) && saved.grid.length) {
     grid = sanitizeGrid(saved.grid);
+    titles = sanitizeTitles(saved.titles);
     applySettings(saved.settings);
     renderGrid();
     if (collectGroups().groups.filter(g => g.values.length).length >= 2) run();
