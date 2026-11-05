@@ -377,6 +377,7 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
           <option value="ci" data-short="95% CI">Mean ± 95% CI</option>
         </select>
         <select id="themeSelect" class="field" aria-label="Color theme">
+          <option value="claude" selected>Claude</option>
           <option value="prism">Classic Prism</option>
           <option value="pastel">Pastel</option>
           <option value="vibrant">Vibrant</option>
@@ -1284,8 +1285,10 @@ const $ = (id) => document.getElementById(id);
    THEMES
    ============================================================ */
 // Light-mode themes (white graph paper). Lines/fonts are dark for contrast.
-const PAPER = "#ffffff", GRIDCOL = "#e5e7eb";
+const PAPER = "#ffffff";
 const THEMES = {
+  // Claude: Anthropic's brand orange / blue / green / warm grey, then deeper and muted tones of the same family
+  claude:  { colors: ["#d97757","#6a9bcc","#788c5d","#b0aea5","#c9a15b","#8b6f9f","#a8553a","#4f6b80"], line:"#141413", markerLine:"#141413", paper:PAPER, font:"#141413" },
   prism:   { colors: ["#0173b2","#de8f05","#029e73","#d55e00","#cc78bc","#56b4e9","#949494","#fbafe4"], line:"#1f2937", markerLine:"#1f2937", paper:PAPER, font:"#1f2937" },
   pastel:  { colors: ["#7dd3fc","#fca5a5","#6ee7b7","#fcd34d","#c4b5fd","#f9a8d4","#67e8f9","#fdba74"], line:"#374151", markerLine:"#374151", paper:PAPER, font:"#374151" },
   vibrant: { colors: ["#2563eb","#dc2626","#16a34a","#eab308","#7c3aed","#db2777","#0891b2","#ea580c"], line:"#0f172a", markerLine:"#0f172a", paper:PAPER, font:"#0f172a" },
@@ -1301,7 +1304,7 @@ const DEMO = [
 const DEFAULT_ROWS = 10;
 const STORE_KEY = "plsig:v1", OLD_STORE_KEY = "ministat:v1";   // the app was called ministat before
 const SETTING_IDS = ["testSelect", "posthocSelect", "dunnAdj", "mu0", "chartType", "errType", "themeSelect", "sigLabel", "xLabel", "yLabel", "plotW", "plotH", "dotSize"];
-const GRAPH_DEFAULTS = { chartType: "bar", errType: "sem", themeSelect: "prism", sigLabel: "stars", xLabel: "Group", yLabel: "Value", plotW: "300", plotH: "400", dotSize: "6" };
+const GRAPH_DEFAULTS = { chartType: "bar", errType: "sem", themeSelect: "claude", sigLabel: "stars", xLabel: "Group", yLabel: "Value", plotW: "300", plotH: "400", dotSize: "6" };
 
 let grid = [];          // array of groups: {name, cells:[string,...]}
 let titles = [];        // row titles (text, left of the data; the row factor / outcome names)
@@ -2280,12 +2283,13 @@ function mulberry32(a) {
 function baseLayout(theme, xTitle, yTitle) {
   const axisFont = { size: 14, family: "Arial, Helvetica, sans-serif" };
   const axis = (title) => ({ title: { text: title, font: axisFont }, zeroline: false, showline: true, mirror: true,
-                             linecolor: theme.line, linewidth: 1.5, ticks: "" });
+                             linecolor: theme.line, linewidth: 1.5, showgrid: false,
+                             ticks: "outside", ticklen: 5, tickwidth: 1.5, tickcolor: theme.line });   // ticks on the axes, no gridlines
   return {
     paper_bgcolor: theme.paper, plot_bgcolor: theme.paper,
     font: { color: theme.font, family: "Arial, Helvetica, sans-serif", size: 13 },
     showlegend: false, margin: { t: 36, r: 20, b: 55, l: 60 },
-    xaxis: axis(xTitle), yaxis: Object.assign(axis(yTitle), { gridcolor: GRIDCOL }),
+    xaxis: axis(xTitle), yaxis: axis(yTitle),
     annotations: [], shapes: [],
   };
 }
@@ -2299,7 +2303,7 @@ function render(traces, layout) {
 
 function drawPlot(spec) {
   lastPlot = spec;
-  const theme = THEMES[$("themeSelect").value] || THEMES.prism;
+  const theme = THEMES[$("themeSelect").value] || THEMES.claude;
   if (spec.mode === "xy") return drawXY(spec, theme);
   if (spec.mode === "counts") return drawCounts(spec, theme);
   if (spec.mode === "grouped") return drawGrouped(spec, theme);
@@ -2459,7 +2463,6 @@ function drawXY(spec, theme) {
   const { x, y, fit } = spec;
   const dotSize = Math.max(2, parseInt($("dotSize").value, 10) || 6);
   const layout = baseLayout(theme, axisTitle("xLabel", spec.xName), axisTitle("yLabel", spec.yName));
-  layout.xaxis.gridcolor = GRIDCOL;
   const lo = Math.min(...x), hi = Math.max(...x), pad = (hi - lo) * 0.05 || 1;
   const xs = Array.from({ length: 61 }, (_, i) => lo + (hi - lo) * i / 60);
   const yhat = xs.map(v => fit.intercept + fit.slope * v);
