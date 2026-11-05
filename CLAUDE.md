@@ -13,7 +13,8 @@ The project was called ministat until Nov 2026, when the repository was renamed.
 
 - No logo and no app name anywhere in the interface. The only place the name appears is the tab title, `plsig — please be significant`.
 - The layout and controls follow the user's svguest project (6px radii, flat ribbon buttons). The colours are the Claude palette shared with ocrp, the user's choice from Nov 2026. Light mode: ivory paper `#faf9f5` / `#f0eee6`, ink `#141413`, terracotta accent `#c96442`. Dark mode: warm charcoal `#1f1e1d` / `#262624`, accent `#e08a6a`. The figure itself is always drawn on white paper, flat, with a hairline edge only; the user found a drop shadow looked embossed.
-- Figure style (user's choice, Nov 2026): outside tick marks on both axes, one per value tick and one per sample; no gridlines inside the plot. The default colour theme is `claude`: Anthropic's brand orange `#d97757`, blue `#6a9bcc`, green `#788c5d` and warm grey `#b0aea5`, then tones of the same family. Classic Prism, Pastel and Vivid remain as options.
+- Font: Arial everywhere, in the interface and in the figures (user's choice, Nov 2026). Chinese text falls back to PingFang SC / Microsoft YaHei.
+- Figure style (user's choice, Nov 2026): outside tick marks on both axes, one per value tick and one per sample; no gridlines inside the plot; data points take their group's colour, and error bars / mean lines take a darker tone of it. The default colour theme is `claude`: Anthropic's brand orange `#d97757`, blue `#6a9bcc`, green `#788c5d` and warm grey `#b0aea5`, then tones of the same family. Classic Prism, Pastel and Vivid remain as options.
 - Layout:
   - top: a ribbon of labeled groups (Sheet, File, Analysis, Graph, Size & export, View);
   - left: the data sheet, a full-bleed spreadsheet;
