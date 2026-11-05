@@ -487,7 +487,7 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
       <dt>Paste</dt><dd>Paste a block from Excel/Sheets into any cell (<kbd>⌘/Ctrl</kbd> <kbd>V</kbd>); the grid expands to fit. Paste in the ribbon imports TSV / CSV text, optionally with a header row.</dd>
       <dt>Select</dt><dd>Click a cell and just type to replace it; double-click or <kbd>F2</kbd> to edit inside it. Drag, or <kbd>Shift</kbd> + click / arrows, to select a block; click a row number or column letter for a whole row or column; <kbd>⌘/Ctrl</kbd> <kbd>A</kbd> selects everything. Click the empty grid to add rows and columns there.</dd>
       <dt>Move</dt><dd>Arrows, <kbd>Tab</kbd> and <kbd>Enter</kbd> move between cells (<kbd>Enter</kbd> on the last row adds one); <kbd>⌘/Ctrl</kbd> + arrow jumps to the edge.</dd>
-      <dt>Edit</dt><dd>Copy, cut and paste work on blocks; one copied value pasted onto a block fills it. <kbd>Delete</kbd> clears the block, <kbd>⌘/Ctrl</kbd> <kbd>D</kbd> fills down, <kbd>Esc</kbd> cancels a change. Right-click for insert / delete rows and columns. Results update as you type.</dd>
+      <dt>Edit</dt><dd>Copy, cut and paste work on blocks; one copied value pasted onto a block fills it. <kbd>Delete</kbd> clears the block, <kbd>⌘/Ctrl</kbd> <kbd>D</kbd> fills down, <kbd>Esc</kbd> cancels a change. Type a value with a block selected and press <kbd>⌘/Ctrl</kbd> <kbd>Enter</kbd> to put it in every cell. Right-click for insert / delete rows and columns. Results update as you type.</dd>
       <dt>Undo</dt><dd><kbd>⌘/Ctrl</kbd> <kbd>Z</kbd>; add <kbd>Shift</kbd> for redo.</dd>
       <dt>Session</dt><dd>Saved in this browser automatically; Save / Open (.jgz) moves a session between machines.</dd>
       <dt>Export</dt><dd>PNG at 5× the on-screen size (≈ 300 dpi for a 2–3 inch figure); SVG is vector.</dd>
@@ -1633,7 +1633,6 @@ table.addEventListener("input", e => {
   } else if (t.classList.contains("row-title")) {
     titles[+t.dataset.r] = t.value;
   }
-  if (selMulti() && t.matches(".cell-input, .row-title")) { sel.fg = sel.ag; sel.fr = sel.ar; paintSel(); }   // typing collapses the range
   scheduleSave(); scheduleRun();
 });
 table.addEventListener("click", e => {
@@ -1720,7 +1719,18 @@ table.addEventListener("keydown", e => {
   }
   if (mod && k.toLowerCase() === "a") { e.preventDefault(); selectAllCells(); return; }
   if (mod && k.toLowerCase() === "d") { e.preventDefault(); fillDown(); return; }
-  if ((k === "Delete" || k === "Backspace") && selMulti()) { e.preventDefault(); clearSel(); return; }
+  // Ctrl/⌘+Enter: put the active cell's value into every cell of the selection (Excel)
+  if (mod && k === "Enter" && selMulti()) {
+    e.preventDefault();
+    const v = t.value.trim(), keep = { ...sel };
+    t.value = editOrig; setVal(g, r, editOrig);   // the typed value lands via the undoable fill
+    stopEditing();
+    sel = keep; pasteText(v);
+    sel = keep; focusCell(sel.ag, sel.ar, true); editOrig = getVal(sel.ag, sel.ar);
+    return;
+  }
+  // Delete / Backspace clear the block — unless the user is typing in the active cell
+  if ((k === "Delete" || k === "Backspace") && selMulti() && t.value === editOrig && !editing) { e.preventDefault(); clearSel(); return; }
   if (k === "F2") { e.preventDefault(); startEditing(t); return; }
 
   const step = { ArrowUp: [0, -1], ArrowDown: [0, 1], ArrowLeft: [-1, 0], ArrowRight: [1, 0] }[k];
