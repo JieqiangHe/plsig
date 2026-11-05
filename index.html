@@ -15,74 +15,82 @@
 /* ---- ministat styles ---- */
 
 /* Interface theme — light by default: the pre-paint script in <head> sets
-   data-theme="light" unless "dark" was saved (◐ button in the Data toolbar;
-   localStorage). Every color
-   routes through these variables: the hand-written rules below, the
-   component classes from the generated block above, and the Tailwind color
-   utilities used in the markup and in JS-built HTML — re-pointed below,
-   where later rules of equal specificity win. The figure itself always
-   renders on white paper (see THEMES) and is unaffected. */
+   data-theme="light" unless "dark" was saved (theme button in the top bar;
+   localStorage). Every color routes through these variables: the
+   hand-written rules below, the component classes from the generated block
+   above, and the Tailwind color utilities used in the markup and in JS-built
+   HTML — re-pointed below, where later rules of equal specificity win. The
+   figure itself always renders on white paper (see THEMES) and is unaffected. */
 :root {
   color-scheme: dark;
-  --surface: #000;                 /* page + section cards */
-  --card-border: #262626;          /* neutral-800 */
-  --grid-border: #404040;          /* neutral-700 — inset boxes */
-  --panel: #262626;                /* neutral-800 fills */
-  --fg: #e5e5e5;  --fg-strong: #f5f5f5;  --fg-soft: #d4d4d4;
-  --fg-muted: #a3a3a3;  --fg-faint: #737373;
-  --btn-bg: #262626;  --btn-hover: #404040;
-  --input-bg: #262626;  --input-border: #404040;
-  --input-hover-bg: #1c1c1c;  --input-hover-border: #525252;
-  --focus-border: #a3a3a3;  --focus-ring: 0 0 0 3px rgba(163,163,163,.15);
-  --cell-border: #333333;  --cell-focus-bg: #171717;
-  --bad-bg: #3f1d1d;  --bad-border: #ef4444;  --bad-fg: #fecaca;
-  --thead-bg: #171717;  --row-alt: #0d0d0d;
-  --scrollbar: #404040;  --option-bg: #171717;
-  --run-bg: #e5e5e5;  --run-fg: #171717;  --run-hover: #ffffff;   /* Analyze ▸ */
-  --danger-hover-bg: #7f1d1d;  --danger-hover-fg: #fecaca;        /* Clear ✕ */
-  --ok: #6ee7b5;  --ok-bg: rgba(16,185,129,.15);                  /* significant */
-  --ok-box-bg: rgba(16,185,129,.1);  --ok-box-border: rgba(16,185,129,.3);
-  --warn: #fcd34d;  --warn-bg: rgba(245,158,11,.1);  --warn-border: rgba(245,158,11,.3);
-  --err: #f87171;
-  --ns-pill-bg: #404040;  --ns-pill-fg: #d4d4d4;                  /* "ns" pill */
-  --accent: #a3a3a3;
-  --plot-shadow: 0 2px 8px rgba(0,0,0,.45);
+  /* neutrals + accent follow svguest / ocrp so the tools read as one family */
+  --bg: #1f1f1f;                   /* page + top bar */
+  --surface: #262626;              /* cards */
+  --card-border: rgba(255,255,255,.1);
+  --card-shadow: 0 1px 2px rgba(0,0,0,.6);
+  --grid-border: rgba(255,255,255,.12);   /* inset boxes */
+  --panel: #2a2a2a;                /* neutral fills */
+  --canvas: #383838;               /* figure view behind the white page */
+  --fg: #e3e3e3;  --fg-strong: #f5f5f5;  --fg-soft: #c8c8c8;
+  --fg-muted: #a6a6a6;  --fg-faint: #8c8c8c;
+  --btn-bg: #303030;  --btn-hover: #3a3a3a;  --btn-border: rgba(255,255,255,.12);
+  --input-bg: #1f1f1f;  --input-border: rgba(255,255,255,.14);
+  --input-hover-bg: #1f1f1f;  --input-hover-border: rgba(255,255,255,.26);
+  --focus-border: #4c8df6;  --focus-ring: 0 0 0 3px rgba(76,141,246,.22);
+  --cell-border: rgba(255,255,255,.08);  --cell-focus-bg: #1f1f1f;
+  --bad-bg: rgba(240,122,112,.14);  --bad-border: #f07a70;  --bad-fg: #ffd2cd;
+  --thead-bg: #2b2b2b;  --row-alt: rgba(255,255,255,.03);
+  --scrollbar: rgba(255,255,255,.18);  --option-bg: #262626;
+  --accent: #4c8df6;  --accent-soft: rgba(76,141,246,.2);
+  --run-bg: #e3e3e3;  --run-fg: #1f1f1f;  --run-hover: #ffffff;   /* Analyze */
+  --danger-hover-bg: rgba(240,122,112,.12);  --danger-hover-fg: #f07a70;   /* Clear */
+  --ok: #4fc27e;  --ok-bg: rgba(79,194,126,.16);                  /* significant */
+  --ok-box-bg: rgba(79,194,126,.08);  --ok-box-border: rgba(79,194,126,.35);
+  --warn: #e2a33c;  --warn-bg: rgba(226,163,60,.1);  --warn-border: rgba(226,163,60,.32);
+  --err: #f07a70;
+  --ns-pill-bg: #383838;  --ns-pill-fg: #c8c8c8;                  /* "ns" pill */
+  --plot-shadow: 0 0 0 1px rgba(0,0,0,.4), 0 8px 24px -6px rgba(0,0,0,.8);
 }
 [data-theme="light"] {
   color-scheme: light;
+  --bg: #e9e9e9;
   --surface: #ffffff;
-  --card-border: #e5e7eb;
-  --grid-border: #d4d4d4;
-  --panel: #f5f5f5;
-  --fg: #262626;  --fg-strong: #171717;  --fg-soft: #525252;
-  --fg-muted: #525252;  --fg-faint: #8a8a8a;
-  --btn-bg: #ffffff;  --btn-hover: #e9f0fd;
-  --input-bg: #ffffff;  --input-border: #d4d4d4;
-  --input-hover-bg: #ffffff;  --input-hover-border: #a3a3a3;
-  --focus-border: #737373;  --focus-ring: 0 0 0 3px rgba(38,38,38,.12);
-  --cell-border: #d4d4d4;  --cell-focus-bg: #ffffff;
-  --bad-bg: #fee2e2;  --bad-border: #dc2626;  --bad-fg: #7f1d1d;
-  --thead-bg: #f5f5f5;  --row-alt: #fafafa;
-  --scrollbar: #d4d4d4;  --option-bg: #ffffff;
-  --run-bg: #171717;  --run-fg: #ffffff;  --run-hover: #000000;
-  --danger-hover-bg: #fee2e2;  --danger-hover-fg: #b91c1c;
-  --ok: #047857;  --ok-bg: rgba(5,150,105,.12);
-  --ok-box-bg: rgba(5,150,105,.07);  --ok-box-border: rgba(5,150,105,.35);
-  --warn: #b45309;  --warn-bg: rgba(217,119,6,.08);  --warn-border: rgba(217,119,6,.35);
-  --err: #dc2626;
-  --ns-pill-bg: #e5e5e5;  --ns-pill-fg: #525252;
-  --accent: #525252;
-  --plot-shadow: 0 2px 8px rgba(0,0,0,.12);
+  --card-border: rgba(0,0,0,.1);
+  --card-shadow: 0 1px 2px rgba(0,0,0,.06);
+  --grid-border: rgba(0,0,0,.12);
+  --panel: #f2f2f2;
+  --canvas: #d4d4d4;
+  --fg: #262626;  --fg-strong: #1a1a1a;  --fg-soft: #4a4a4a;
+  --fg-muted: #595959;  --fg-faint: #8a8a8a;
+  --btn-bg: #fafafa;  --btn-hover: #efefef;  --btn-border: rgba(0,0,0,.13);
+  --input-bg: #ffffff;  --input-border: rgba(0,0,0,.15);
+  --input-hover-bg: #ffffff;  --input-hover-border: rgba(0,0,0,.3);
+  --focus-border: #1a73e8;  --focus-ring: 0 0 0 3px rgba(26,115,232,.15);
+  --cell-border: rgba(0,0,0,.08);  --cell-focus-bg: #ffffff;
+  --bad-bg: rgba(204,65,54,.08);  --bad-border: #cc4136;  --bad-fg: #8f2a22;
+  --thead-bg: #f7f7f7;  --row-alt: #fafafa;
+  --scrollbar: rgba(0,0,0,.2);  --option-bg: #ffffff;
+  --accent: #1a73e8;  --accent-soft: rgba(26,115,232,.12);
+  --run-bg: #262626;  --run-fg: #ffffff;  --run-hover: #000000;
+  --danger-hover-bg: rgba(204,65,54,.08);  --danger-hover-fg: #cc4136;
+  --ok: #2f8f55;  --ok-bg: rgba(47,143,85,.12);
+  --ok-box-bg: rgba(47,143,85,.06);  --ok-box-border: rgba(47,143,85,.32);
+  --warn: #b4761a;  --warn-bg: rgba(180,118,26,.08);  --warn-border: rgba(180,118,26,.3);
+  --err: #cc4136;
+  --ns-pill-bg: #ededed;  --ns-pill-fg: #595959;
+  --plot-shadow: 0 0 0 1px rgba(0,0,0,.1), 0 8px 24px -6px rgba(0,0,0,.3);
 }
 /* component classes from the generated block, re-pointed at the theme */
-.tb-btn{background-color:var(--btn-bg);color:var(--fg);border:1px solid var(--input-border);border-radius:3px;padding:2px 7px;font-size:11.5px;line-height:1.5}
+.tb-btn{display:inline-flex;align-items:center;gap:5px;background-color:var(--btn-bg);color:var(--fg);border:1px solid var(--btn-border);border-radius:6px;padding:0 9px;height:26px;font-size:12px;font-weight:500;line-height:1;white-space:nowrap}
 .tb-btn:hover{background-color:var(--btn-hover)}
+.tb-btn:disabled{opacity:.4;cursor:default}
 .tb-btn:disabled:hover{background-color:var(--btn-bg)}
-.field{background-color:var(--input-bg);border-color:var(--input-border);color:var(--fg-strong);border-radius:3px;padding:3px 6px;font-size:12.5px}
-.field:focus{border-color:var(--focus-border)}
-.num-field{background-color:var(--input-bg);border-color:var(--input-border);color:var(--fg-strong);border-radius:3px;padding:2px 5px;font-size:12.5px}
-.num-field:focus{border-color:var(--focus-border)}
-.h3{color:var(--fg)}
+.tb-btn svg{width:14px;height:14px;flex:none;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.field{background-color:var(--input-bg);border:1px solid var(--input-border);color:var(--fg-strong);border-radius:6px;padding:0 8px;height:30px;font-size:13px;width:100%}
+.field:focus{outline:none;border-color:var(--focus-border)}
+.num-field{background-color:var(--input-bg);border:1px solid var(--input-border);color:var(--fg-strong);border-radius:6px;padding:0 6px;height:26px;font-size:12px;font-variant-numeric:tabular-nums}
+.num-field:focus{outline:none;border-color:var(--focus-border)}
+.h3{color:var(--fg-strong)}
 /* Tailwind color utilities used on this page, re-pointed at the theme */
 .bg-black{background-color:var(--surface)}
 .bg-neutral-200{background-color:var(--run-bg)}
@@ -111,260 +119,351 @@
 .border-emerald-500\/30{border-color:var(--ok-box-border)}
 .accent-neutral-400{accent-color:var(--accent)}
 
-body { font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+html, body { background: var(--bg); }
+body { font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", Helvetica, Arial, sans-serif; color: var(--fg); -webkit-font-smoothing: antialiased; }
+kbd { font: 500 11px/1 ui-monospace, SFMono-Regular, Menlo, monospace; padding: 2px 5px; border: 1px solid var(--btn-border); border-bottom-width: 2px; border-radius: 4px; background: var(--panel); color: var(--fg-soft); }
 
-/* Data grid — uniform cells, group-name aligned with its column */
-table.data-grid { table-layout: fixed; border-collapse: collapse; }
-table.data-grid td, table.data-grid th { padding: 2px 4px; box-sizing: border-box; }
-.cell-input { width: 100%; box-sizing: border-box; padding: 3px 6px; font-size: 13px; line-height: 19px; border: 1px solid var(--cell-border); border-radius: 3px; text-align: right; font-variant-numeric: tabular-nums; background: transparent; color: var(--fg); transition: border-color .12s, background .12s; }
-.cell-input:focus { outline: none; border-color: var(--focus-border); background: var(--cell-focus-bg); }
-.cell-input.bad { background: var(--bad-bg); border-color: var(--bad-border); color: var(--bad-fg); }
+/* ---------- app shell: top bar + four cards (Data / Figure / Analysis / Results) ---------- */
+body { display: flex; flex-direction: column; height: 100vh; height: 100dvh; overflow: hidden; }
+#menuBar { flex: none; display: flex; align-items: center; gap: 10px; height: 42px; padding: 0 10px 0 14px; background: var(--bg); border-bottom: 1px solid var(--card-border); }
+.brand { display: flex; align-items: center; gap: 9px; color: var(--fg-strong); text-decoration: none; }
+.brand-mark { display: grid; place-items: center; flex: none; color: var(--fg-strong); }
+.brand-mark svg { width: 18px; height: 18px; }
+.brand-name { font-size: 15px; font-weight: 650; letter-spacing: -.01em; }
+.brand-tag { font-size: 12px; color: var(--fg-faint); padding-left: 10px; margin-left: 2px; border-left: 1px solid var(--card-border); }
+.bar-spacer { flex: 1; }
+.privacy { display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; color: var(--fg-muted); padding: 0 10px; height: 24px; border-radius: 999px; background: var(--panel); }
+.privacy::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--ok); }
+#menuBar .tb-btn { border-color: transparent; background: transparent; color: var(--fg-muted); height: 30px; }
+#menuBar .tb-btn:hover { background: var(--btn-hover); color: var(--fg-strong); }
+
+main.quad { flex: 1 1 auto; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) minmax(0, 1fr); gap: 8px; padding: 0 8px 8px; }
+main.quad > section { display: flex; flex-direction: column; min-height: 0; overflow: hidden; background: var(--surface); border: 1px solid var(--card-border); border-radius: 10px; padding: 0; box-shadow: var(--card-shadow); }
+.card-head { flex: none; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; min-height: 46px; padding: 8px 14px; border-bottom: 1px solid var(--card-border); }
+.card-head h2 { display: flex; align-items: center; gap: 8px; margin: 0 auto 0 0; font-size: 13.5px; font-weight: 600; color: var(--fg-strong); letter-spacing: -.005em; }
+.step { display: inline-grid; place-items: center; width: 20px; height: 20px; border-radius: 6px; font-size: 11px; font-weight: 650; color: var(--accent); background: var(--accent-soft); }
+.card-body { flex: 1 1 auto; min-height: 0; overflow: auto; padding: 12px 14px 14px; }
+.toolbar { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.btn-group { display: inline-flex; }
+.btn-group .tb-btn { border-radius: 0; margin-left: -1px; }
+.btn-group .tb-btn:first-child { border-radius: 6px 0 0 6px; margin-left: 0; }
+.btn-group .tb-btn:last-child { border-radius: 0 6px 6px 0; }
+.btn-group .tb-btn:only-child { border-radius: 6px; }
+.tb-sep { width: 1px; height: 18px; background: var(--card-border); margin: 0 2px; }
+#clearBtn:hover { color: var(--danger-hover-fg); }
+.size-ctl { display: inline-flex; align-items: center; gap: 4px; font-size: 11.5px; color: var(--fg-faint); }
+.size-ctl label { font-weight: 500; }
+
+/* Data card */
+#sec-data .card-body { display: flex; flex-direction: column; }
+#sec-data .quad-fill { flex: 1 1 auto; min-height: 160px; border: 1px solid var(--grid-border); border-radius: 8px; background: var(--surface); }
+.hint { margin-top: 8px; font-size: 11.5px; color: var(--fg-faint); }
+#parseWarn { border-radius: 8px; }
+.disclosure { margin-top: 8px; }
+.disclosure > summary { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 500; color: var(--fg-muted); }
+.disclosure > summary:hover { color: var(--fg-strong); }
+.disclosure > summary::before { content: ""; width: 6px; height: 6px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: rotate(-45deg); transition: transform .15s; }
+.disclosure[open] > summary::before { transform: rotate(45deg); }
+#pasteBox { border-radius: 8px; background: var(--panel); border-color: var(--grid-border); padding: 8px 10px; }
+
+/* Data grid — spreadsheet look: hairline grid, sticky header + row numbers */
+table.data-grid { table-layout: fixed; border-collapse: separate; border-spacing: 0; }
+table.data-grid td, table.data-grid th { padding: 0; box-sizing: border-box; border-right: 1px solid var(--cell-border); border-bottom: 1px solid var(--cell-border); }
+table.data-grid thead th { position: sticky; top: 0; z-index: 2; background: var(--thead-bg); }
+table.data-grid td.rowhdr, table.data-grid thead th:first-child { position: sticky; left: 0; z-index: 1; background: var(--thead-bg); }
+table.data-grid thead th:first-child { z-index: 3; }
+.cell-input { display: block; width: 100%; box-sizing: border-box; height: 30px; padding: 0 10px; font-size: 13px; border: 0; border-radius: 0; text-align: right; font-variant-numeric: tabular-nums; background: transparent; color: var(--fg); transition: background .12s, box-shadow .12s; }
+.cell-input:hover { background: var(--row-alt); }
+.cell-input:focus { outline: none; background: var(--cell-focus-bg); box-shadow: inset 0 0 0 2px var(--focus-border); }
+.cell-input.bad { background: var(--bad-bg); color: var(--bad-fg); box-shadow: inset 0 0 0 1px var(--bad-border); }
 /* group-name shares the exact column width of its cells; right padding clears the × button */
-.grp-name { width: 100%; box-sizing: border-box; padding: 3px 22px 3px 6px; font-size: 13px; line-height: 19px; font-weight: 600; text-align: center; border: 1px solid var(--cell-border); border-radius: 3px; background: transparent; color: var(--fg-strong); transition: border-color .12s, background .12s; }
-.grp-name:focus { outline: none; border-color: var(--focus-border); background: var(--cell-focus-bg); }
-.delGrp { position: absolute; top: 50%; right: 3px; transform: translateY(-50%); font-size: 13px; line-height: 1; color: var(--fg-faint); }
-.delGrp:hover { color: var(--err); }
+.grp-name { display: block; width: 100%; box-sizing: border-box; height: 32px; padding: 0 24px 0 10px; font-size: 12.5px; font-weight: 600; text-align: right; border: 0; border-radius: 0; background: transparent; color: var(--fg-strong); }
+.grp-name:focus { outline: none; background: var(--cell-focus-bg); box-shadow: inset 0 0 0 2px var(--focus-border); }
+.delGrp { position: absolute; top: 50%; right: 5px; transform: translateY(-50%); width: 16px; height: 16px; border-radius: 4px; font-size: 13px; line-height: 15px; color: var(--fg-faint); opacity: 0; transition: opacity .12s; }
+th:hover .delGrp, th:focus-within .delGrp { opacity: 1; }
+.delGrp:hover { color: var(--err); background: var(--danger-hover-bg); }
 /* row header: shows the row number; the delete × only appears on hover / focus */
-.rowhdr { font-size: 10px; color: var(--fg-faint); text-align: center; vertical-align: middle; }
-.rowhdr .delRow { display: none; font-size: 13px; line-height: 1; color: var(--err); }
+.rowhdr { font-size: 11px; color: var(--fg-faint); text-align: center; vertical-align: middle; font-variant-numeric: tabular-nums; }
+.rowhdr .delRow { display: none; font-size: 14px; line-height: 1; color: var(--err); }
 tr:hover > .rowhdr .rn, tr:focus-within > .rowhdr .rn { display: none; }
 tr:hover > .rowhdr .delRow, tr:focus-within > .rowhdr .delRow { display: inline; }
 
-.stat-table { border-collapse: collapse; width: 100%; font-size: 12px; color: var(--fg); }
-.stat-table th, .stat-table td { border: 1px solid var(--cell-border); padding: 4px 8px; text-align: left; }
-.stat-table thead th { background: var(--thead-bg); font-weight: 600; }
+/* Figure card: the white figure sits on a dotted canvas */
+#sec-graph .card-body { padding: 0; }
+.canvas { min-height: 100%; box-sizing: border-box; display: flex; align-items: flex-start; justify-content: center; padding: 20px; background: var(--canvas); }
+#plot { flex: none; border-radius: 2px; overflow: hidden; background: #fff; box-shadow: var(--plot-shadow); }
+
+/* Analysis card */
+.field-label { display: block; font-size: 11.5px; font-weight: 500; color: var(--fg-muted); margin-bottom: 4px; }
+.form-section { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--fg-faint); margin: 16px 0 8px; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 12px; }
+.check { display: flex; align-items: flex-start; gap: 8px; font-size: 12.5px; margin: 10px 0 0; padding: 8px 10px; border-radius: 8px; background: var(--panel); }
+.check input { margin-top: 2px; }
+#sec-settings .card-body { padding-bottom: 0; }
+.run-bar { position: sticky; bottom: 0; margin: 16px -14px 0; padding: 12px 14px; background: var(--surface); border-top: 1px solid var(--card-border); }
+#runBtn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; height: 36px; border-radius: 8px; font-size: 13.5px; font-weight: 600; }
+#runBtn svg { width: 14px; height: 14px; fill: currentColor; }
+
+/* Results card */
+#verdict > div { border-radius: 8px; padding: 10px 12px 10px 14px; font-size: 13px; line-height: 1.5; border-left-width: 3px; }
+#verdict:empty { display: none; }
+#report > div + div { margin-top: 18px; }
+main.quad .h3 { font-size: 12.5px; font-weight: 600; margin: 0 0 6px; }
+#verdict:not(:empty) + #report { margin-top: 14px; }
+main.quad .text-sm { font-size: 12.5px; }
+.stat-table { border-collapse: collapse; width: 100%; font-size: 12.5px; color: var(--fg); }
+.stat-table th, .stat-table td { border: 0; border-bottom: 1px solid var(--cell-border); padding: 6px 10px; text-align: left; }
+.stat-table thead th { background: transparent; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; color: var(--fg-faint); border-bottom-color: var(--grid-border); }
 .stat-table td.num, .stat-table th.num { text-align: right; font-variant-numeric: tabular-nums; }
-.stat-table tr:nth-child(even) td { background: var(--row-alt); }
-.pill { display: inline-block; padding: 1px 6px; border-radius: 4px; font-size: 11px; font-weight: 600; }
-.scroll-thin::-webkit-scrollbar { height: 8px; width: 8px; }
-.scroll-thin::-webkit-scrollbar-thumb { background: var(--scrollbar); border-radius: 4px; }
+.stat-table tbody tr:hover td { background: var(--row-alt); }
+.stat-table td.font-medium { color: var(--fg-soft); font-weight: 500; }
+.pill { display: inline-block; padding: 1px 7px; border-radius: 999px; font-size: 11px; font-weight: 600; }
+
+/* misc */
+.scroll-thin::-webkit-scrollbar, main.quad ::-webkit-scrollbar { height: 8px; width: 8px; }
+.scroll-thin::-webkit-scrollbar-thumb, main.quad ::-webkit-scrollbar-thumb { background: var(--scrollbar); border-radius: 4px; }
+main.quad ::-webkit-scrollbar-track { background: transparent; }
 details > summary { cursor: pointer; list-style: none; }
 details > summary::-webkit-details-marker { display: none; }
 select option, select optgroup { background: var(--option-bg); color: var(--fg); }
 input::placeholder, textarea::placeholder { color: var(--fg-faint); }
-/* form field polish (settings + graph toolbar) */
 #sec-settings select, #sec-settings input:not([type="checkbox"]):not([type="file"]),
 #sec-graph input[type="number"], #sec-data textarea { transition: border-color .15s, background-color .15s, box-shadow .15s; }
-#sec-settings select:hover, #sec-settings input:not([type="checkbox"]):not([type="file"]):hover { border-color: var(--input-hover-border); background: var(--input-hover-bg); }
+#sec-settings select:hover, #sec-settings input:not([type="checkbox"]):not([type="file"]):hover { border-color: var(--input-hover-border); background-color: var(--input-hover-bg); }
 #sec-settings select:focus, #sec-settings input:not([type="checkbox"]):not([type="file"]):focus,
-#sec-graph input[type="number"]:focus, #sec-data textarea:focus { border-color: var(--focus-border); box-shadow: var(--focus-ring); }
-/* buttons */
-main button { transition: background-color .15s, color .15s, transform .08s; }
-main button:active:not(:disabled) { transform: scale(.97); }
-/* white plot surface lifted slightly off the card */
-#plot { border-radius: 2px; box-shadow: var(--plot-shadow); }
+#sec-graph input[type="number"]:focus, #sec-data textarea:focus { outline: none; border-color: var(--focus-border); box-shadow: var(--focus-ring); }
+button { transition: background-color .15s, color .15s, border-color .15s, transform .08s; }
+button:active:not(:disabled) { transform: scale(.97); }
+:focus-visible { outline: 2px solid var(--focus-border); outline-offset: 1px; }
 
-/* Bottom menu bar (theme + help) below four fixed, equal quadrants —
-   Data TL / Figure TR / Analysis BL / Stat BR. Each section scrolls its own
-   content; narrow screens stack vertically. */
-body { display: flex; flex-direction: column; height: 100vh; height: 100dvh; overflow: hidden; }
-#menuBar { flex: none; display: flex; align-items: center; justify-content: flex-end; gap: 6px; height: 30px; padding: 0 10px; background: var(--panel); border-top: 1px solid var(--card-border); }
-/* minisvg-style flat menu items: no border, no fill, hover tint only */
-#menuBar .tb-btn { border-color: transparent; background: transparent; }
-#menuBar .tb-btn:hover:not(:disabled) { background: var(--btn-hover); }
-main.quad { flex: 1 1 auto; min-height: 0; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 10px; padding: 10px; }
-main.quad > section { overflow: auto; min-height: 0; border-radius: 4px; padding: 8px 10px; }
-#sec-data { display: flex; flex-direction: column; }
-#sec-data .quad-fill { flex: 1 1 auto; min-height: 160px; border-radius: 4px; }
-#sec-graph #plot { width: auto; margin: 0 auto; }
-
-/* minisvg-flavored density: small radii, tight spacing, hairline section headers */
-main.quad h2 { font-size: 12px; font-weight: 600; color: var(--fg-muted); border-bottom: 1px solid var(--grid-border); padding-bottom: 3px; margin: 0 0 6px; }
-main.quad .text-sm { font-size: 12.5px; }
-main.quad .h3 { font-size: 12.5px; }
-main.quad .field-label { font-size: 11px; margin-bottom: 2px; }
-#runBtn { border-radius: 3px; padding: 4px; margin-top: 8px; font-size: 12.5px; }
-#verdict > div { border-radius: 4px; padding: 5px 10px; font-size: 12.5px; }
-#parseWarn { border-radius: 4px; }
+@media (max-width: 1100px) { .brand-tag { display: none; } }
 @media (max-width: 880px) {
   body { display: block; height: auto; overflow: auto; }
-  main.quad { display: flex; flex-direction: column; }
+  #menuBar { position: sticky; top: 0; z-index: 10; padding: 0 12px; }
+  .privacy { display: none; }
+  main.quad { display: flex; flex-direction: column; padding: 10px; gap: 10px; }
   main.quad > section { overflow: visible; min-height: auto; }
-  #sec-data .quad-fill { min-height: auto; }
-  #sec-graph #plot { width: 100%; }
+  .card-body { overflow: visible; }
+  #sec-data .quad-fill { min-height: auto; max-height: 60vh; }
+  .canvas { overflow-x: auto; justify-content: flex-start; padding: 16px; }
+  #sec-graph #plot { margin: 0 auto; }
+  .run-bar { position: static; }
 }
+@media (max-width: 480px) { .form-grid { grid-template-columns: 1fr; } }
+
 /* help dialog */
-dialog { border: 1px solid var(--card-border); border-radius: 6px; padding: 0; background: var(--surface); color: var(--fg); }
-dialog::backdrop { background: #0007; }
-#helpDlg { width: min(480px, 92vw); }
-#helpDlg form { padding: 12px 16px 14px; }
-#helpDlg header { display: flex; align-items: center; margin-bottom: 8px; }
-#helpDlg h3 { flex: 1; margin: 0; font-size: 13px; font-weight: 600; }
-#helpDlg header button { border: 0; background: none; font-size: 15px; line-height: 18px; padding: 0 4px; color: var(--fg-muted); }
-#helpDlg header button:hover { color: var(--fg); }
-#helpDlg dl { display: grid; grid-template-columns: 88px 1fr; gap: 4px 10px; margin: 0; font-size: 12px; }
+dialog { border: 1px solid var(--card-border); border-radius: 12px; padding: 0; background: var(--surface); color: var(--fg); box-shadow: 0 20px 50px rgba(0,0,0,.25); }
+dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
+#helpDlg { width: min(520px, 92vw); }
+#helpDlg form { padding: 16px 20px 20px; }
+#helpDlg header { display: flex; align-items: center; margin-bottom: 12px; }
+#helpDlg h3 { flex: 1; margin: 0; font-size: 15px; font-weight: 600; color: var(--fg-strong); }
+#helpDlg header button { border: 0; background: none; font-size: 18px; line-height: 18px; width: 28px; height: 28px; border-radius: 6px; color: var(--fg-muted); }
+#helpDlg header button:hover { color: var(--fg); background: var(--btn-hover); }
+#helpDlg dl { display: grid; grid-template-columns: 76px 1fr; gap: 10px 14px; margin: 0; font-size: 12.5px; line-height: 1.55; }
+#helpDlg dt { font-weight: 600; color: var(--fg-muted); }
 #helpDlg dd { margin: 0; }
 </style>
 </head>
 
 <body class="bg-black text-neutral-200">
+  <header id="menuBar">
+    <span class="brand">
+      <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 16 16"><rect x="2" y="8" width="3" height="6" rx=".8" fill="currentColor"/><rect x="6.5" y="3" width="3" height="11" rx=".8" fill="currentColor"/><rect x="11" y="6" width="3" height="8" rx=".8" fill="currentColor" opacity=".55"/></svg></span>
+      <span class="brand-name">ministat</span>
+      <span class="brand-tag">Statistics &amp; scientific graphing</span>
+    </span>
+    <span class="bar-spacer"></span>
+    <span class="privacy" title="All calculations run in this browser; your data never leaves this machine">Runs locally · nothing uploaded</span>
+    <button id="themeBtn" class="tb-btn" title="Switch between light and dark interface">Theme</button>
+    <button id="helpBtn" class="tb-btn"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.6"/><path d="M12 17h.01"/></svg>Help</button>
+  </header>
+
   <main class="quad">
 
-    <!-- ============ DATA ============ -->
-    <section id="sec-data" class="bg-black rounded-xl border border-neutral-800 p-3">
-      <h2>Data</h2>
-      <div class="flex gap-1.5 flex-wrap mb-2">
-        <button id="undoBtn" class="tb-btn" title="Undo (⌘/Ctrl+Z)" disabled>Undo</button>
-        <button id="redoBtn" class="tb-btn" title="Redo (⌘/Ctrl+Shift+Z)" disabled>Redo</button>
-        <button id="addRowBtn" class="tb-btn">Add row</button>
-        <button id="addGroupBtn" class="tb-btn">Add group</button>
-        <button id="clearBtn" class="tb-btn hover:bg-red-900 hover:text-red-200">Clear</button>
-        <button id="exportBtn" class="tb-btn">Export .jgz</button>
-        <label for="importJH" id="importLabel" class="tb-btn cursor-pointer">Import .jgz</label>
-        <input id="importJH" type="file" accept=".jgz,.jh" class="hidden" />
-        <button id="copyData" class="tb-btn" title="Copy the grid as TSV (paste into Excel/Sheets)">Copy data</button>
+    <!-- ============ DATA (top-left) ============ -->
+    <section id="sec-data">
+      <div class="card-head">
+        <h2><span class="step">1</span>Data</h2>
+        <div class="toolbar">
+          <div class="btn-group">
+            <button id="undoBtn" class="tb-btn" title="Undo (⌘/Ctrl+Z)" aria-label="Undo" disabled><svg viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-3"/></svg></button>
+            <button id="redoBtn" class="tb-btn" title="Redo (⌘/Ctrl+Shift+Z)" aria-label="Redo" disabled><svg viewBox="0 0 24 24"><path d="m15 14 5-5-5-5"/><path d="M20 9H9a5 5 0 0 0 0 10h3"/></svg></button>
+          </div>
+          <div class="btn-group">
+            <button id="addRowBtn" class="tb-btn"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Row</button>
+            <button id="addGroupBtn" class="tb-btn"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Group</button>
+          </div>
+          <div class="btn-group">
+            <label for="importJH" id="importLabel" class="tb-btn cursor-pointer" title="Open a saved .jgz session">Import</label>
+            <button id="exportBtn" class="tb-btn" title="Save this session as a .jgz file">Export</button>
+            <button id="copyData" class="tb-btn" title="Copy the grid as TSV (paste into Excel/Sheets)">Copy</button>
+          </div>
+          <input id="importJH" type="file" accept=".jgz,.jh" class="hidden" />
+          <button id="clearBtn" class="tb-btn hover:bg-red-900 hover:text-red-200" title="Clear all data" aria-label="Clear all data"><svg viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/></svg></button>
+        </div>
       </div>
+      <div class="card-body">
+        <div class="overflow-auto scroll-thin quad-fill">
+          <table class="data-grid text-sm" id="dataTable" aria-label="Data grid"></table>
+        </div>
+        <p class="hint">Paste from Excel/Sheets into any cell (⌘/Ctrl+V) · hover a row number or column header to delete it.</p>
 
-      <div class="overflow-auto scroll-thin border border-neutral-700 quad-fill">
-        <table class="data-grid text-sm" id="dataTable" aria-label="Data grid"></table>
+        <div id="parseWarn" class="hidden mt-2 text-xs text-amber-300 bg-amber-500/10 border border-amber-500/30 px-3 py-2" role="status"></div>
+
+        <details class="disclosure">
+          <summary class="select-none">Paste / import TSV or CSV</summary>
+          <div class="mt-2">
+            <label for="pasteBox" class="sr-only">Delimited data to import</label>
+            <textarea id="pasteBox" rows="5" placeholder="Optionally include a header row of group names.&#10;Control&#9;Drug A&#9;Drug B&#10;5.1&#9;7.2&#9;9.8&#10;4.8&#9;6.9&#9;10.2" class="w-full text-xs font-mono border text-neutral-100 focus:outline-none"></textarea>
+            <div class="flex gap-2 mt-2">
+              <button id="importBtn" class="tb-btn">Import into grid</button>
+              <button id="loadDemoBtn" class="tb-btn">Reset to demo data</button>
+            </div>
+          </div>
+        </details>
       </div>
-      <p class="mt-1.5 text-[11px] text-neutral-400">Tip: paste from Excel/Sheets into any cell (⌘/Ctrl+V) · hover a row number to delete it.</p>
+    </section>
 
-      <div id="parseWarn" class="hidden mt-2 text-xs text-amber-300 bg-amber-500/10 border border-amber-500/30 px-3 py-2" role="status"></div>
-
-      <details class="mt-2">
-        <summary class="text-xs font-medium text-neutral-400 hover:text-neutral-200 select-none">⌗ Paste / import TSV or CSV (from Excel, Sheets…)</summary>
-        <div class="mt-2">
-          <label for="pasteBox" class="sr-only">Delimited data to import</label>
-          <textarea id="pasteBox" rows="5" placeholder="Optionally include a header row of group names.&#10;Control&#9;Drug A&#9;Drug B&#10;5.1&#9;7.2&#9;9.8&#10;4.8&#9;6.9&#9;10.2" class="w-full text-xs font-mono border border-neutral-700 rounded-md p-2 bg-neutral-800 text-neutral-100 focus:outline-none focus:border-neutral-400"></textarea>
-          <div class="flex gap-2 mt-2">
-            <button id="importBtn" class="tb-btn px-3">Import into grid</button>
-            <button id="loadDemoBtn" class="tb-btn px-3">Reset to demo data</button>
+    <!-- ============ FIGURE (top-right) ============ -->
+    <section id="sec-graph">
+      <div class="card-head">
+        <h2><span class="step">3</span>Figure</h2>
+        <div class="toolbar">
+          <span class="size-ctl"><label for="plotW">W</label><input id="plotW" type="number" min="220" step="20" value="300" class="num-field w-14" /></span>
+          <span class="size-ctl"><label for="plotH">H</label><input id="plotH" type="number" min="220" step="20" value="400" class="num-field w-14" /></span>
+          <span class="size-ctl"><label for="dotSize">Dot</label><input id="dotSize" type="number" min="2" max="20" step="1" value="6" class="num-field w-12" /></span>
+          <button id="resetGraph" class="tb-btn" title="Restore graph to default options, size &amp; view">Reset</button>
+          <span class="tb-sep"></span>
+          <div class="btn-group">
+            <button id="dlPng" class="tb-btn" title="PNG at 5× the on-screen size (≈ 300 dpi for a 2–3 inch figure)"><svg viewBox="0 0 24 24"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14"/></svg>PNG</button>
+            <button id="dlSvg" class="tb-btn" title="Download as vector SVG">SVG</button>
           </div>
         </div>
-      </details>
+      </div>
+      <div class="card-body scroll-thin">
+        <div class="canvas"><div id="plot" style="height: 400px;"></div></div>
+      </div>
     </section>
 
-    <!-- ============ FIGURE (top-right quadrant) ============ -->
-    <section id="sec-graph" class="bg-black rounded-xl border border-neutral-800 p-3">
-      <h2>Figure</h2>
-      <div class="flex items-center gap-1.5 flex-wrap mb-2 text-xs text-neutral-500">
-        <label for="plotW">W</label><input id="plotW" type="number" min="220" step="20" value="300" class="num-field w-14" />
-        <label for="plotH">H</label><input id="plotH" type="number" min="220" step="20" value="400" class="num-field w-14" />
-        <label for="dotSize">Dot</label><input id="dotSize" type="number" min="2" max="20" step="1" value="6" class="num-field w-12" />
-        <span class="text-neutral-400">px</span>
-        <button id="resetGraph" class="tb-btn" title="Restore graph to default options, size &amp; view">Reset</button>
-        <button id="dlPng" class="tb-btn" title="PNG at 5× the on-screen size (≈ 300 dpi for a 2–3 inch figure)">PNG 300 dpi</button>
-        <button id="dlSvg" class="tb-btn" title="Download as vector SVG">SVG</button>
+    <!-- ============ ANALYSIS SETTINGS (bottom-left) ============ -->
+    <section id="sec-settings">
+      <div class="card-head">
+        <h2><span class="step">2</span>Analysis</h2>
       </div>
-      <div id="plot" class="w-full" style="height: 400px;"></div>
-    </section>
-
-    <!-- ============ ANALYSIS SETTINGS (bottom-left quadrant) ============ -->
-    <section id="sec-settings" class="bg-black rounded-xl border border-neutral-800 p-3">
-      <h2>Analysis</h2>
-
-      <label for="testSelect" class="field-label">Test</label>
-      <select id="testSelect" class="field mb-2">
-        <optgroup label="Two groups — independent">
-          <option value="ttest">Unpaired t-test (Student's / Welch's)</option>
-          <option value="mwu">Mann–Whitney U / Wilcoxon rank-sum</option>
-        </optgroup>
-        <optgroup label="Two groups — paired (matched rows)">
-          <option value="paired">Paired t-test</option>
-          <option value="wilcoxon">Wilcoxon signed-rank</option>
-        </optgroup>
-        <optgroup label="Two or more groups">
-          <option value="anova">One-way ANOVA + post-hoc</option>
-          <option value="kruskal">Kruskal–Wallis + Dunn's post-hoc</option>
-        </optgroup>
-      </select>
-
-      <div id="opt_ttest" class="test-opts">
-        <label class="flex items-center gap-2 text-sm mb-2">
-          <input type="checkbox" id="welchChk" class="accent-neutral-400" checked />
-          <span>Welch's correction <span class="text-neutral-400">(recommended; does not assume equal variances)</span></span>
-        </label>
-      </div>
-
-      <div id="opt_anova" class="test-opts hidden">
-        <label for="posthocSelect" class="field-label">Post-hoc test</label>
-        <select id="posthocSelect" class="field mb-2">
-          <option value="tukey">Tukey's HSD (all pairs)</option>
-          <option value="holm">Holm pairwise t-tests (all pairs)</option>
-          <option value="bonferroni">Bonferroni pairwise t-tests (all pairs)</option>
-          <option value="dunnett">Dunnett (each group vs. the first group)</option>
+      <div class="card-body scroll-thin">
+        <label for="testSelect" class="field-label">Statistical test</label>
+        <select id="testSelect" class="field">
+          <optgroup label="Two groups — independent">
+            <option value="ttest">Unpaired t-test (Student's / Welch's)</option>
+            <option value="mwu">Mann–Whitney U / Wilcoxon rank-sum</option>
+          </optgroup>
+          <optgroup label="Two groups — paired (matched rows)">
+            <option value="paired">Paired t-test</option>
+            <option value="wilcoxon">Wilcoxon signed-rank</option>
+          </optgroup>
+          <optgroup label="Two or more groups">
+            <option value="anova">One-way ANOVA + post-hoc</option>
+            <option value="kruskal">Kruskal–Wallis + Dunn's post-hoc</option>
+          </optgroup>
         </select>
-      </div>
 
-      <div id="opt_kruskal" class="test-opts hidden">
-        <label for="dunnAdj" class="field-label">Dunn's test p-value adjustment</label>
-        <select id="dunnAdj" class="field mb-2">
-          <option value="holm">Holm</option>
-          <option value="bonferroni">Bonferroni</option>
-        </select>
-      </div>
+        <div id="opt_ttest" class="test-opts">
+          <label class="check">
+            <input type="checkbox" id="welchChk" class="accent-neutral-400" checked />
+            <span>Welch's correction <span class="text-neutral-400">— recommended; does not assume equal variances</span></span>
+          </label>
+        </div>
 
-      <div class="grid grid-cols-2 gap-2 mt-2">
-        <div>
-          <label for="chartType" class="field-label">Chart type</label>
-          <select id="chartType" class="field">
-            <option value="bar">Bar + error bars</option>
-            <option value="box">Box &amp; whisker</option>
+        <div id="opt_anova" class="test-opts hidden mt-3">
+          <label for="posthocSelect" class="field-label">Post-hoc test</label>
+          <select id="posthocSelect" class="field">
+            <option value="tukey">Tukey's HSD (all pairs)</option>
+            <option value="holm">Holm pairwise t-tests (all pairs)</option>
+            <option value="bonferroni">Bonferroni pairwise t-tests (all pairs)</option>
+            <option value="dunnett">Dunnett (each group vs. the first group)</option>
           </select>
         </div>
-        <div>
-          <label for="errType" class="field-label">Error bars</label>
-          <select id="errType" class="field">
-            <option value="sd">Mean ± SD</option>
-            <option value="sem" selected>Mean ± SEM</option>
-            <option value="ci">Mean ± 95% CI</option>
+
+        <div id="opt_kruskal" class="test-opts hidden mt-3">
+          <label for="dunnAdj" class="field-label">Dunn's test p-value adjustment</label>
+          <select id="dunnAdj" class="field">
+            <option value="holm">Holm</option>
+            <option value="bonferroni">Bonferroni</option>
           </select>
         </div>
-        <div>
-          <label for="themeSelect" class="field-label">Theme</label>
-          <select id="themeSelect" class="field">
-            <option value="prism">Classic Prism</option>
-            <option value="pastel">Pastel</option>
-            <option value="vibrant">Vibrant</option>
-          </select>
+
+        <div class="form-section">Plot</div>
+        <div class="form-grid">
+          <div>
+            <label for="chartType" class="field-label">Chart type</label>
+            <select id="chartType" class="field">
+              <option value="bar">Bar + error bars</option>
+              <option value="box">Box &amp; whisker</option>
+            </select>
+          </div>
+          <div>
+            <label for="errType" class="field-label">Error bars</label>
+            <select id="errType" class="field">
+              <option value="sd">Mean ± SD</option>
+              <option value="sem" selected>Mean ± SEM</option>
+              <option value="ci">Mean ± 95% CI</option>
+            </select>
+          </div>
+          <div>
+            <label for="themeSelect" class="field-label">Color theme</label>
+            <select id="themeSelect" class="field">
+              <option value="prism">Classic Prism</option>
+              <option value="pastel">Pastel</option>
+              <option value="vibrant">Vibrant</option>
+            </select>
+          </div>
+          <div>
+            <label for="sigLabel" class="field-label">Significance</label>
+            <select id="sigLabel" class="field">
+              <option value="stars">Asterisks (*)</option>
+              <option value="pval">p-value</option>
+            </select>
+          </div>
+          <div>
+            <label for="xLabel" class="field-label">X-axis title</label>
+            <input id="xLabel" value="Group" class="field" />
+          </div>
+          <div>
+            <label for="yLabel" class="field-label">Y-axis title</label>
+            <input id="yLabel" value="Value" class="field" />
+          </div>
         </div>
-        <div>
-          <label for="sigLabel" class="field-label">Significance</label>
-          <select id="sigLabel" class="field">
-            <option value="stars">Asterisks (*)</option>
-            <option value="pval">p-value</option>
-          </select>
-        </div>
-        <div>
-          <label for="xLabel" class="field-label">X-axis title</label>
-          <input id="xLabel" value="Group" class="field" />
-        </div>
-        <div>
-          <label for="yLabel" class="field-label">Y-axis title</label>
-          <input id="yLabel" value="Value" class="field" />
+
+        <div class="run-bar">
+          <button id="runBtn" class="bg-neutral-200 text-neutral-900 hover:bg-white"><svg viewBox="0 0 16 16"><path d="M4 2.5v11a.5.5 0 0 0 .77.42l8.5-5.5a.5.5 0 0 0 0-.84l-8.5-5.5A.5.5 0 0 0 4 2.5Z"/></svg>Analyze</button>
         </div>
       </div>
-
-      <button id="runBtn" class="w-full mt-3 py-2 rounded-lg bg-neutral-200 text-neutral-900 font-semibold hover:bg-white active:scale-[.99] transition">
-        Analyze ▸
-      </button>
     </section>
 
-    <!-- ============ REPORT (bottom-right quadrant) ============ -->
-    <section id="sec-report" class="bg-black rounded-xl border border-neutral-800 p-3">
-      <h2>Stat</h2>
-      <button id="copyStats" class="tb-btn mb-2">Copy table</button>
-      <div id="verdict" class="mb-2"></div>
-      <div id="report" class="space-y-3 overflow-x-auto scroll-thin"></div>
+    <!-- ============ REPORT (bottom-right) ============ -->
+    <section id="sec-report">
+      <div class="card-head">
+        <h2><span class="step">4</span>Results</h2>
+        <button id="copyStats" class="tb-btn" title="Copy all result tables as TSV"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>Copy table</button>
+      </div>
+      <div class="card-body scroll-thin">
+        <div id="verdict"></div>
+        <div id="report" class="overflow-x-auto scroll-thin"></div>
+      </div>
     </section>
   </main>
-
-  <footer id="menuBar">
-    <button id="themeBtn" class="tb-btn" title="Switch between light and dark interface">theme:light</button>
-    <button id="helpBtn" class="tb-btn">Help</button>
-  </footer>
 
   <dialog id="helpDlg"><form method="dialog">
     <header><h3>ministat — tips</h3><button type="submit" value="" aria-label="Close">×</button></header>
     <dl>
-      <dt>Paste</dt><dd>Paste a block from Excel/Sheets into any cell (⌘/Ctrl+V); the grid expands to fit.</dd>
+      <dt>Paste</dt><dd>Paste a block from Excel/Sheets into any cell (<kbd>⌘/Ctrl</kbd> <kbd>V</kbd>); the grid expands to fit.</dd>
       <dt>Move</dt><dd><kbd>Enter</kbd> / <kbd>↑</kbd> <kbd>↓</kbd> move between rows; <kbd>←</kbd> <kbd>→</kbd> move between groups at a cell's edge.</dd>
-      <dt>Delete</dt><dd>Hover a row number and click × to delete the row; the × in a column header deletes the group.</dd>
-      <dt>Undo</dt><dd><kbd>⌘/Ctrl+Z</kbd>; add <kbd>Shift</kbd> for redo.</dd>
+      <dt>Delete</dt><dd>Hover a row number and click × to delete the row; hover a column header and click × to delete the group.</dd>
+      <dt>Undo</dt><dd><kbd>⌘/Ctrl</kbd> <kbd>Z</kbd>; add <kbd>Shift</kbd> for redo.</dd>
       <dt>Session</dt><dd>Saved in this browser automatically; Export / Import (.jgz) moves a session between machines.</dd>
       <dt>Export</dt><dd>PNG at 5× the on-screen size (≈ 300 dpi for a 2–3 inch figure); SVG is vector.</dd>
-      <dt>Theme</dt><dd>theme:light / theme:dark in the bottom bar.</dd>
+      <dt>Theme</dt><dd>The sun / moon button in the top bar switches between light and dark.</dd>
     </dl>
   </form></dialog>
 
@@ -1311,7 +1410,7 @@ function run() {
   }
   if (groups.length < 2) { showWarnings(problems, decimalComma); clearResults(); return; }
 
-  const btn = $("runBtn"); btn.disabled = true; btn.textContent = "Analyzing…";
+  const btn = $("runBtn"), label = btn.innerHTML; btn.disabled = true; btn.textContent = "Analyzing…";
   setTimeout(() => {   // let the button repaint before a potentially slow post-hoc
     try {
       const res = ANALYSES[test](groups, problems);
@@ -1325,7 +1424,7 @@ function run() {
       showWarnings(problems, decimalComma);
       $("report").innerHTML = `<div class="text-red-400 text-sm">Error: ${escapeHtml(err.message)}</div>`;
       console.error(err);
-    } finally { btn.disabled = false; btn.textContent = "Analyze ▸"; }
+    } finally { btn.disabled = false; btn.innerHTML = label; }
   }, 20);
 }
 
@@ -1835,21 +1934,23 @@ $("importJH").onchange = async (e) => {
 };
 
 function flash(btn, msg) {
-  if (btn._flashTimer) clearTimeout(btn._flashTimer); else btn._flashOrig = btn.textContent;
+  if (btn._flashTimer) clearTimeout(btn._flashTimer); else btn._flashOrig = btn.innerHTML;
   btn.textContent = msg;
-  btn._flashTimer = setTimeout(() => { btn.textContent = btn._flashOrig; btn._flashTimer = null; }, 1400);
+  btn._flashTimer = setTimeout(() => { btn.innerHTML = btn._flashOrig; btn._flashTimer = null; }, 1400);
 }
 function escapeHtml(s) { return String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
 
 /* ============================================================
-   INTERFACE THEME — ◐ in the Data toolbar; persisted in localStorage
+   INTERFACE THEME — sun/moon button in the top bar; persisted in localStorage
    ("ministat:theme") and applied pre-paint by the script in <head>.
    The figure always renders on white paper and is not affected.
    ============================================================ */
 const themeBtn = $("themeBtn");
 function applyUiTheme(light) {
   document.documentElement.dataset.theme = light ? "light" : "dark";
-  themeBtn.textContent = light ? "theme:light" : "theme:dark";
+  themeBtn.innerHTML = light
+    ? '<svg viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z"/></svg>Dark'
+    : '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>Light';
   themeBtn.title = light ? "Switch to dark interface" : "Switch to light interface";
 }
 themeBtn.onclick = () => {
