@@ -31,6 +31,7 @@
   --grid-border: rgba(255,255,255,.12);   /* inset boxes */
   --panel: #2a2a2a;                /* neutral fills */
   --side: #262626;                 /* side panes */
+  --seg-bg: rgba(255,255,255,.07);  --seg-on: #3d3d3d;
   --canvas: #383838;               /* figure view behind the white page */
   --fg: #e3e3e3;  --fg-strong: #f5f5f5;  --fg-soft: #c8c8c8;
   --fg-muted: #a6a6a6;  --fg-faint: #8c8c8c;
@@ -61,6 +62,7 @@
   --grid-border: rgba(0,0,0,.12);
   --panel: #f2f2f2;
   --side: #f2f2f2;
+  --seg-bg: rgba(0,0,0,.06);  --seg-on: #ffffff;
   --canvas: #d4d4d4;
   --fg: #262626;  --fg-strong: #1a1a1a;  --fg-soft: #4a4a4a;
   --fg-muted: #595959;  --fg-faint: #8a8a8a;
@@ -83,15 +85,20 @@
   --plot-shadow: 0 0 0 1px rgba(0,0,0,.1), 0 8px 24px -6px rgba(0,0,0,.3);
 }
 /* component classes from the generated block, re-pointed at the theme */
-.tb-btn{display:inline-flex;align-items:center;gap:5px;background-color:var(--btn-bg);color:var(--fg);border:1px solid var(--btn-border);border-radius:6px;padding:0 9px;height:26px;font-size:12px;font-weight:500;line-height:1;white-space:nowrap}
+.tb-btn{display:inline-flex;align-items:center;gap:5px;height:26px;padding:0 9px;background-color:var(--btn-bg);color:var(--fg);border:1px solid var(--btn-border);border-radius:6px;box-shadow:0 1px 1px rgba(0,0,0,.04);font-size:12px;line-height:1;white-space:nowrap;cursor:pointer}
 .tb-btn:hover{background-color:var(--btn-hover)}
 .tb-btn:disabled{opacity:.4;cursor:default}
 .tb-btn:disabled:hover{background-color:var(--btn-bg)}
-.tb-btn svg{width:14px;height:14px;flex:none;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-.field{background-color:var(--input-bg);border:1px solid var(--input-border);color:var(--fg-strong);border-radius:6px;padding:0 6px;height:26px;font-size:12px;width:100%}
+.tb-btn svg{width:14px;height:14px;flex:none;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.field{height:26px;padding:0 7px;background-color:var(--input-bg);border:1px solid var(--input-border);border-radius:6px;color:var(--fg-strong);font-size:12px;width:100%}
+select.field{-webkit-appearance:none;appearance:none;padding-right:22px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%238a8a8a' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;background-size:9px 6px;cursor:pointer}
 .field:focus{outline:none;border-color:var(--focus-border)}
 .num-field{background-color:var(--input-bg);border:1px solid var(--input-border);color:var(--fg-strong);border-radius:6px;padding:0 6px;height:26px;font-size:12px;font-variant-numeric:tabular-nums}
 .num-field:focus{outline:none;border-color:var(--focus-border)}
+.seg{display:inline-flex;gap:2px;padding:2px;border-radius:7px;background:var(--seg-bg);flex:none}
+.seg button{height:22px;padding:0 9px;border:0;border-radius:5px;background:none;color:var(--fg-muted);font-size:12px;cursor:pointer}
+.seg button:hover{color:var(--fg-strong)}
+.seg button.on{background:var(--seg-on);color:var(--fg-strong);box-shadow:0 1px 2px rgba(0,0,0,.14);font-weight:500}
 .h3{color:var(--fg-strong)}
 /* Tailwind color utilities used on this page, re-pointed at the theme */
 .bg-black{background-color:var(--surface)}
@@ -125,61 +132,44 @@ html, body { background: var(--bg); }
 body { margin: 0; font: 12px/1.5 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", Helvetica, Arial, sans-serif; color: var(--fg); -webkit-font-smoothing: antialiased; }
 kbd { font: 500 11px/1 ui-monospace, SFMono-Regular, Menlo, monospace; padding: 2px 5px; border: 1px solid var(--btn-border); border-bottom-width: 2px; border-radius: 4px; background: var(--panel); color: var(--fg-soft); }
 
-/* ---------- app shell: ribbon / [navigator] work area / status bar ----------
-   The data table is the centre of the app (Excel / Prism style). Two
-   arrangements, switched in the status bar (localStorage "ministat:layout"):
-     lay-split — sheet on the left, figure + results on the right
-     lay-tabs  — Prism-like navigator; Data / Graph / Results one at a time */
+/* ---------- app shell: ribbon / sheet | graph + results / status bar ----------
+   The data table is the centre of the app (Excel / Prism style). */
 body { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; grid-template-columns: minmax(0, 1fr); height: 100vh; height: 100dvh; overflow: hidden; }
-body.lay-tabs { grid-template-columns: 168px minmax(0, 1fr); }
 #ribbon, #statusBar { grid-column: 1 / -1; }
-#work { grid-column: -2 / -1; min-width: 0; min-height: 0; }
+
 
 /* ribbon: labeled groups of small controls, two rows high */
-#ribbon { display: flex; align-items: stretch; overflow-x: auto; scrollbar-width: thin; background: var(--bg); border-bottom: 1px solid var(--card-border); }
-.rg { flex: none; display: flex; flex-direction: column; padding: 6px 10px 3px; border-right: 1px solid var(--card-border); }
-.rg-body { flex: 1; display: grid; grid-auto-flow: column; grid-template-rows: 26px 26px; gap: 4px 6px; align-items: center; justify-content: start; }
-.rg-cap { margin-top: 3px; font-size: 10.5px; line-height: 14px; color: var(--fg-faint); text-align: center; white-space: nowrap; }
-#ribbon .tb-btn { height: 26px; padding: 0 8px; font-weight: 400; }
-.rg-flat .tb-btn { border-color: transparent; background: transparent; }
-.rg-flat .tb-btn:hover:not(:disabled) { background: var(--btn-hover); }
-.rg .field { height: 26px; font-size: 12px; }
-.rg .row { display: flex; align-items: center; gap: 6px; }
-.rg .lbl { font-size: 11px; color: var(--fg-muted); white-space: nowrap; }
-.rg .check { display: flex; align-items: center; gap: 5px; font-size: 11.5px; white-space: nowrap; }
-.rg .test-opts .field { width: 210px; }
-.unit { display: inline-flex; align-items: center; height: 26px; border: 1px solid var(--input-border); border-radius: 6px; background: var(--input-bg); padding: 0 6px; gap: 4px; }
+#ribbon { display: flex; align-items: stretch; overflow-x: auto; scrollbar-width: none; background: var(--bg); border-bottom: 1px solid var(--card-border); }
+.rg { flex: none; display: flex; flex-direction: column; padding: 6px 9px 2px; position: relative; }
+.rg + .rg::before { content: ""; position: absolute; left: 0; top: 8px; bottom: 8px; width: 1px; background: var(--card-border); }
+.rg-body { flex: 1; display: grid; grid-auto-flow: column; grid-template-rows: 26px 26px; gap: 4px 6px; align-items: center; justify-content: start; justify-items: start; }
+.rg-cap { margin-top: 2px; font-size: 10.5px; line-height: 14px; letter-spacing: .02em; color: var(--fg-faint); text-align: center; white-space: nowrap; }
+.rg-flat .tb-btn, .rg .flat .tb-btn { border-color: transparent; background: transparent; box-shadow: none; padding: 0 7px; }
+.rg-flat .tb-btn:hover:not(:disabled), .rg .flat .tb-btn:hover { background: var(--btn-hover); }
+.rg-flat .tb-btn svg, .rg .flat .tb-btn svg { color: var(--fg-muted); }
+.rg-flat .tb-btn:hover:not(:disabled) svg { color: var(--fg-strong); }
+.rg .check { display: flex; align-items: center; gap: 6px; padding-left: 2px; font-size: 12px; white-space: nowrap; }
+.rg .check input { width: 13px; height: 13px; margin: 0; }
+.unit { display: inline-flex; align-items: center; height: 26px; border: 1px solid var(--input-border); border-radius: 6px; background: var(--input-bg); padding: 0 7px; gap: 5px; transition: border-color .15s, box-shadow .15s; }
+.unit:hover { border-color: var(--input-hover-border); }
 .unit:focus-within { border-color: var(--focus-border); box-shadow: var(--focus-ring); }
 .unit label { font-size: 11px; color: var(--fg-faint); }
 .unit .num-field { width: 38px; border: 0; height: 24px; padding: 0; background: transparent; box-shadow: none !important; }
-#runBtn { grid-row: span 2; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; width: 64px; height: 56px; border-radius: 7px; font-size: 12px; font-weight: 600; }
-#runBtn svg { width: 14px; height: 14px; fill: currentColor; }
+.unit.txt .num-field { width: 68px; text-align: left; font-variant-numeric: normal; }
+.rg .row { display: flex; align-items: center; gap: 6px; }
+.rg-flat .row { gap: 0; }
+#runBtn { grid-row: span 2; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; width: 62px; height: 56px; border: 0; border-radius: 8px; font-size: 12px; font-weight: 600; box-shadow: 0 1px 2px rgba(0,0,0,.18); cursor: pointer; }
+#runBtn svg { width: 13px; height: 13px; fill: currentColor; }
 #runBtn:disabled { opacity: .6; }
 #clearBtn:hover { color: var(--danger-hover-fg) !important; }
+#clearBtn:hover svg { color: var(--danger-hover-fg) !important; }
 
-/* Prism-like navigator (tabs layout only) */
-#nav { display: none; }
-.lay-tabs #nav { display: block; grid-row: 2; grid-column: 1; overflow: auto; background: var(--side); border-right: 1px solid var(--card-border); padding: 10px 8px; }
-.nav-cap { padding: 8px 8px 4px; font-size: 10.5px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--fg-faint); }
-.nav-cap:first-child { padding-top: 0; }
-#nav button { display: flex; align-items: center; gap: 8px; width: 100%; height: 30px; padding: 0 8px; border: 0; border-radius: 6px; background: none; color: var(--fg); font-size: 12.5px; text-align: left; }
-#nav button:hover { background: var(--btn-hover); }
-#nav button.on { background: var(--accent-soft); color: var(--fg-strong); font-weight: 600; }
-#nav svg { width: 15px; height: 15px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; color: var(--fg-muted); }
-#nav button.on svg { color: var(--accent); }
-
-/* work area */
-.lay-split #work { display: grid; grid-template-columns: minmax(0, 1fr) minmax(400px, 42%); }
-.lay-tabs #work { display: flex; }
-.lay-tabs #work > section { flex: 1 1 auto; min-width: 0; }
-.lay-tabs[data-view="data"] #vOut { display: none; }
-.lay-tabs:not([data-view="data"]) #vData { display: none; }
-.lay-tabs[data-view="graph"] #vResults { display: none; }
-.lay-tabs[data-view="results"] #vGraph { display: none; }
+/* work area: sheet | graph + results */
+#work { min-width: 0; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr) minmax(420px, 42%); }
 
 /* the sheet: full-bleed spreadsheet; empty gridlines continue past the data */
 #vData { display: flex; flex-direction: column; min-height: 0; background: var(--input-bg); }
-.lay-split #vData { border-right: 1px solid var(--card-border); }
+#vData { border-right: 1px solid var(--card-border); }
 #sheetWrap { flex: 1 1 auto; min-height: 0; overflow: auto;
   --cw: 118px; --rw: 34px; --hh: 50px; --rh: 29px;
   background:
@@ -223,11 +213,8 @@ tr:hover > .rowhdr .delRow, tr:focus-within > .rowhdr .delRow { display: inline;
 /* output: figure (white paper) + results */
 #vOut { min-height: 0; overflow: auto; background: var(--side); }
 #vGraph { display: flex; justify-content: center; padding: 20px 16px; border-bottom: 1px solid var(--card-border); }
-.lay-tabs #vGraph { min-height: 100%; box-sizing: border-box; align-items: flex-start; padding-top: 36px; border: 0; }
 #plot { flex: none; background: #fff; box-shadow: var(--plot-shadow); }
 #vResults { padding: 14px 18px 24px; background: var(--surface); }
-.lay-tabs #vResults { min-height: 100%; box-sizing: border-box; padding: 20px 24px 32px; }
-.lay-tabs #vResults > * { max-width: 860px; margin-left: auto; margin-right: auto; }
 .res-head { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
 .res-head h2 { flex: 1; margin: 0; font-size: 13.5px; font-weight: 600; color: var(--fg-strong); }
 
@@ -255,9 +242,6 @@ tr:hover > .rowhdr .delRow, tr:focus-within > .rowhdr .delRow { display: inline;
 #statusBar .tb-btn { height: 20px; padding: 0 6px; border-color: transparent; background: transparent; color: var(--fg-muted); font-size: 11.5px; font-weight: 400; }
 #statusBar .tb-btn:hover { background: var(--btn-hover); color: var(--fg); }
 #statusBar .tb-btn svg { width: 13px; height: 13px; }
-.seg { display: inline-flex; padding: 1px; border-radius: 6px; background: var(--btn-hover); }
-#statusBar .seg .tb-btn { height: 18px; border-radius: 5px; }
-#statusBar .seg .tb-btn.on { background: var(--surface); color: var(--fg-strong); box-shadow: 0 1px 2px rgba(0,0,0,.12); }
 
 /* misc */
 .scroll-thin::-webkit-scrollbar, #sheetWrap::-webkit-scrollbar, #vOut::-webkit-scrollbar { height: 8px; width: 8px; }
@@ -273,17 +257,14 @@ button { transition: background-color .15s, color .15s, border-color .15s; }
 :focus-visible { outline: 2px solid var(--focus-border); outline-offset: 1px; }
 
 @media (max-width: 880px) {
-  body, body.lay-tabs { display: flex; flex-direction: column; height: auto; overflow: auto; }
-  .lay-tabs #nav { display: flex; gap: 4px; padding: 6px; border-right: 0; border-bottom: 1px solid var(--card-border); }
-  .lay-tabs #nav .nav-cap { display: none; }
-  .lay-tabs #nav button { justify-content: center; }
-  .lay-split #work { display: flex; flex-direction: column; }
+  body { display: flex; flex-direction: column; height: auto; overflow: auto; }
+  #work { display: flex; flex-direction: column; }
   #ribbon { flex-wrap: wrap; overflow-x: auto; }
   .rg { border-bottom: 1px solid var(--card-border); }
   #sheetWrap { min-height: 280px; max-height: 60vh; }
   #vOut { overflow: visible; }
   #vGraph { overflow-x: auto; justify-content: flex-start; }
-  #statusBar .tip, #layoutSeg { display: none; }
+  #statusBar .tip { display: none; }
 }
 
 /* help dialog */
@@ -301,27 +282,25 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
 </style>
 </head>
 
-<body class="bg-black text-neutral-200 lay-split" data-view="data">
-  <script>/* restore the saved layout before first paint */try{if(localStorage.getItem("ministat:layout")==="tabs"){document.body.classList.replace("lay-split","lay-tabs")}}catch(_){}</script>
+<body class="bg-black text-neutral-200">
 
   <!-- ============ RIBBON ============ -->
   <header id="ribbon">
     <div class="rg rg-flat">
       <div class="rg-body">
-        <button id="undoBtn" class="tb-btn" title="Undo (⌘/Ctrl+Z)" disabled><svg viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-3"/></svg>Undo</button>
-        <button id="redoBtn" class="tb-btn" title="Redo (⌘/Ctrl+Shift+Z)" disabled><svg viewBox="0 0 24 24"><path d="m15 14 5-5-5-5"/><path d="M20 9H9a5 5 0 0 0 0 10h3"/></svg>Redo</button>
+        <span class="row"><button id="undoBtn" class="tb-btn" title="Undo (⌘/Ctrl+Z)" aria-label="Undo" disabled><svg viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-3"/></svg></button><button id="redoBtn" class="tb-btn" title="Redo (⌘/Ctrl+Shift+Z)" aria-label="Redo" disabled><svg viewBox="0 0 24 24"><path d="m15 14 5-5-5-5"/><path d="M20 9H9a5 5 0 0 0 0 10h3"/></svg></button></span>
+        <button id="clearBtn" class="tb-btn hover:bg-red-900 hover:text-red-200" title="Clear all data"><svg viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/></svg>Clear</button>
         <button id="addRowBtn" class="tb-btn"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Row</button>
         <button id="addGroupBtn" class="tb-btn"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Column</button>
-        <button id="clearBtn" class="tb-btn hover:bg-red-900 hover:text-red-200" title="Clear all data"><svg viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/></svg>Clear</button>
       </div>
       <div class="rg-cap">Sheet</div>
     </div>
 
     <div class="rg rg-flat">
       <div class="rg-body">
-        <label for="importJH" id="importLabel" class="tb-btn cursor-pointer" title="Open a saved .jgz session">Import .jgz</label>
-        <button id="exportBtn" class="tb-btn" title="Save this session as a .jgz file">Export .jgz</button>
-        <button id="copyData" class="tb-btn" title="Copy the grid as TSV (paste into Excel/Sheets)">Copy data</button>
+        <label for="importJH" id="importLabel" class="tb-btn cursor-pointer" title="Open a saved .jgz session file"><svg viewBox="0 0 24 24"><path d="M12 15V3m-4 8 4 4 4-4"/><path d="M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/></svg>Import</label>
+        <button id="exportBtn" class="tb-btn" title="Save this session (data + settings) as a .jgz file"><svg viewBox="0 0 24 24"><path d="M12 3v12m-4-8 4-4 4 4"/><path d="M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/></svg>Export</button>
+        <button id="copyData" class="tb-btn" title="Copy the grid as TSV (paste into Excel/Sheets)"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>Copy</button>
       </div>
       <input id="importJH" type="file" accept=".jgz,.jh" class="hidden" />
       <div class="rg-cap">File</div>
@@ -329,9 +308,9 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
 
     <div class="rg">
       <div class="rg-body">
-        <select id="testSelect" class="field" style="width:258px" aria-label="Statistical test">
+        <select id="testSelect" class="field" style="width:226px" aria-label="Statistical test">
           <optgroup label="Two groups — independent">
-            <option value="ttest">Unpaired t-test (Student's / Welch's)</option>
+            <option value="ttest">Unpaired t-test</option>
             <option value="mwu">Mann–Whitney U / Wilcoxon rank-sum</option>
           </optgroup>
           <optgroup label="Two groups — paired (matched rows)">
@@ -348,7 +327,7 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
             <label class="check" title="Recommended; does not assume equal variances"><input type="checkbox" id="welchChk" class="accent-neutral-400" checked />Welch's correction</label>
           </div>
           <div id="opt_anova" class="test-opts hidden">
-            <select id="posthocSelect" class="field" aria-label="Post-hoc test" style="width:258px">
+            <select id="posthocSelect" class="field" aria-label="Post-hoc test" style="width:226px">
               <option value="tukey">Post-hoc: Tukey's HSD (all pairs)</option>
               <option value="holm">Post-hoc: Holm pairwise t-tests</option>
               <option value="bonferroni">Post-hoc: Bonferroni pairwise t-tests</option>
@@ -356,7 +335,7 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
             </select>
           </div>
           <div id="opt_kruskal" class="test-opts hidden">
-            <select id="dunnAdj" class="field" aria-label="Dunn's test p-value adjustment" style="width:258px">
+            <select id="dunnAdj" class="field" aria-label="Dunn's test p-value adjustment" style="width:226px">
               <option value="holm">Dunn's adjustment: Holm</option>
               <option value="bonferroni">Dunn's adjustment: Bonferroni</option>
             </select>
@@ -369,26 +348,26 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
 
     <div class="rg">
       <div class="rg-body">
-        <select id="chartType" class="field" aria-label="Chart type" style="width:136px">
-          <option value="bar">Bar + error bars</option>
-          <option value="box">Box &amp; whisker</option>
+        <select id="chartType" class="field as-seg" aria-label="Chart type">
+          <option value="bar" data-short="Bar">Bar + error bars</option>
+          <option value="box" data-short="Box">Box &amp; whisker</option>
         </select>
-        <select id="errType" class="field" aria-label="Error bars" style="width:136px">
-          <option value="sd">Mean ± SD</option>
-          <option value="sem" selected>Mean ± SEM</option>
-          <option value="ci">Mean ± 95% CI</option>
+        <select id="errType" class="field as-seg" aria-label="Error bars">
+          <option value="sd" data-short="SD">Mean ± SD</option>
+          <option value="sem" data-short="SEM" selected>Mean ± SEM</option>
+          <option value="ci" data-short="95% CI">Mean ± 95% CI</option>
         </select>
-        <select id="themeSelect" class="field" aria-label="Color theme" style="width:120px">
+        <select id="themeSelect" class="field" aria-label="Color theme" style="width:124px">
           <option value="prism">Classic Prism</option>
           <option value="pastel">Pastel</option>
           <option value="vibrant">Vibrant</option>
         </select>
-        <select id="sigLabel" class="field" aria-label="Significance label" style="width:120px">
-          <option value="stars">Asterisks (*)</option>
-          <option value="pval">p-value</option>
+        <select id="sigLabel" class="field as-seg" aria-label="Significance label">
+          <option value="stars" data-short="✱">Asterisks (*)</option>
+          <option value="pval" data-short="P">p-value</option>
         </select>
-        <span class="row"><label for="xLabel" class="lbl">X</label><input id="xLabel" value="Group" class="field" style="width:104px" /></span>
-        <span class="row"><label for="yLabel" class="lbl">Y</label><input id="yLabel" value="Value" class="field" style="width:104px" /></span>
+        <span class="unit txt"><label for="xLabel">X</label><input id="xLabel" value="Group" class="num-field" /></span>
+        <span class="unit txt"><label for="yLabel">Y</label><input id="yLabel" value="Value" class="num-field" /></span>
       </div>
       <div class="rg-cap">Graph</div>
     </div>
@@ -401,31 +380,16 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
         </span>
         <span class="row">
           <span class="unit"><label for="dotSize">Dot</label><input id="dotSize" type="number" min="2" max="20" step="1" value="6" class="num-field" /></span>
-          <button id="resetGraph" class="tb-btn" title="Restore graph to default options, size &amp; view">Reset</button>
+          <button id="resetGraph" class="tb-btn" title="Restore graph to default options, size &amp; view"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>Reset</button>
         </span>
+        <span class="flat"><button id="dlPng" class="tb-btn" title="PNG at 5× the on-screen size (≈ 300 dpi for a 2–3 inch figure)"><svg viewBox="0 0 24 24"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14"/></svg>PNG</button></span>
+        <span class="flat"><button id="dlSvg" class="tb-btn" title="Download as vector SVG"><svg viewBox="0 0 24 24"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14"/></svg>SVG</button></span>
       </div>
-      <div class="rg-cap">Size (px)</div>
+      <div class="rg-cap">Size (px) &amp; export</div>
     </div>
 
-    <div class="rg rg-flat">
-      <div class="rg-body">
-        <button id="dlPng" class="tb-btn" title="PNG at 5× the on-screen size (≈ 300 dpi for a 2–3 inch figure)"><svg viewBox="0 0 24 24"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14"/></svg>PNG</button>
-        <button id="dlSvg" class="tb-btn" title="Download as vector SVG"><svg viewBox="0 0 24 24"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14"/></svg>SVG</button>
-      </div>
-      <div class="rg-cap">Export</div>
-    </div>
 
   </header>
-
-  <!-- ============ NAVIGATOR (tabs layout) ============ -->
-  <nav id="nav" aria-label="Views">
-    <div class="nav-cap">Data tables</div>
-    <button data-view="data"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M9 10v10"/></svg>Data</button>
-    <div class="nav-cap">Results</div>
-    <button data-view="results"><svg viewBox="0 0 24 24"><path d="M5 5h14M5 10h14M5 15h9M5 20h6"/></svg>Statistics</button>
-    <div class="nav-cap">Graphs</div>
-    <button data-view="graph"><svg viewBox="0 0 24 24"><path d="M4 20V4M4 20h16"/><rect x="7" y="11" width="3" height="6"/><rect x="13" y="7" width="3" height="10"/></svg>Graph</button>
-  </nav>
 
   <div id="work">
     <!-- ============ DATA SHEET ============ -->
@@ -467,10 +431,6 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
   <footer id="statusBar">
     <span class="tip">Paste from Excel/Sheets into any cell (⌘/Ctrl+V) · Enter / arrows move · hover a row number or column header to delete it</span>
     <span class="bar-spacer"></span>
-    <span id="layoutSeg" class="seg" role="group" aria-label="Layout">
-      <button class="tb-btn" data-layout="split" title="Sheet on the left, graph and results on the right">Split</button>
-      <button class="tb-btn" data-layout="tabs" title="One view at a time, chosen in the navigator">Tabs</button>
-    </span>
     <span class="privacy" title="All calculations run in this browser; your data never leaves this machine">Runs locally · nothing uploaded</span>
     <button id="helpBtn" class="tb-btn"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.6"/><path d="M12 17h.01"/></svg>Help</button>
     <button id="themeBtn" class="tb-btn" title="Switch between light and dark interface">Theme</button>
@@ -485,7 +445,7 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
       <dt>Undo</dt><dd><kbd>⌘/Ctrl</kbd> <kbd>Z</kbd>; add <kbd>Shift</kbd> for redo.</dd>
       <dt>Session</dt><dd>Saved in this browser automatically; Export / Import (.jgz) moves a session between machines.</dd>
       <dt>Export</dt><dd>PNG at 5× the on-screen size (≈ 300 dpi for a 2–3 inch figure); SVG is vector.</dd>
-      <dt>Theme</dt><dd>Split / Tabs in the status bar changes the layout; the sun / moon button next to it switches light and dark.</dd>
+      <dt>Theme</dt><dd>The sun / moon button at the right of the status bar switches between light and dark.</dd>
     </dl>
   </form></dialog>
 
@@ -1113,6 +1073,24 @@ function collectSettings() {
   s.welchChk = $("welchChk").checked;
   return s;
 }
+/* segmented buttons for short <select>s (class "as-seg"); the select stays the
+   source of truth (hidden), so saving / loading / reset work unchanged */
+function syncSegs() {
+  document.querySelectorAll("select.as-seg").forEach(sel => {
+    sel.nextElementSibling.querySelectorAll("button").forEach(b => b.classList.toggle("on", b.dataset.v === sel.value));
+  });
+}
+document.querySelectorAll("select.as-seg").forEach(sel => {
+  const seg = document.createElement("span");
+  seg.className = "seg"; seg.setAttribute("role", "group"); seg.setAttribute("aria-label", sel.getAttribute("aria-label") || "");
+  [...sel.options].forEach(o => {
+    const b = document.createElement("button");
+    b.type = "button"; b.dataset.v = o.value; b.textContent = o.dataset.short || o.text; b.title = o.text;
+    b.onclick = () => { if (sel.value === o.value) return; sel.value = o.value; sel.dispatchEvent(new Event("change")); syncSegs(); };
+    seg.appendChild(b);
+  });
+  sel.hidden = true; sel.after(seg);
+});
 function applySettings(s) {
   if (!s) return;
   SETTING_IDS.forEach(id => {
@@ -1123,7 +1101,7 @@ function applySettings(s) {
     el.value = s[id];
   });
   if (typeof s.welchChk === "boolean") $("welchChk").checked = s.welchChk;
-  syncTestOptions();
+  syncTestOptions(); syncSegs();
 }
 function sanitizeGrid(g) {
   return g.map((c, i) => ({ name: String(c && c.name != null ? c.name : groupLabel(i)),
@@ -1900,7 +1878,7 @@ $("copyData").onclick = async () => {
 };
 $("resetGraph").onclick = () => {
   Object.entries(GRAPH_DEFAULTS).forEach(([id, val]) => { $(id).value = val; });
-  scheduleSave();
+  syncSegs(); scheduleSave();
   if (lastPlot) drawPlot(lastPlot); // redraw at default options (also clears any zoom/pan)
   flash($("resetGraph"), "Reset ✓");
 };
@@ -1996,34 +1974,6 @@ themeBtn.onclick = () => {
 applyUiTheme(document.documentElement.dataset.theme === "light");
 $("helpBtn").onclick = () => $("helpDlg").showModal();
 
-/* ============================================================
-   LAYOUT — "split" (sheet | graph + results) or "tabs" (navigator,
-   one view at a time); status-bar switch, saved as "ministat:layout"
-   ============================================================ */
-function resizePlot() { const el = $("plot"); if (el.data) Plotly.Plots.resize(el); }
-function setView(v) {
-  document.body.dataset.view = v;
-  document.querySelectorAll("#nav button").forEach(b => b.classList.toggle("on", b.dataset.view === v));
-  if (v === "data") sizeSheetBackground(); else resizePlot();
-}
-function setLayout(l) {
-  const tabs = l === "tabs";
-  document.body.classList.toggle("lay-tabs", tabs);
-  document.body.classList.toggle("lay-split", !tabs);
-  document.querySelectorAll("#layoutSeg button").forEach(b => b.classList.toggle("on", b.dataset.layout === (tabs ? "tabs" : "split")));
-  setView(document.body.dataset.view || "data");
-  sizeSheetBackground(); resizePlot();
-}
-document.querySelectorAll("#nav button").forEach(b => b.onclick = () => setView(b.dataset.view));
-document.querySelectorAll("#layoutSeg button").forEach(b => b.onclick = () => {
-  setLayout(b.dataset.layout);
-  try { localStorage.setItem("ministat:layout", b.dataset.layout); } catch (e) { /* storage unavailable */ }
-});
-/* in the tabs layout, Analyze from the data sheet jumps to the results */
-$("runBtn").addEventListener("click", () => {
-  if (document.body.classList.contains("lay-tabs") && document.body.dataset.view === "data") setView("results");
-});
-setLayout(document.body.classList.contains("lay-tabs") ? "tabs" : "split");
 
 /* ============================================================
    INIT — restore the last session, or show the demo on a first visit
@@ -2041,6 +1991,7 @@ setLayout(document.body.classList.contains("lay-tabs") ? "tabs" : "split");
     run();
   }
   updateHistoryButtons();
+  syncSegs();
 })();
 </script>
 </body>
