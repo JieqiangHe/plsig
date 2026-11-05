@@ -14,10 +14,10 @@ The project was called ministat until Nov 2026, when the repository was renamed.
 - No logo and no app name anywhere in the interface. The only place the name appears is the tab title, `plsig — please be significant`.
 - The layout and controls follow the user's svguest project (6px radii, flat ribbon buttons). The colours are the Claude palette shared with ocrp, the user's choice from Nov 2026. Light mode: ivory paper `#faf9f5` / `#f0eee6`, ink `#141413`, terracotta accent `#c96442`. Dark mode: warm charcoal `#1f1e1d` / `#262624`, accent `#e08a6a`. The figure itself is always drawn on white paper.
 - Layout:
-  - top: a ribbon of labeled groups (Sheet, File, Analysis, Graph, Size & export);
+  - top: a ribbon of labeled groups (Sheet, File, Analysis, Graph, Size & export, View);
   - left: the data sheet, a full-bleed spreadsheet;
-  - right: the figure, with the results below it;
-  - bottom: a status bar.
+  - right: the figure, with the results below it.
+- No status bar (removed Nov 2026). Theme and Help are icon buttons in the ribbon's View group at the far right; the tips and the "runs locally" note live in the Help dialog.
 - Ribbon buttons are equal width and symmetric. Short options are segmented controls; the real `<select>` behind each stays hidden and holds the value.
 - The user rejected a four-card quadrant layout, a three-pane canvas layout, and a Prism-style tabs layout.
 - The ribbon must fit at 1280px wide.

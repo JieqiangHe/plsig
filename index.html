@@ -104,7 +104,7 @@ select.field{-webkit-appearance:none;appearance:none;padding-right:22px;backgrou
 .num-field{background-color:var(--input-bg);border:1px solid var(--input-border);color:var(--fg-strong);border-radius:6px;padding:0 6px;height:26px;font-size:12px;font-variant-numeric:tabular-nums}
 .num-field:focus{outline:none;border-color:var(--focus-border)}
 .seg{display:inline-flex;gap:2px;padding:2px;border-radius:7px;background:var(--seg-bg);flex:none}
-.seg button{height:22px;padding:0 7px;border:0;border-radius:5px;background:none;color:var(--fg-muted);font-size:12px;cursor:pointer}
+.seg button{height:22px;padding:0 6px;border:0;border-radius:5px;background:none;color:var(--fg-muted);font-size:12px;cursor:pointer}
 .seg button:hover{color:var(--fg-strong)}
 .seg button.on{background:var(--seg-on);color:var(--fg-strong);box-shadow:0 1px 2px rgba(0,0,0,.14);font-weight:500}
 input[type=checkbox] { accent-color: var(--accent); }
@@ -115,13 +115,12 @@ kbd { font: 500 11px/1 ui-monospace, SFMono-Regular, Menlo, monospace; padding: 
 
 /* ---------- app shell: ribbon / sheet | graph + results / status bar ----------
    The data table is the centre of the app (Excel / Prism style). */
-body { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; grid-template-columns: minmax(0, 1fr); height: 100vh; height: 100dvh; overflow: hidden; }
-#ribbon, #statusBar { grid-column: 1 / -1; }
+body { display: grid; grid-template-rows: auto minmax(0, 1fr); grid-template-columns: minmax(0, 1fr); height: 100vh; height: 100dvh; overflow: hidden; }
 
 
 /* ribbon: labeled groups of small controls, two rows high */
 #ribbon { display: flex; align-items: stretch; overflow-x: auto; scrollbar-width: none; background: var(--bg); border-bottom: 1px solid var(--card-border); }
-.rg { flex: none; display: flex; flex-direction: column; padding: 6px 8px 2px; position: relative; }
+.rg { flex: none; display: flex; flex-direction: column; padding: 6px 7px 2px; position: relative; }
 .rg + .rg::before { content: ""; position: absolute; left: 0; top: 8px; bottom: 8px; width: 1px; background: var(--card-border); }
 .rg-body { flex: 1; display: grid; grid-auto-flow: column; grid-template-rows: 26px 26px; gap: 4px 6px; align-items: center; justify-content: start; justify-items: stretch; }
 .rg-eq .rg-body { grid-auto-columns: 1fr; }                /* every column as wide as the widest */
@@ -142,10 +141,12 @@ body { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; grid-templat
 .unit:hover { border-color: var(--input-hover-border); }
 .unit:focus-within { border-color: var(--focus-border); box-shadow: var(--focus-ring); }
 .unit label { font-size: 11px; color: var(--fg-faint); }
-.unit .num-field { flex: 1; min-width: 0; width: 38px; border: 0; height: 24px; padding: 0; background: transparent; box-shadow: none !important; }
+.unit .num-field { flex: 1; min-width: 0; width: 34px; border: 0; height: 24px; padding: 0; background: transparent; box-shadow: none !important; }
 .unit.wide label { white-space: nowrap; }
-.unit.txt .num-field { width: 68px; text-align: left; font-variant-numeric: normal; }
+.unit.txt .num-field { width: 60px; text-align: left; font-variant-numeric: normal; }
 .rg .row { display: flex; align-items: center; gap: 6px; }
+.rg-end { margin-left: auto; }
+.rg .tb-btn.icon { justify-content: center; padding: 0 6px; }
 #runBtn { grid-row: span 2; background: var(--run-bg); color: var(--run-fg); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; width: 62px; height: 56px; border: 0; border-radius: 8px; font-size: 12px; font-weight: 600; box-shadow: 0 1px 2px rgba(0,0,0,.18); cursor: pointer; }
 #runBtn svg { width: 13px; height: 13px; fill: currentColor; }
 #runBtn:hover:not(:disabled) { background: var(--run-hover); }
@@ -238,16 +239,6 @@ tr:hover > .rowhdr .delRow, tr:focus-within > .rowhdr .delRow { display: inline;
 .pill { display: inline-block; padding: 1px 7px; border-radius: 999px; font-size: 11px; font-weight: 600; background: var(--ns-pill-bg); color: var(--ns-pill-fg); }
 .pill.sig { background: var(--ok-bg); color: var(--ok); }
 
-/* status bar */
-#statusBar { display: flex; align-items: center; gap: 12px; height: 26px; padding: 0 4px 0 10px; font-size: 11.5px; color: var(--fg-muted); background: var(--bg); border-top: 1px solid var(--card-border); white-space: nowrap; overflow: hidden; }
-#statusBar .tip { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
-.bar-spacer { flex: 1; }
-.privacy { display: inline-flex; align-items: center; gap: 6px; }
-.privacy::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--ok); }
-#statusBar .tb-btn { height: 20px; padding: 0 6px; border-color: transparent; background: transparent; color: var(--fg-muted); font-size: 11.5px; font-weight: 400; }
-#statusBar .tb-btn:hover { background: var(--btn-hover); color: var(--fg); }
-#statusBar .tb-btn svg { width: 13px; height: 13px; }
-
 /* misc */
 .scroll-thin::-webkit-scrollbar, #sheetWrap::-webkit-scrollbar, #vOut::-webkit-scrollbar { height: 8px; width: 8px; }
 .scroll-thin::-webkit-scrollbar-thumb, #sheetWrap::-webkit-scrollbar-thumb, #vOut::-webkit-scrollbar-thumb { background: var(--scrollbar); border-radius: 4px; }
@@ -269,7 +260,6 @@ button { transition: background-color .15s, color .15s, border-color .15s; }
   #sheetWrap { min-height: 280px; max-height: 60vh; }
   #vOut { overflow: visible; }
   #vGraph { overflow-x: auto; justify-content: flex-start; }
-  #statusBar .tip { display: none; }
 }
 
 /* help dialog */
@@ -314,7 +304,7 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
 
     <div class="rg">
       <div class="rg-body">
-        <select id="testSelect" class="field" style="width:212px" aria-label="Statistical test">
+        <select id="testSelect" class="field" style="width:196px" aria-label="Statistical test">
           <optgroup label="Column statistics">
             <option value="desc">Descriptive statistics + normality</option>
             <option value="onet">One-sample t-test</option>
@@ -414,6 +404,14 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
     </div>
 
 
+
+    <div class="rg rg-flat rg-end">
+      <div class="rg-body">
+        <button id="themeBtn" class="tb-btn icon" title="Switch between light and dark interface" aria-label="Switch theme"></button>
+        <button id="helpBtn" class="tb-btn icon" title="Help: data layout, shortcuts, export" aria-label="Help"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.6"/><path d="M12 17h.01"/></svg></button>
+      </div>
+      <div class="rg-cap">View</div>
+    </div>
   </header>
 
   <div id="work">
@@ -452,14 +450,6 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
     </section>
   </div>
 
-  <!-- ============ STATUS BAR ============ -->
-  <footer id="statusBar">
-    <span class="tip">Paste from Excel/Sheets into any cell (⌘/Ctrl+V) · Enter / arrows move · hover a row number or column header to delete it</span>
-    <span class="bar-spacer"></span>
-    <span class="privacy" title="All calculations run in this browser; your data never leaves this machine">Runs locally · nothing uploaded</span>
-    <button id="helpBtn" class="tb-btn"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.6"/><path d="M12 17h.01"/></svg>Help</button>
-    <button id="themeBtn" class="tb-btn" title="Switch between light and dark interface">Theme</button>
-  </footer>
 
   <dialog id="helpDlg"><form method="dialog">
     <header><h3>Tips</h3><button type="submit" value="" aria-label="Close">×</button></header>
@@ -472,7 +462,8 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
       <dt>Undo</dt><dd><kbd>⌘/Ctrl</kbd> <kbd>Z</kbd>; add <kbd>Shift</kbd> for redo.</dd>
       <dt>Session</dt><dd>Saved in this browser automatically; Export / Import (.jgz) moves a session between machines.</dd>
       <dt>Export</dt><dd>PNG at 5× the on-screen size (≈ 300 dpi for a 2–3 inch figure); SVG is vector.</dd>
-      <dt>Theme</dt><dd>The sun / moon button at the right of the status bar switches between light and dark.</dd>
+      <dt>Theme</dt><dd>The sun / moon button in the ribbon's View group switches between light and dark.</dd>
+      <dt>Privacy</dt><dd>Everything runs in this browser; your data is never uploaded.</dd>
     </dl>
   </form></dialog>
 
@@ -2616,7 +2607,7 @@ function flash(btn, msg) {
 function escapeHtml(s) { return String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
 
 /* ============================================================
-   INTERFACE THEME — sun/moon button in the status bar; persisted in localStorage
+   INTERFACE THEME — sun/moon button in the ribbon's View group; persisted in localStorage
    ("plsig:theme") and applied pre-paint by the script in <head>.
    The figure always renders on white paper and is not affected.
    ============================================================ */
@@ -2624,8 +2615,8 @@ const themeBtn = $("themeBtn");
 function applyUiTheme(light) {
   document.documentElement.dataset.theme = light ? "light" : "dark";
   themeBtn.innerHTML = light
-    ? '<svg viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z"/></svg>Dark'
-    : '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>Light';
+    ? '<svg viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z"/></svg>'
+    : '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>';
   themeBtn.title = light ? "Switch to dark interface" : "Switch to light interface";
 }
 themeBtn.onclick = () => {
