@@ -125,73 +125,91 @@ html, body { background: var(--bg); }
 body { margin: 0; font: 12px/1.5 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", Helvetica, Arial, sans-serif; color: var(--fg); -webkit-font-smoothing: antialiased; }
 kbd { font: 500 11px/1 ui-monospace, SFMono-Regular, Menlo, monospace; padding: 2px 5px; border: 1px solid var(--btn-border); border-bottom-width: 2px; border-radius: 4px; background: var(--panel); color: var(--fg-soft); }
 
-/* ---------- app shell (svguest-style): menu bar / data sheet | canvas | properties / status bar ----------
-   Panes are separated by hairlines only — no cards, gaps or shadows. */
-body { display: grid; grid-template: auto minmax(0, 1fr) auto / minmax(260px, 340px) minmax(0, 1fr) 272px; height: 100vh; height: 100dvh; overflow: hidden; }
-#menuBar { grid-column: 1 / -1; display: flex; align-items: center; gap: 2px; padding: 4px 6px; background: var(--bg); border-bottom: 1px solid var(--card-border); overflow-x: auto; scrollbar-width: none; }
-#menuBar .tb-btn, #statusBar .tb-btn { border-color: transparent; background: transparent; color: var(--fg); height: 28px; padding: 0 8px; font-weight: 400; }
-#menuBar .tb-btn:hover:not(:disabled), #statusBar .tb-btn:hover { background: var(--btn-hover); }
-.tb-sep { flex: none; width: 1px; height: 16px; background: var(--card-border); margin: 0 5px; }
-.bar-spacer { flex: 1; }
-#clearBtn:hover { color: var(--danger-hover-fg) !important; }
-#menuBar #runBtn { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 14px; margin-left: 6px; border-radius: 6px; font-size: 12px; font-weight: 600; }
-#runBtn svg { width: 11px; height: 11px; fill: currentColor; }
-#runBtn:disabled { opacity: .6; }
+/* ---------- app shell: ribbon / [navigator] work area / status bar ----------
+   The data table is the centre of the app (Excel / Prism style). Two
+   arrangements, switched in the status bar (localStorage "ministat:layout"):
+     lay-split — sheet on the left, figure + results on the right
+     lay-tabs  — Prism-like navigator; Data / Graph / Results one at a time */
+body { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; grid-template-columns: minmax(0, 1fr); height: 100vh; height: 100dvh; overflow: hidden; }
+body.lay-tabs { grid-template-columns: 168px minmax(0, 1fr); }
+#ribbon, #statusBar { grid-column: 1 / -1; }
+#work { grid-column: -2 / -1; min-width: 0; min-height: 0; }
 
-#statusBar { grid-column: 1 / -1; display: flex; align-items: center; gap: 12px; height: 26px; padding: 0 4px 0 10px; font-size: 11.5px; color: var(--fg-muted); background: var(--bg); border-top: 1px solid var(--card-border); white-space: nowrap; overflow: hidden; }
-#statusBar .tip { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
-.privacy { display: inline-flex; align-items: center; gap: 6px; }
-.privacy::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--ok); }
-#statusBar .tb-btn { height: 22px; padding: 0 6px; color: var(--fg-muted); font-size: 11.5px; }
-#statusBar .tb-btn svg { width: 13px; height: 13px; }
-
-/* side panes: titled sections like svguest's Properties */
-.pane { min-height: 0; overflow: auto; background: var(--side); }
-#paneData { border-right: 1px solid var(--card-border); display: flex; flex-direction: column; }
-#paneProps { border-left: 1px solid var(--card-border); }
-.pane-head { flex: none; display: flex; align-items: baseline; gap: 6px; padding: 9px 12px 7px; font-size: 13px; font-weight: 600; color: var(--fg-strong); }
-.pane-head small { font-size: 11px; font-weight: 400; color: var(--fg-faint); }
-.sect { padding: 10px 12px 12px; border-bottom: 1px solid var(--card-border); }
-.sect:last-child { border-bottom: 0; }
-.sect h3 { display: flex; align-items: baseline; gap: 6px; margin: 0 0 8px; font-size: 12.5px; font-weight: 600; color: var(--fg-strong); }
-.sect h3 small { font-size: 11px; font-weight: 400; color: var(--fg-faint); }
-.field-label { display: block; font-size: 11.5px; color: var(--fg-muted); margin: 8px 0 3px; }
-.field-label:first-child { margin-top: 0; }
-/* label-left rows ("kv"), as in svguest's Appearance block */
-.kv { display: grid; grid-template-columns: 64px minmax(0, 1fr); align-items: center; gap: 6px 8px; }
-.kv > label { font-size: 11.5px; color: var(--fg-muted); }
-.trio { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
-.unit { display: flex; align-items: center; height: 26px; border: 1px solid var(--input-border); border-radius: 6px; background: var(--input-bg); padding: 0 6px; gap: 4px; }
+/* ribbon: labeled groups of small controls, two rows high */
+#ribbon { display: flex; align-items: stretch; overflow-x: auto; scrollbar-width: thin; background: var(--bg); border-bottom: 1px solid var(--card-border); }
+.rg { flex: none; display: flex; flex-direction: column; padding: 6px 10px 3px; border-right: 1px solid var(--card-border); }
+.rg-body { flex: 1; display: grid; grid-auto-flow: column; grid-template-rows: 26px 26px; gap: 4px 6px; align-items: center; justify-content: start; }
+.rg-cap { margin-top: 3px; font-size: 10.5px; line-height: 14px; color: var(--fg-faint); text-align: center; white-space: nowrap; }
+#ribbon .tb-btn { height: 26px; padding: 0 8px; font-weight: 400; }
+.rg-flat .tb-btn { border-color: transparent; background: transparent; }
+.rg-flat .tb-btn:hover:not(:disabled) { background: var(--btn-hover); }
+.rg .field { height: 26px; font-size: 12px; }
+.rg .row { display: flex; align-items: center; gap: 6px; }
+.rg .lbl { font-size: 11px; color: var(--fg-muted); white-space: nowrap; }
+.rg .check { display: flex; align-items: center; gap: 5px; font-size: 11.5px; white-space: nowrap; }
+.rg .test-opts .field { width: 210px; }
+.unit { display: inline-flex; align-items: center; height: 26px; border: 1px solid var(--input-border); border-radius: 6px; background: var(--input-bg); padding: 0 6px; gap: 4px; }
 .unit:focus-within { border-color: var(--focus-border); box-shadow: var(--focus-ring); }
 .unit label { font-size: 11px; color: var(--fg-faint); }
-.unit .num-field { flex: 1; min-width: 0; width: auto; border: 0; height: 24px; padding: 0; background: transparent; box-shadow: none !important; }
-.pair { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-.pair .tb-btn, .wide { justify-content: center; width: 100%; }
-.check { display: flex; align-items: flex-start; gap: 7px; font-size: 12px; margin-top: 8px; line-height: 1.4; }
-.check input { margin-top: 2px; }
+.unit .num-field { width: 38px; border: 0; height: 24px; padding: 0; background: transparent; box-shadow: none !important; }
+#runBtn { grid-row: span 2; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; width: 64px; height: 56px; border-radius: 7px; font-size: 12px; font-weight: 600; }
+#runBtn svg { width: 14px; height: 14px; fill: currentColor; }
+#runBtn:disabled { opacity: .6; }
+#clearBtn:hover { color: var(--danger-hover-fg) !important; }
 
-/* data sheet */
-#paneData .sheet { flex: 1 1 auto; min-height: 120px; margin: 0 12px; border: 1px solid var(--grid-border); border-radius: 6px; background: var(--input-bg); }
-#paneData .below { flex: none; padding: 8px 12px 12px; }
-#parseWarn { border-radius: 6px; margin-bottom: 8px; }
+/* Prism-like navigator (tabs layout only) */
+#nav { display: none; }
+.lay-tabs #nav { display: block; grid-row: 2; grid-column: 1; overflow: auto; background: var(--side); border-right: 1px solid var(--card-border); padding: 10px 8px; }
+.nav-cap { padding: 8px 8px 4px; font-size: 10.5px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--fg-faint); }
+.nav-cap:first-child { padding-top: 0; }
+#nav button { display: flex; align-items: center; gap: 8px; width: 100%; height: 30px; padding: 0 8px; border: 0; border-radius: 6px; background: none; color: var(--fg); font-size: 12.5px; text-align: left; }
+#nav button:hover { background: var(--btn-hover); }
+#nav button.on { background: var(--accent-soft); color: var(--fg-strong); font-weight: 600; }
+#nav svg { width: 15px; height: 15px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; color: var(--fg-muted); }
+#nav button.on svg { color: var(--accent); }
+
+/* work area */
+.lay-split #work { display: grid; grid-template-columns: minmax(0, 1fr) minmax(400px, 42%); }
+.lay-tabs #work { display: flex; }
+.lay-tabs #work > section { flex: 1 1 auto; min-width: 0; }
+.lay-tabs[data-view="data"] #vOut { display: none; }
+.lay-tabs:not([data-view="data"]) #vData { display: none; }
+.lay-tabs[data-view="graph"] #vResults { display: none; }
+.lay-tabs[data-view="results"] #vGraph { display: none; }
+
+/* the sheet: full-bleed spreadsheet; empty gridlines continue past the data */
+#vData { display: flex; flex-direction: column; min-height: 0; background: var(--input-bg); }
+.lay-split #vData { border-right: 1px solid var(--card-border); }
+#sheetWrap { flex: 1 1 auto; min-height: 0; overflow: auto;
+  --cw: 118px; --rw: 34px; --hh: 50px; --rh: 29px;
+  background:
+    linear-gradient(to right, transparent calc(var(--cw) - 1px), var(--cell-border) 0) var(--rw) 0 / var(--cw) 100% repeat-x local,
+    linear-gradient(to bottom, transparent 20px, var(--cell-border) 20px, var(--cell-border) 21px, transparent 21px) 0 0 / 100% var(--hh) no-repeat local,
+    linear-gradient(to bottom, var(--thead-bg) calc(var(--hh) - 1px), var(--grid-border) 0) 0 0 / 100% var(--hh) no-repeat local,
+    linear-gradient(to bottom, transparent calc(var(--rh) - 1px), var(--cell-border) 0) 0 var(--hh) / 100% var(--rh) repeat-y local,
+    linear-gradient(to right, var(--thead-bg) calc(var(--rw) - 1px), var(--cell-border) 0) 0 0 / var(--rw) 100% no-repeat local,
+    var(--input-bg); }
+.sheet-foot { flex: none; padding: 6px 10px; border-top: 1px solid var(--card-border); background: var(--side); }
+#parseWarn { border-radius: 6px; margin: 2px 0 6px; }
 .disclosure > summary { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--fg-muted); }
 .disclosure > summary:hover { color: var(--fg-strong); }
 .disclosure > summary::before { content: ""; width: 5px; height: 5px; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: rotate(-45deg); transition: transform .15s; }
 .disclosure[open] > summary::before { transform: rotate(45deg); }
-#pasteBox { border-radius: 6px; background: var(--input-bg); border-color: var(--input-border); padding: 6px 8px; }
+#pasteBox { border-radius: 6px; background: var(--input-bg); border-color: var(--input-border); padding: 6px 8px; max-width: 560px; display: block; }
 
-/* Data grid — spreadsheet look: hairline grid, sticky header + row numbers */
+/* Data grid — spreadsheet look: column letters, hairline grid, sticky header + row numbers */
 table.data-grid { table-layout: fixed; border-collapse: separate; border-spacing: 0; }
 table.data-grid td, table.data-grid th { padding: 0; box-sizing: border-box; border-right: 1px solid var(--cell-border); border-bottom: 1px solid var(--cell-border); }
-table.data-grid thead th { position: sticky; top: 0; z-index: 2; background: var(--thead-bg); }
+table.data-grid thead th { position: sticky; top: 0; z-index: 2; background: var(--thead-bg); border-bottom-color: var(--grid-border); }
 table.data-grid td.rowhdr, table.data-grid thead th:first-child { position: sticky; left: 0; z-index: 1; background: var(--thead-bg); }
 table.data-grid thead th:first-child { z-index: 3; }
+.col-letter { height: 20px; line-height: 20px; font-size: 10.5px; font-weight: 500; color: var(--fg-faint); text-align: center; border-bottom: 1px solid var(--cell-border); }
 .cell-input { display: block; width: 100%; box-sizing: border-box; height: 28px; padding: 0 9px; font-size: 12.5px; border: 0; border-radius: 0; text-align: right; font-variant-numeric: tabular-nums; background: transparent; color: var(--fg); transition: background .12s, box-shadow .12s; }
 .cell-input:hover { background: var(--row-alt); }
 .cell-input:focus { outline: none; background: var(--cell-focus-bg); box-shadow: inset 0 0 0 2px var(--focus-border); }
 .cell-input.bad { background: var(--bad-bg); color: var(--bad-fg); box-shadow: inset 0 0 0 1px var(--bad-border); }
 /* group-name shares the exact column width of its cells; right padding clears the × button */
-.grp-name { display: block; width: 100%; box-sizing: border-box; height: 30px; padding: 0 22px 0 9px; font-size: 12px; font-weight: 600; text-align: right; border: 0; border-radius: 0; background: transparent; color: var(--fg-strong); }
+.grp-name { display: block; width: 100%; box-sizing: border-box; height: 29px; padding: 0 22px 0 9px; font-size: 12px; font-weight: 600; text-align: center; border: 0; border-radius: 0; background: transparent; color: var(--fg-strong); }
 .grp-name:focus { outline: none; background: var(--cell-focus-bg); box-shadow: inset 0 0 0 2px var(--focus-border); }
 .delGrp { position: absolute; top: 50%; right: 4px; transform: translateY(-50%); width: 16px; height: 16px; border-radius: 4px; font-size: 13px; line-height: 15px; color: var(--fg-faint); opacity: 0; transition: opacity .12s; }
 th:hover .delGrp, th:focus-within .delGrp { opacity: 1; }
@@ -202,14 +220,16 @@ th:hover .delGrp, th:focus-within .delGrp { opacity: 1; }
 tr:hover > .rowhdr .rn, tr:focus-within > .rowhdr .rn { display: none; }
 tr:hover > .rowhdr .delRow, tr:focus-within > .rowhdr .delRow { display: inline; }
 
-/* canvas: the figure and the report are two white pages on the gray view */
-#view { min-width: 0; min-height: 0; overflow: auto; background: var(--canvas); padding: 28px 24px 40px; display: flex; flex-direction: column; align-items: center; gap: 24px; }
-.page { flex: none; background: #fff; box-shadow: var(--plot-shadow); }
-#plot { border-radius: 1px; overflow: hidden; }
-#sheet { width: min(680px, 100%); box-sizing: border-box; padding: 22px 26px 26px; background: var(--surface); color: var(--fg); border-radius: 2px; }
-#sheet:has(#report:empty) { display: none; }
-.sheet-head { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
-.sheet-head h2 { flex: 1; margin: 0; font-size: 14px; font-weight: 600; color: var(--fg-strong); }
+/* output: figure (white paper) + results */
+#vOut { min-height: 0; overflow: auto; background: var(--side); }
+#vGraph { display: flex; justify-content: center; padding: 20px 16px; border-bottom: 1px solid var(--card-border); }
+.lay-tabs #vGraph { min-height: 100%; box-sizing: border-box; align-items: flex-start; padding-top: 36px; border: 0; }
+#plot { flex: none; background: #fff; box-shadow: var(--plot-shadow); }
+#vResults { padding: 14px 18px 24px; background: var(--surface); }
+.lay-tabs #vResults { min-height: 100%; box-sizing: border-box; padding: 20px 24px 32px; }
+.lay-tabs #vResults > * { max-width: 860px; margin-left: auto; margin-right: auto; }
+.res-head { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.res-head h2 { flex: 1; margin: 0; font-size: 13.5px; font-weight: 600; color: var(--fg-strong); }
 
 /* results */
 #verdict > div { border-radius: 6px; padding: 9px 12px; font-size: 12.5px; line-height: 1.5; }
@@ -220,38 +240,50 @@ tr:hover > .rowhdr .delRow, tr:focus-within > .rowhdr .delRow { display: inline;
 #report .text-sm { font-size: 12.5px; }
 .stat-table { border-collapse: collapse; width: 100%; font-size: 12px; color: var(--fg); }
 .stat-table th, .stat-table td { border: 0; border-bottom: 1px solid var(--cell-border); padding: 5px 8px; text-align: left; }
-.stat-table thead th { background: transparent; font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; color: var(--fg-faint); border-bottom-color: var(--grid-border); }
+.stat-table thead th { background: var(--thead-bg); font-size: 11px; font-weight: 600; color: var(--fg-muted); border-bottom-color: var(--grid-border); }
 .stat-table td.num, .stat-table th.num { text-align: right; font-variant-numeric: tabular-nums; }
 .stat-table tbody tr:hover td { background: var(--row-alt); }
 .stat-table td.font-medium { color: var(--fg-soft); font-weight: 500; }
 .pill { display: inline-block; padding: 1px 7px; border-radius: 999px; font-size: 11px; font-weight: 600; }
 
+/* status bar */
+#statusBar { display: flex; align-items: center; gap: 12px; height: 26px; padding: 0 4px 0 10px; font-size: 11.5px; color: var(--fg-muted); background: var(--bg); border-top: 1px solid var(--card-border); white-space: nowrap; overflow: hidden; }
+#statusBar .tip { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.bar-spacer { flex: 1; }
+.privacy { display: inline-flex; align-items: center; gap: 6px; }
+.privacy::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--ok); }
+#statusBar .tb-btn { height: 20px; padding: 0 6px; border-color: transparent; background: transparent; color: var(--fg-muted); font-size: 11.5px; font-weight: 400; }
+#statusBar .tb-btn:hover { background: var(--btn-hover); color: var(--fg); }
+#statusBar .tb-btn svg { width: 13px; height: 13px; }
+.seg { display: inline-flex; padding: 1px; border-radius: 6px; background: var(--btn-hover); }
+#statusBar .seg .tb-btn { height: 18px; border-radius: 5px; }
+#statusBar .seg .tb-btn.on { background: var(--surface); color: var(--fg-strong); box-shadow: 0 1px 2px rgba(0,0,0,.12); }
+
 /* misc */
-.scroll-thin::-webkit-scrollbar, .pane::-webkit-scrollbar, #view::-webkit-scrollbar { height: 8px; width: 8px; }
-.scroll-thin::-webkit-scrollbar-thumb, .pane::-webkit-scrollbar-thumb, #view::-webkit-scrollbar-thumb { background: var(--scrollbar); border-radius: 4px; }
+.scroll-thin::-webkit-scrollbar, #sheetWrap::-webkit-scrollbar, #vOut::-webkit-scrollbar { height: 8px; width: 8px; }
+.scroll-thin::-webkit-scrollbar-thumb, #sheetWrap::-webkit-scrollbar-thumb, #vOut::-webkit-scrollbar-thumb { background: var(--scrollbar); border-radius: 4px; }
 details > summary { cursor: pointer; list-style: none; }
 details > summary::-webkit-details-marker { display: none; }
 select option, select optgroup { background: var(--option-bg); color: var(--fg); }
 input::placeholder, textarea::placeholder { color: var(--fg-faint); }
-#paneProps select, #paneProps input:not([type="checkbox"]):not([type="file"]), #paneData textarea { transition: border-color .15s, background-color .15s, box-shadow .15s; }
-#paneProps select:hover, #paneProps .field:hover { border-color: var(--input-hover-border); }
-#paneProps .field:focus, #paneData textarea:focus { outline: none; border-color: var(--focus-border); box-shadow: var(--focus-ring); }
+#ribbon .field { transition: border-color .15s, box-shadow .15s; }
+#ribbon .field:hover { border-color: var(--input-hover-border); }
+#ribbon .field:focus, #pasteBox:focus { outline: none; border-color: var(--focus-border); box-shadow: var(--focus-ring); }
 button { transition: background-color .15s, color .15s, border-color .15s; }
 :focus-visible { outline: 2px solid var(--focus-border); outline-offset: 1px; }
 
-@media (max-width: 1100px) { body { grid-template-columns: minmax(240px, 300px) minmax(0, 1fr) 244px; } }
 @media (max-width: 880px) {
-  body { display: flex; flex-direction: column; height: auto; overflow: auto; }
-  #menuBar { position: sticky; top: 0; z-index: 10; flex-wrap: wrap; overflow: visible; }
-  .pane, #view { overflow: visible; border: 0; }
-  #paneData { border-bottom: 1px solid var(--card-border); }
-  #paneData .sheet { max-height: 55vh; overflow: auto; }
-  #paneProps { order: 1; border-top: 1px solid var(--card-border); }
-  #view { order: 2; padding: 20px 12px; align-items: stretch; }
-  #view > .page:first-child { align-self: center; max-width: 100%; overflow-x: auto; }
-  #sheet { width: 100%; padding: 16px; }
-  #statusBar { order: 3; }
-  #statusBar .tip { display: none; }
+  body, body.lay-tabs { display: flex; flex-direction: column; height: auto; overflow: auto; }
+  .lay-tabs #nav { display: flex; gap: 4px; padding: 6px; border-right: 0; border-bottom: 1px solid var(--card-border); }
+  .lay-tabs #nav .nav-cap { display: none; }
+  .lay-tabs #nav button { justify-content: center; }
+  .lay-split #work { display: flex; flex-direction: column; }
+  #ribbon { flex-wrap: wrap; overflow-x: auto; }
+  .rg { border-bottom: 1px solid var(--card-border); }
+  #sheetWrap { min-height: 280px; max-height: 60vh; }
+  #vOut { overflow: visible; }
+  #vGraph { overflow-x: auto; justify-content: flex-start; }
+  #statusBar .tip, #layoutSeg { display: none; }
 }
 
 /* help dialog */
@@ -269,159 +301,178 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
 </style>
 </head>
 
-<body class="bg-black text-neutral-200">
-  <!-- ============ MENU BAR ============ -->
-  <header id="menuBar">
-    <button id="undoBtn" class="tb-btn" title="Undo (⌘/Ctrl+Z)" aria-label="Undo" disabled><svg viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-3"/></svg></button>
-    <button id="redoBtn" class="tb-btn" title="Redo (⌘/Ctrl+Shift+Z)" aria-label="Redo" disabled><svg viewBox="0 0 24 24"><path d="m15 14 5-5-5-5"/><path d="M20 9H9a5 5 0 0 0 0 10h3"/></svg></button>
-    <span class="tb-sep"></span>
-    <button id="addRowBtn" class="tb-btn">Add row</button>
-    <button id="addGroupBtn" class="tb-btn">Add group</button>
-    <button id="clearBtn" class="tb-btn hover:bg-red-900 hover:text-red-200" title="Clear all data">Clear</button>
-    <span class="tb-sep"></span>
-    <label for="importJH" id="importLabel" class="tb-btn cursor-pointer" title="Open a saved .jgz session">Import .jgz</label>
-    <input id="importJH" type="file" accept=".jgz,.jh" class="hidden" />
-    <button id="exportBtn" class="tb-btn" title="Save this session as a .jgz file">Export .jgz</button>
-    <button id="copyData" class="tb-btn" title="Copy the grid as TSV (paste into Excel/Sheets)">Copy data</button>
-    <span class="bar-spacer"></span>
-    <button id="helpBtn" class="tb-btn">Help</button>
-    <button id="runBtn" class="bg-neutral-200 text-neutral-900 hover:bg-white" title="Run the selected test on the data"><svg viewBox="0 0 16 16"><path d="M4 2.5v11a.5.5 0 0 0 .77.42l8.5-5.5a.5.5 0 0 0 0-.84l-8.5-5.5A.5.5 0 0 0 4 2.5Z"/></svg>Analyze</button>
-  </header>
+<body class="bg-black text-neutral-200 lay-split" data-view="data">
+  <script>/* restore the saved layout before first paint */try{if(localStorage.getItem("ministat:layout")==="tabs"){document.body.classList.replace("lay-split","lay-tabs")}}catch(_){}</script>
 
-  <!-- ============ DATA SHEET (left) ============ -->
-  <aside id="paneData" class="pane">
-    <div class="pane-head">Data <small>one column per group</small></div>
-    <div class="sheet overflow-auto scroll-thin">
-      <table class="data-grid text-sm" id="dataTable" aria-label="Data grid"></table>
+  <!-- ============ RIBBON ============ -->
+  <header id="ribbon">
+    <div class="rg rg-flat">
+      <div class="rg-body">
+        <button id="undoBtn" class="tb-btn" title="Undo (⌘/Ctrl+Z)" disabled><svg viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-3"/></svg>Undo</button>
+        <button id="redoBtn" class="tb-btn" title="Redo (⌘/Ctrl+Shift+Z)" disabled><svg viewBox="0 0 24 24"><path d="m15 14 5-5-5-5"/><path d="M20 9H9a5 5 0 0 0 0 10h3"/></svg>Redo</button>
+        <button id="addRowBtn" class="tb-btn"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Row</button>
+        <button id="addGroupBtn" class="tb-btn"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Column</button>
+        <button id="clearBtn" class="tb-btn hover:bg-red-900 hover:text-red-200" title="Clear all data"><svg viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/></svg>Clear</button>
+      </div>
+      <div class="rg-cap">Sheet</div>
     </div>
-    <div class="below">
-      <div id="parseWarn" class="hidden text-xs text-amber-300 bg-amber-500/10 border border-amber-500/30 px-3 py-2" role="status"></div>
-      <details class="disclosure">
-        <summary class="select-none">Paste / import TSV or CSV</summary>
-        <div class="mt-2">
-          <label for="pasteBox" class="sr-only">Delimited data to import</label>
-          <textarea id="pasteBox" rows="5" placeholder="Optionally include a header row of group names.&#10;Control&#9;Drug A&#9;Drug B&#10;5.1&#9;7.2&#9;9.8&#10;4.8&#9;6.9&#9;10.2" class="w-full text-xs font-mono border text-neutral-100 focus:outline-none"></textarea>
-          <div class="pair mt-2">
-            <button id="importBtn" class="tb-btn">Import into grid</button>
-            <button id="loadDemoBtn" class="tb-btn">Reset to demo</button>
+
+    <div class="rg rg-flat">
+      <div class="rg-body">
+        <label for="importJH" id="importLabel" class="tb-btn cursor-pointer" title="Open a saved .jgz session">Import .jgz</label>
+        <button id="exportBtn" class="tb-btn" title="Save this session as a .jgz file">Export .jgz</button>
+        <button id="copyData" class="tb-btn" title="Copy the grid as TSV (paste into Excel/Sheets)">Copy data</button>
+      </div>
+      <input id="importJH" type="file" accept=".jgz,.jh" class="hidden" />
+      <div class="rg-cap">File</div>
+    </div>
+
+    <div class="rg">
+      <div class="rg-body">
+        <select id="testSelect" class="field" style="width:258px" aria-label="Statistical test">
+          <optgroup label="Two groups — independent">
+            <option value="ttest">Unpaired t-test (Student's / Welch's)</option>
+            <option value="mwu">Mann–Whitney U / Wilcoxon rank-sum</option>
+          </optgroup>
+          <optgroup label="Two groups — paired (matched rows)">
+            <option value="paired">Paired t-test</option>
+            <option value="wilcoxon">Wilcoxon signed-rank</option>
+          </optgroup>
+          <optgroup label="Two or more groups">
+            <option value="anova">One-way ANOVA + post-hoc</option>
+            <option value="kruskal">Kruskal–Wallis + Dunn's post-hoc</option>
+          </optgroup>
+        </select>
+        <div>
+          <div id="opt_ttest" class="test-opts">
+            <label class="check" title="Recommended; does not assume equal variances"><input type="checkbox" id="welchChk" class="accent-neutral-400" checked />Welch's correction</label>
+          </div>
+          <div id="opt_anova" class="test-opts hidden">
+            <select id="posthocSelect" class="field" aria-label="Post-hoc test" style="width:258px">
+              <option value="tukey">Post-hoc: Tukey's HSD (all pairs)</option>
+              <option value="holm">Post-hoc: Holm pairwise t-tests</option>
+              <option value="bonferroni">Post-hoc: Bonferroni pairwise t-tests</option>
+              <option value="dunnett">Post-hoc: Dunnett (each vs. first group)</option>
+            </select>
+          </div>
+          <div id="opt_kruskal" class="test-opts hidden">
+            <select id="dunnAdj" class="field" aria-label="Dunn's test p-value adjustment" style="width:258px">
+              <option value="holm">Dunn's adjustment: Holm</option>
+              <option value="bonferroni">Dunn's adjustment: Bonferroni</option>
+            </select>
           </div>
         </div>
-      </details>
+        <button id="runBtn" class="bg-neutral-200 text-neutral-900 hover:bg-white" title="Run the selected test on the sheet"><svg viewBox="0 0 16 16"><path d="M4 2.5v11a.5.5 0 0 0 .77.42l8.5-5.5a.5.5 0 0 0 0-.84l-8.5-5.5A.5.5 0 0 0 4 2.5Z"/></svg>Analyze</button>
+      </div>
+      <div class="rg-cap">Analysis</div>
     </div>
-  </aside>
 
-  <!-- ============ CANVAS (center): figure page + report page ============ -->
-  <main id="view">
-    <div class="page"><div id="plot" style="height: 400px;"></div></div>
-    <article id="sheet" class="page">
-      <div class="sheet-head">
-        <h2>Results</h2>
-        <button id="copyStats" class="tb-btn" title="Copy all result tables as TSV"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>Copy table</button>
-      </div>
-      <div id="verdict"></div>
-      <div id="report" class="overflow-x-auto scroll-thin"></div>
-    </article>
-  </main>
-
-  <!-- ============ PROPERTIES (right) ============ -->
-  <aside id="paneProps" class="pane">
-    <section class="sect">
-      <h3>Test</h3>
-      <label for="testSelect" class="sr-only">Statistical test</label>
-      <select id="testSelect" class="field">
-        <optgroup label="Two groups — independent">
-          <option value="ttest">Unpaired t-test (Student's / Welch's)</option>
-          <option value="mwu">Mann–Whitney U / Wilcoxon rank-sum</option>
-        </optgroup>
-        <optgroup label="Two groups — paired (matched rows)">
-          <option value="paired">Paired t-test</option>
-          <option value="wilcoxon">Wilcoxon signed-rank</option>
-        </optgroup>
-        <optgroup label="Two or more groups">
-          <option value="anova">One-way ANOVA + post-hoc</option>
-          <option value="kruskal">Kruskal–Wallis + Dunn's post-hoc</option>
-        </optgroup>
-      </select>
-      <div id="opt_ttest" class="test-opts">
-        <label class="check">
-          <input type="checkbox" id="welchChk" class="accent-neutral-400" checked />
-          <span>Welch's correction <span class="text-neutral-500">(does not assume equal variances)</span></span>
-        </label>
-      </div>
-      <div id="opt_anova" class="test-opts hidden">
-        <label for="posthocSelect" class="field-label">Post-hoc</label>
-        <select id="posthocSelect" class="field">
-          <option value="tukey">Tukey's HSD (all pairs)</option>
-          <option value="holm">Holm pairwise t-tests (all pairs)</option>
-          <option value="bonferroni">Bonferroni pairwise t-tests (all pairs)</option>
-          <option value="dunnett">Dunnett (each group vs. the first group)</option>
-        </select>
-      </div>
-      <div id="opt_kruskal" class="test-opts hidden">
-        <label for="dunnAdj" class="field-label">Dunn's p-value adjustment</label>
-        <select id="dunnAdj" class="field">
-          <option value="holm">Holm</option>
-          <option value="bonferroni">Bonferroni</option>
-        </select>
-      </div>
-    </section>
-
-    <section class="sect">
-      <h3>Plot</h3>
-      <div class="kv">
-        <label for="chartType">Chart</label>
-        <select id="chartType" class="field">
+    <div class="rg">
+      <div class="rg-body">
+        <select id="chartType" class="field" aria-label="Chart type" style="width:136px">
           <option value="bar">Bar + error bars</option>
           <option value="box">Box &amp; whisker</option>
         </select>
-        <label for="errType">Error bars</label>
-        <select id="errType" class="field">
+        <select id="errType" class="field" aria-label="Error bars" style="width:136px">
           <option value="sd">Mean ± SD</option>
           <option value="sem" selected>Mean ± SEM</option>
           <option value="ci">Mean ± 95% CI</option>
         </select>
-        <label for="themeSelect">Colors</label>
-        <select id="themeSelect" class="field">
+        <select id="themeSelect" class="field" aria-label="Color theme" style="width:120px">
           <option value="prism">Classic Prism</option>
           <option value="pastel">Pastel</option>
           <option value="vibrant">Vibrant</option>
         </select>
-        <label for="sigLabel">Significance</label>
-        <select id="sigLabel" class="field">
+        <select id="sigLabel" class="field" aria-label="Significance label" style="width:120px">
           <option value="stars">Asterisks (*)</option>
           <option value="pval">p-value</option>
         </select>
-        <label for="xLabel">X title</label>
-        <input id="xLabel" value="Group" class="field" />
-        <label for="yLabel">Y title</label>
-        <input id="yLabel" value="Value" class="field" />
+        <span class="row"><label for="xLabel" class="lbl">X</label><input id="xLabel" value="Group" class="field" style="width:104px" /></span>
+        <span class="row"><label for="yLabel" class="lbl">Y</label><input id="yLabel" value="Value" class="field" style="width:104px" /></span>
+      </div>
+      <div class="rg-cap">Graph</div>
+    </div>
+
+    <div class="rg">
+      <div class="rg-body">
+        <span class="row">
+          <span class="unit"><label for="plotW">W</label><input id="plotW" type="number" min="220" step="20" value="300" class="num-field" /></span>
+          <span class="unit"><label for="plotH">H</label><input id="plotH" type="number" min="220" step="20" value="400" class="num-field" /></span>
+        </span>
+        <span class="row">
+          <span class="unit"><label for="dotSize">Dot</label><input id="dotSize" type="number" min="2" max="20" step="1" value="6" class="num-field" /></span>
+          <button id="resetGraph" class="tb-btn" title="Restore graph to default options, size &amp; view">Reset</button>
+        </span>
+      </div>
+      <div class="rg-cap">Size (px)</div>
+    </div>
+
+    <div class="rg rg-flat">
+      <div class="rg-body">
+        <button id="dlPng" class="tb-btn" title="PNG at 5× the on-screen size (≈ 300 dpi for a 2–3 inch figure)"><svg viewBox="0 0 24 24"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14"/></svg>PNG</button>
+        <button id="dlSvg" class="tb-btn" title="Download as vector SVG"><svg viewBox="0 0 24 24"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14"/></svg>SVG</button>
+      </div>
+      <div class="rg-cap">Export</div>
+    </div>
+
+  </header>
+
+  <!-- ============ NAVIGATOR (tabs layout) ============ -->
+  <nav id="nav" aria-label="Views">
+    <div class="nav-cap">Data tables</div>
+    <button data-view="data"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M9 10v10"/></svg>Data</button>
+    <div class="nav-cap">Results</div>
+    <button data-view="results"><svg viewBox="0 0 24 24"><path d="M5 5h14M5 10h14M5 15h9M5 20h6"/></svg>Statistics</button>
+    <div class="nav-cap">Graphs</div>
+    <button data-view="graph"><svg viewBox="0 0 24 24"><path d="M4 20V4M4 20h16"/><rect x="7" y="11" width="3" height="6"/><rect x="13" y="7" width="3" height="10"/></svg>Graph</button>
+  </nav>
+
+  <div id="work">
+    <!-- ============ DATA SHEET ============ -->
+    <section id="vData">
+      <div id="sheetWrap">
+        <table class="data-grid text-sm" id="dataTable" aria-label="Data grid"></table>
+      </div>
+      <div class="sheet-foot">
+        <div id="parseWarn" class="hidden text-xs text-amber-300 bg-amber-500/10 border border-amber-500/30 px-3 py-2" role="status"></div>
+        <details class="disclosure">
+          <summary class="select-none">Paste / import TSV or CSV</summary>
+          <div class="mt-2 mb-1">
+            <label for="pasteBox" class="sr-only">Delimited data to import</label>
+            <textarea id="pasteBox" rows="5" placeholder="Optionally include a header row of group names.&#10;Control&#9;Drug A&#9;Drug B&#10;5.1&#9;7.2&#9;9.8&#10;4.8&#9;6.9&#9;10.2" class="w-full text-xs font-mono border text-neutral-100 focus:outline-none"></textarea>
+            <div class="flex gap-2 mt-2">
+              <button id="importBtn" class="tb-btn">Import into grid</button>
+              <button id="loadDemoBtn" class="tb-btn">Reset to demo data</button>
+            </div>
+          </div>
+        </details>
       </div>
     </section>
 
-    <section class="sect">
-      <h3>Size <small>px</small></h3>
-      <div class="trio">
-        <span class="unit"><label for="plotW">W</label><input id="plotW" type="number" min="220" step="20" value="300" class="num-field" /></span>
-        <span class="unit"><label for="plotH">H</label><input id="plotH" type="number" min="220" step="20" value="400" class="num-field" /></span>
-        <span class="unit"><label for="dotSize">Dot</label><input id="dotSize" type="number" min="2" max="20" step="1" value="6" class="num-field" /></span>
-      </div>
-      <button id="resetGraph" class="tb-btn wide mt-2" title="Restore graph to default options, size &amp; view">Reset figure</button>
-    </section>
-
-    <section class="sect">
-      <h3>Export</h3>
-      <div class="pair">
-        <button id="dlPng" class="tb-btn" title="PNG at 5× the on-screen size (≈ 300 dpi for a 2–3 inch figure)">PNG 300 dpi</button>
-        <button id="dlSvg" class="tb-btn" title="Download as vector SVG">SVG</button>
+    <!-- ============ OUTPUT: graph + results ============ -->
+    <section id="vOut">
+      <div id="vGraph"><div id="plot" style="height: 400px;"></div></div>
+      <div id="vResults">
+        <div class="res-head">
+          <h2>Results</h2>
+          <button id="copyStats" class="tb-btn" title="Copy all result tables as TSV"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>Copy table</button>
+        </div>
+        <div id="verdict"></div>
+        <div id="report" class="overflow-x-auto scroll-thin"></div>
       </div>
     </section>
-  </aside>
+  </div>
 
   <!-- ============ STATUS BAR ============ -->
   <footer id="statusBar">
     <span class="tip">Paste from Excel/Sheets into any cell (⌘/Ctrl+V) · Enter / arrows move · hover a row number or column header to delete it</span>
     <span class="bar-spacer"></span>
+    <span id="layoutSeg" class="seg" role="group" aria-label="Layout">
+      <button class="tb-btn" data-layout="split" title="Sheet on the left, graph and results on the right">Split</button>
+      <button class="tb-btn" data-layout="tabs" title="One view at a time, chosen in the navigator">Tabs</button>
+    </span>
     <span class="privacy" title="All calculations run in this browser; your data never leaves this machine">Runs locally · nothing uploaded</span>
+    <button id="helpBtn" class="tb-btn"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.6"/><path d="M12 17h.01"/></svg>Help</button>
     <button id="themeBtn" class="tb-btn" title="Switch between light and dark interface">Theme</button>
   </footer>
 
@@ -430,11 +481,11 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
     <dl>
       <dt>Paste</dt><dd>Paste a block from Excel/Sheets into any cell (<kbd>⌘/Ctrl</kbd> <kbd>V</kbd>); the grid expands to fit.</dd>
       <dt>Move</dt><dd><kbd>Enter</kbd> / <kbd>↑</kbd> <kbd>↓</kbd> move between rows; <kbd>←</kbd> <kbd>→</kbd> move between groups at a cell's edge.</dd>
-      <dt>Delete</dt><dd>Hover a row number and click × to delete the row; hover a column header and click × to delete the group.</dd>
+      <dt>Delete</dt><dd>Hover a row number and click × to delete the row; hover a column header and click × to delete the column (group).</dd>
       <dt>Undo</dt><dd><kbd>⌘/Ctrl</kbd> <kbd>Z</kbd>; add <kbd>Shift</kbd> for redo.</dd>
       <dt>Session</dt><dd>Saved in this browser automatically; Export / Import (.jgz) moves a session between machines.</dd>
       <dt>Export</dt><dd>PNG at 5× the on-screen size (≈ 300 dpi for a 2–3 inch figure); SVG is vector.</dd>
-      <dt>Theme</dt><dd>The sun / moon button at the right of the status bar switches between light and dark.</dd>
+      <dt>Theme</dt><dd>Split / Tabs in the status bar changes the layout; the sun / moon button next to it switches light and dark.</dd>
     </dl>
   </form></dialog>
 
@@ -1149,7 +1200,7 @@ function renderGrid() {
   grid.forEach(g => { while (g.cells.length < rows) g.cells.push(""); });
   let html = "<thead><tr><th style='width:34px'></th>";
   grid.forEach((g, gi) => {
-    html += `<th style="width:118px"><div class="relative">
+    html += `<th style="width:118px"><div class="col-letter">${colLetter(gi)}</div><div class="relative">
         <input class="grp-name" data-g="${gi}" value="${escapeHtml(g.name)}" aria-label="Name of group ${gi + 1}" />
         ${grid.length > 1 ? `<button class="delGrp" data-g="${gi}" title="Delete group" aria-label="Delete group ${escapeHtml(g.name)}">×</button>` : ""}
       </div></th>`;
@@ -1164,6 +1215,19 @@ function renderGrid() {
     html += "</tr>";
   }
   $("dataTable").innerHTML = html + "</tbody>";
+  sizeSheetBackground();
+}
+
+/* spreadsheet column letters: A … Z, AA, AB … */
+function colLetter(i) { let s = ""; for (i++; i > 0; i = Math.floor((i - 1) / 26)) s = String.fromCharCode(65 + (i - 1) % 26) + s; return s; }
+/* the empty gridlines past the data are a CSS background; match them to the real cell sizes */
+function sizeSheetBackground() {
+  const t = $("dataTable"), wrap = $("sheetWrap"), ths = t.tHead && t.tHead.rows[0].cells, row = t.tBodies[0] && t.tBodies[0].rows[0];
+  if (!ths || ths.length < 2 || !t.offsetWidth) return;
+  wrap.style.setProperty("--rw", ths[0].offsetWidth + "px");
+  wrap.style.setProperty("--cw", ths[1].offsetWidth + "px");
+  wrap.style.setProperty("--hh", t.tHead.offsetHeight + "px");
+  if (row) wrap.style.setProperty("--rh", row.offsetHeight + "px");
 }
 
 function focusCell(g, r) {
@@ -1931,6 +1995,35 @@ themeBtn.onclick = () => {
 };
 applyUiTheme(document.documentElement.dataset.theme === "light");
 $("helpBtn").onclick = () => $("helpDlg").showModal();
+
+/* ============================================================
+   LAYOUT — "split" (sheet | graph + results) or "tabs" (navigator,
+   one view at a time); status-bar switch, saved as "ministat:layout"
+   ============================================================ */
+function resizePlot() { const el = $("plot"); if (el.data) Plotly.Plots.resize(el); }
+function setView(v) {
+  document.body.dataset.view = v;
+  document.querySelectorAll("#nav button").forEach(b => b.classList.toggle("on", b.dataset.view === v));
+  if (v === "data") sizeSheetBackground(); else resizePlot();
+}
+function setLayout(l) {
+  const tabs = l === "tabs";
+  document.body.classList.toggle("lay-tabs", tabs);
+  document.body.classList.toggle("lay-split", !tabs);
+  document.querySelectorAll("#layoutSeg button").forEach(b => b.classList.toggle("on", b.dataset.layout === (tabs ? "tabs" : "split")));
+  setView(document.body.dataset.view || "data");
+  sizeSheetBackground(); resizePlot();
+}
+document.querySelectorAll("#nav button").forEach(b => b.onclick = () => setView(b.dataset.view));
+document.querySelectorAll("#layoutSeg button").forEach(b => b.onclick = () => {
+  setLayout(b.dataset.layout);
+  try { localStorage.setItem("ministat:layout", b.dataset.layout); } catch (e) { /* storage unavailable */ }
+});
+/* in the tabs layout, Analyze from the data sheet jumps to the results */
+$("runBtn").addEventListener("click", () => {
+  if (document.body.classList.contains("lay-tabs") && document.body.dataset.view === "data") setView("results");
+});
+setLayout(document.body.classList.contains("lay-tabs") ? "tabs" : "split");
 
 /* ============================================================
    INIT — restore the last session, or show the demo on a first visit
