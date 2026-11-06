@@ -1,6 +1,6 @@
 # plsig
 
-**pl**ease be **sig**nificant: free in-browser statistics and scientific graphing in the spirit of GraphPad Prism. Everything is in one file, `index.html`, with no build step. The only scripts it loads are jStat and the Plotly cartesian bundle, from jsDelivr with SRI hashes. Live at https://jieqianghe.github.io/plsig/ (GitHub Pages, served from `main`).
+**pl**ease be **sig**nificant: free in-browser statistics and scientific graphing in the spirit of GraphPad Prism. Everything is in one file, `index.html`, with no build step; `sw.js` beside it is the offline service worker (network-first for the page, cache-first for the two pinned jsDelivr scripts; bump `CACHE` when its logic changes). The only scripts it loads are jStat and the Plotly cartesian bundle, from jsDelivr with SRI hashes. Live at https://jieqianghe.github.io/plsig/ (GitHub Pages, served from `main`).
 
 The project was called ministat until Nov 2026, when the repository was renamed. Sessions and the theme that the browser saved under the old `ministat:` localStorage keys are still read on load; keep that fallback.
 
@@ -34,6 +34,7 @@ The project was called ministat until Nov 2026, when the repository was renamed.
 - Examples (the button at the right of the paste bar) opens a gallery, `EXAMPLES`, with one data set per kind of test laid out as that test reads it; each opens in a new tab (a blank current tab is reused).
 - First-run tour (`TOUR`): five callouts with a spotlight ring, shown once on a first visit (`plsig:toured`), replayed from Help (Take the tour).
 - Interface language (Nov 2026): 中 / EN button in the View group (`setLang`, saved in `plsig:lang`; the first visit follows the browser's language). The page is written in English; `ZH` (exact strings) and `ZH_PATTERNS` (sentences with numbers / names) translate text nodes and title / aria-label / placeholder attributes, and a MutationObserver translates whatever renders later. Each node keeps its English, so switching back is exact. Never translated: the figure (`#plot`, figures stay English for papers), `<select>` options (labels are built from them), tab names, and anything under `[data-noi18n]`. Help has a Chinese `<dl id="helpZh">`; the tour has `zt` / `zx`; `methodsText` writes Chinese itself. A new interface string needs a `ZH` entry.
+- Tier-3 features (Nov 2026): Share (right of the tabs) puts every tab, gzipped + base64url, after `#s=` in the address (`shareLink` / `readShareHash`; a first visit replaces the demo sheet, the shared active tab opens). Open also reads .xlsx with a built-in reader (`unzipEntries` via DecompressionStream "deflate-raw" + DOMParser; no SheetJS: its npm build has open advisories) and .csv / .txt; each worksheet becomes a tab. Undo covers figure settings: `snapshot()` holds `settings`, `trackSettings()` (in `scheduleSave`) turns a settings change into an undo step, merging steps < 700 ms apart. Style → Fill: Colour / Pattern / Grey (hatch per group, `fillmode: "overlay"`).
 - The user rejected a four-card quadrant layout, a three-pane canvas layout, and a Prism-style tabs layout.
 - The ribbon must fit at 1280px wide.
 
