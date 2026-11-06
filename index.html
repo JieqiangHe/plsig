@@ -197,6 +197,8 @@ a.tb-btn { text-decoration: none; }
 #menuPop .st-num:focus { border-color: var(--focus-border); }
 #menuPop .st-num.bad { border-color: var(--bad-border); }
 #menuPop .st-clear { justify-content: center; margin-top: 6px; height: 24px; font-size: 11.5px; color: var(--fg-muted); background: var(--seg-bg); }
+#menuPop .st-mine { display: flex; gap: 6px; padding: 0 4px; }
+#menuPop .st-mine button { flex: 1; justify-content: center; height: 24px; font-size: 12px; background: var(--seg-bg); }
 #menuPop .stepper { display: flex; align-items: center; gap: 4px; margin: 2px 0 4px; }
 #menuPop .stepper button { width: 30px; flex: none; justify-content: center; font-size: 15px; background: var(--btn-hover); }
 #menuPop .stepper output { flex: 1; text-align: center; font-size: 12.5px; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--fg-strong); }
@@ -352,6 +354,8 @@ th.hd-on .col-letter { color: var(--accent); font-weight: 600; box-shadow: inset
 #report .note { font-size: 11.5px; font-weight: 400; color: var(--fg-muted); }
 #report .hint { margin-top: 4px; font-size: 12px; color: var(--warn); }
 #report .err { font-size: 12.5px; color: var(--err); }
+#report .methods p { padding: 8px 10px; border: 1px solid var(--grid-border); border-radius: 6px; background: var(--panel); font-size: 12px; line-height: 1.55; color: var(--fg-soft); user-select: text; }
+#report .methods .tb-btn { height: 20px; padding: 0 7px; font-size: 11px; margin-left: 6px; vertical-align: 1px; }
 .more { margin-top: 4px; }
 .more > summary { font-size: 12px; color: var(--fg-muted); }
 .more > summary:hover { color: var(--fg); }
@@ -609,6 +613,8 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
       <dt>Figure text</dt><dd>Click any text on the figure to edit it: an axis title, a group name under the x axis, or a legend entry. Group names and legend entries rename the column or row title on the sheet (<kbd>⌘/Ctrl</kbd> <kbd>Z</kbd> undoes it). <kbd>Enter</kbd> keeps the change, <kbd>Esc</kbd> cancels. A cleared axis title stays as a faint placeholder on screen so you can click it again; exports leave it out. <i>Off</i> next to *** / P = hides the letters and stars on the figure.</dd>
       <dt>Y axis</dt><dd>Style → Y axis: linear or log scale, a fixed range (blank = automatic), a dashed reference line at a value, and a shaded band between two values.</dd>
       <dt>Style</dt><dd>Style in the ribbon sets the figure's font size, dot size, bar width, hollow or hidden points, and a box or open (left and bottom axes) frame.</dd>
+      <dt>My style</dt><dd>Style → Save as my default keeps the chart type, error bars, colours, significance labels and style in this browser: Reset, new visits and Examples then use it. Forget it returns to the built-in defaults.</dd>
+      <dt>Methods</dt><dd>Under the results, a ready-to-copy paragraph for a paper's methods section describes the test that ran, its post-hoc test, how the data are shown and the sample size.</dd>
       <dt>Export</dt><dd>Export opens the options: this figure or every sheet as one panel figure lettered A, B, C…, PNG or SVG, the on-screen size or a journal column width (8.5 / 11.4 / 17.4 cm), and 300 or 600 dpi (written into the PNG, so Word and Illustrator open it at that size). Copy puts the figure on the clipboard for PowerPoint, Word or a chat.</dd>
       <dt>Theme</dt><dd>The sun / moon button in the ribbon's View group switches between light and dark.</dd>
       <dt>Privacy</dt><dd>Everything runs in this browser; your data is never uploaded.</dd>
@@ -1651,7 +1657,10 @@ function styleHtml() {
          `<div class="st-row"><span>Range</span><div class="st-pair">${num("yMin", "auto")}<i>to</i>${num("yMax", "auto")}</div></div>` +
          `<div class="st-row"><span>Line</span><div class="st-pair">${num("refY", "y =")}<i></i><span class="st-hint">dashed reference</span></div></div>` +
          `<div class="st-row"><span>Band</span><div class="st-pair">${num("bandLo", "from")}<i>to</i>${num("bandHi", "to")}</div></div>` +
-         `<button type="button" class="st-clear" data-sclear="1">Clear axis settings</button>`;
+         `<button type="button" class="st-clear" data-sclear="1">Clear axis settings</button>` +
+         `<h4>My default</h4><div class="st-mine"><button type="button" data-mine="save">Save as my default</button>` +
+         (hasMyStyle() ? `<button type="button" data-mine="forget">Forget it</button>` : "") + `</div>` +
+         `<p class="ex-note">${hasMyStyle() ? "Reset, new visits and Examples use your saved style." : "Saves chart, error bars, colours, labels and this style for Reset, new visits and Examples."}</p>`;
 }
 $("styleBtn").onclick = () => {
   if (menuFor === styleAnchor) { closeMenuPop(); return; }
@@ -1689,6 +1698,22 @@ menuPop.addEventListener("input", e => {
   $(f.dataset.nid).value = v !== "" && Number.isFinite(+v) ? v : "";
   clearTimeout(styleNumTimer);
   styleNumTimer = setTimeout(() => { scheduleSave(); redraw(); }, 250);
+});
+/* "my default": the figure options a user wants every time, kept in this browser */
+const MY_STYLE_IDS = ["chartType", "errType", "themeSelect", "sigLabel", "dotSize", "fontSize", "barWidth", "pointStyle", "frame"];
+let myStyle = {};
+try { myStyle = JSON.parse(localStorage.getItem("plsig:mystyle") || "{}") || {}; } catch (_) { myStyle = {}; }
+const hasMyStyle = () => Object.keys(myStyle).length > 0;
+const graphDefaults = () => Object.assign({}, GRAPH_DEFAULTS, myStyle);
+menuPop.addEventListener("click", e => {
+  const b = e.target.closest("[data-mine]");
+  if (!b || menuFor !== styleAnchor) return;
+  if (b.dataset.mine === "save") { myStyle = {}; MY_STYLE_IDS.forEach(id => { myStyle[id] = $(id).value; }); }
+  else myStyle = {};
+  try { if (hasMyStyle()) localStorage.setItem("plsig:mystyle", JSON.stringify(myStyle)); else localStorage.removeItem("plsig:mystyle"); } catch (_) { /* fine */ }
+  menuPop.innerHTML = styleHtml();
+  const ok = menuPop.querySelector(`[data-mine="${b.dataset.mine === "save" ? "save" : "save"}"]`);
+  if (ok && b.dataset.mine === "save") { ok.textContent = "✓ Saved"; setTimeout(() => { if (ok.isConnected) ok.textContent = "Save as my default"; }, 1400); }
 });
 menuPop.addEventListener("click", e => {
   if (!e.target.closest("[data-sclear]") || menuFor !== styleAnchor) return;
@@ -2543,7 +2568,7 @@ const EXAMPLES = [
 function openExample(ex) {
   const names = Object.keys(ex.cols), n = Math.max(...names.map(k => ex.cols[k].length));
   const g = names.map(k => ({ name: k, cells: Array.from({ length: n }, (_, i) => ex.cols[k][i] == null ? "" : String(ex.cols[k][i])) }));
-  const settings = Object.assign(collectSettings(), { testSelect: ex.test, xLabel: ex.xLabel ?? GRAPH_DEFAULTS.xLabel, yLabel: GRAPH_DEFAULTS.yLabel, plotW: "", plotH: "" },
+  const settings = Object.assign(collectSettings(), myStyle, { testSelect: ex.test, xLabel: ex.xLabel ?? GRAPH_DEFAULTS.xLabel, yLabel: GRAPH_DEFAULTS.yLabel, plotW: "", plotH: "" },
                                  ex.posthoc ? { posthocSelect: ex.posthoc } : {});
   stashSheet();
   const cur = sheets[curSheet], blank = !cur.grid.some(c => c.cells.some(v => String(v).trim()));
@@ -2750,6 +2775,7 @@ function run(quiet) {
       showWarnings(problems, decimalComma);
       if (!res) { clearResults(); return; }
       lastReport = res.report;
+      res.report.methods = methodsText(test, groups, res.plot);
       verdictBox(res.verdict.sig, res.verdict.html);
       $("report").innerHTML = reportHtml(res.report);
       drawPlot(res.plot);
@@ -2793,7 +2819,8 @@ function tableHtml(head, rows, kv) {
   return h;
 }
 function reportHtml(rep) {
-  return rep.sections.map(s => {
+  const methods = rep.methods ? `<div class="methods"><h3 class="h3">${uiText("Methods paragraph")} <button type="button" class="tb-btn" id="copyMethods">${uiText("Copy")}</button></h3><p>${escapeHtml(rep.methods)}</p></div>` : "";
+  return methodsSlot(rep.sections.map(s => {
     let h = `<div><h3 class="h3">${escapeHtml(s.title)}${s.note ? ` <span class="note">${escapeHtml(s.note)}</span>` : ""}</h3>`;
     h += tableHtml(s.head, s.rows, !s.head);
     if (s.extra && s.extra.length) {
@@ -2801,7 +2828,64 @@ function reportHtml(rep) {
     }
     if (s.hint) h += `<p class="hint">${escapeHtml(s.hint)}</p>`;
     return h + "</div>";
-  }).join("");
+  }).join(""), methods);
+}
+const methodsSlot = (body, methods) => body + methods;
+function uiLang() { return document.documentElement.lang === "zh" ? "zh" : "en"; }
+function uiText(s) { return s; }
+document.addEventListener("click", async e => {
+  if (!e.target.closest("#copyMethods") || !lastReport || !lastReport.methods) return;
+  try { await navigator.clipboard.writeText(lastReport.methods); flash(e.target.closest("#copyMethods"), uiText("✓ Copied")); }
+  catch (_) { flash(e.target.closest("#copyMethods"), "Copy blocked"); }
+});
+/* "Statistical analysis" paragraph for a paper's methods section, written from the test that
+   ran and its options; English or Chinese, following the interface language */
+function methodsText(test, groups, plot) {
+  const zh = uiLang() === "zh", L = (en, cn) => zh ? cn : en;
+  const ph = $("posthocSelect").value, welch = $("welchChk").checked, err = $("errType").value;
+  const PH = { tukey: L("Tukey's honestly significant difference test", "Tukey HSD 检验"), holm: L("pairwise t-tests with Holm correction", "Holm 校正的两两 t 检验"),
+               bonferroni: L("pairwise t-tests with Bonferroni correction", "Bonferroni 校正的两两 t 检验"), dunnett: L("Dunnett's test against the first group", "以第一组为对照的 Dunnett 检验") };
+  const dunn = $("dunnAdj").value === "holm" ? "Holm" : "Bonferroni";
+  // group sizes, as plotted
+  let ns = [];
+  if (plot && plot.groups) ns = plot.groups.map(g => g.values.length);
+  else if (plot && plot.mode === "grouped") ns = plot.cells.flat().filter(c => c.length).map(c => c.length);
+  else if (plot && plot.mode === "xy") ns = [plot.x.length];
+  const nTxt = !ns.length ? "" : Math.min(...ns) === Math.max(...ns) ? `n = ${ns[0]}` : `n = ${Math.min(...ns)}–${Math.max(...ns)}`;
+  if (plot && plot.paired && ns.length) ns = [ns[0]];   // matched designs: n = subjects, not per group
+  const nShow = plot && plot.paired && nTxt ? nTxt + L(" subjects", " 个受试对象") : nTxt;
+  const errTxt = { sd: L("mean ± SD", "均值 ± 标准差（SD）"), sem: L("mean ± SEM", "均值 ± 标准误（SEM）"), ci: L("mean with 95% confidence interval", "均值及 95% 置信区间") }[err];
+  const meanBased = !["corr", "chisq"].includes(test);
+  const parts = [];
+  const chart = $("chartType").value;
+  if (meanBased && nTxt && (chart === "box" || chart === "violin")) parts.push(L(`Data are shown as ${chart === "box" ? "box plots" : "violin plots"} (median and interquartile range; ${nShow}${ns.length > 1 ? " per group" : ""}).`, `数据以${chart === "box" ? "箱线图" : "小提琴图"}表示（中位数及四分位距；${ns.length > 1 ? "每组 " : ""}${nShow}）。`));
+  else if (meanBased && nTxt) parts.push(L(`Data are presented as ${errTxt} (${nShow}${ns.length > 1 ? " per group" : ""}).`, `数据以${errTxt}表示（每组 ${nShow}）。`.replace("（每组 ", ns.length > 1 ? "（每组 " : "（")));
+  const letters = plot && (plot.mode === "letters" || (plot.mode === "grouped" && plot.letters));
+  const T = {
+    desc: L("Normality of each group was assessed with the Shapiro–Wilk test.", "各组数据的正态性采用 Shapiro–Wilk 检验评估。"),
+    onet: L(`The mean was compared with a hypothetical value of ${$("mu0").value || 0} using a two-tailed one-sample t-test.`, `采用双侧单样本 t 检验将均值与假设值 ${$("mu0").value || 0} 比较。`),
+    onew: L(`The median was compared with a hypothetical value of ${$("mu0").value || 0} using the Wilcoxon signed-rank test.`, `采用 Wilcoxon 符号秩检验将中位数与假设值 ${$("mu0").value || 0} 比较。`),
+    ttest: welch ? L("Differences between the two groups were tested with Welch's unpaired two-tailed t-test.", "两组间差异采用 Welch 校正的双侧非配对 t 检验。")
+                 : L("Differences between the two groups were tested with an unpaired two-tailed Student's t-test.", "两组间差异采用双侧非配对 Student t 检验。"),
+    mwu: L("Differences between the two groups were tested with the two-tailed Mann–Whitney U test.", "两组间差异采用双侧 Mann–Whitney U 检验。"),
+    paired: L("Paired measurements were compared with a two-tailed paired t-test.", "配对数据采用双侧配对 t 检验比较。"),
+    wilcoxon: L("Paired measurements were compared with the Wilcoxon matched-pairs signed-rank test.", "配对数据采用 Wilcoxon 配对符号秩检验比较。"),
+    anova: L(`Differences among groups were tested by one-way ANOVA followed by ${PH[ph]}.`, `多组间差异采用单因素方差分析（one-way ANOVA），事后比较采用${PH[ph]}。`),
+    kruskal: L(`Differences among groups were tested with the Kruskal–Wallis test followed by Dunn's multiple comparisons test (${dunn}-adjusted).`, `多组间差异采用 Kruskal–Wallis 检验，事后比较采用 Dunn 多重比较检验（${dunn} 校正）。`),
+    rmanova: L(`Repeated measurements were analysed by one-way repeated-measures ANOVA with the Geisser–Greenhouse correction, followed by ${PH[ph]}.`, `重复测量数据采用单因素重复测量方差分析（Geisser–Greenhouse 校正），事后比较采用${PH[ph]}。`),
+    friedman: L(`Repeated measurements were analysed with the Friedman test followed by Dunn's multiple comparisons test (${dunn}-adjusted).`, `重复测量数据采用 Friedman 检验，事后比较采用 Dunn 多重比较检验（${dunn} 校正）。`),
+    twoway: L(`Effects of the two factors and their interaction were tested by two-way ANOVA (Type III sums of squares), followed by ${PH[ph]} comparing columns within each row level.`, `两个因素及其交互作用采用双因素方差分析（III 型平方和）检验，并在各行水平内采用${PH[ph]}比较各列。`),
+    cells: L(`Each treatment combination was treated as one group, and differences among all groups were tested by one-way ANOVA followed by ${PH[ph]}.`, `将每个处理组合视为一组，各组间差异采用单因素方差分析，事后比较采用${PH[ph]}。`),
+    corr: L("Associations were assessed by Pearson correlation (with Spearman rank correlation as a non-parametric check) and simple linear regression.", "相关性采用 Pearson 相关分析（以 Spearman 秩相关作为非参数验证）及简单线性回归评估。"),
+    chisq: plot && plot.table && plot.table.length === 2 && plot.names.length === 2
+      ? L("Proportions were compared with Fisher's exact test.", "率的比较采用 Fisher 精确检验。")
+      : L("The distribution of outcomes across groups was compared with the chi-square test of independence.", "各组结局分布的比较采用卡方独立性检验。"),
+  };
+  if (T[test]) parts.push(T[test]);
+  if (letters) parts.push(L("Groups sharing a letter are not significantly different.", "字母相同的组间差异不显著。"));
+  if (test !== "desc") parts.push(L("P < 0.05 was considered statistically significant.", "以 P < 0.05 为差异具有统计学意义。"));
+  parts.push(L("Statistical analyses were performed with plsig (https://jieqianghe.github.io/plsig/).", "统计分析使用 plsig（https://jieqianghe.github.io/plsig/）完成。"));
+  return parts.filter(Boolean).join(zh ? "" : " ");
 }
 function reportTSV(rep) {
   const lines = ["Statistics report\t" + rep.test, ""];
@@ -3813,7 +3897,7 @@ $("copyData").onclick = async () => {
   catch { flash($("copyData"), "Copy failed"); }
 };
 $("resetGraph").onclick = () => {
-  Object.entries(GRAPH_DEFAULTS).forEach(([id, val]) => { $(id).value = val; });
+  Object.entries(graphDefaults()).forEach(([id, val]) => { $(id).value = val; });   // your saved style, if any
   syncSegs(); scheduleSave();
   if (lastPlot) drawPlot(lastPlot); // redraw at default options (also clears any zoom/pan)
   flash($("resetGraph"), "Reset ✓");
@@ -4088,6 +4172,7 @@ $("pasteBtn").onclick = armPaste;
     renderGrid();
     if (collectGroups().groups.filter(g => g.values.length).length >= 2) run();
   } else {
+    Object.entries(myStyle).forEach(([id, v]) => { if ($(id)) $(id).value = v; });   // a new visit starts in your style
     syncTestOptions();
     seedFromDemo();
     run();
