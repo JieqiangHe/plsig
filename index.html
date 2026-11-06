@@ -273,6 +273,18 @@ td.rowhdr:hover, .col-letter:hover { color: var(--fg-strong); }
 td.rowhdr.hd-on { color: var(--accent); font-weight: 600; box-shadow: inset -2px 0 0 var(--focus-border); }
 th.hd-on .col-letter { color: var(--accent); font-weight: 600; box-shadow: inset 0 -2px 0 var(--focus-border); }
 /* right-click menu */
+/* sheet tabs: a strip over the data sheet */
+#tabs { flex: none; display: flex; align-items: flex-end; gap: 2px; padding: 5px 8px 0; overflow-x: auto; scrollbar-width: none; background: var(--bg); border-bottom: 1px solid var(--card-border); }
+#tabs .tab { position: relative; display: inline-flex; align-items: center; gap: 4px; flex: none; max-width: 180px; height: 26px; padding: 0 8px 0 11px; border: 1px solid transparent; border-bottom: 0; border-radius: 6px 6px 0 0; background: var(--seg-bg); color: var(--fg-muted); font-size: 12px; cursor: pointer; user-select: none; }
+#tabs .tab:hover { color: var(--fg-strong); }
+#tabs .tab.on { background: var(--input-bg); color: var(--fg-strong); font-weight: 600; border-color: var(--card-border); margin-bottom: -1px; height: 27px; box-shadow: inset 0 2px 0 var(--accent); }
+#tabs .tab .nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#tabs .tab .x { display: grid; place-items: center; width: 16px; height: 16px; border-radius: 4px; font-size: 13px; line-height: 1; color: var(--fg-faint); visibility: hidden; }
+#tabs .tab:hover .x, #tabs .tab.on .x { visibility: visible; }
+#tabs .tab .x:hover { background: var(--btn-hover); color: var(--fg-strong); }
+#tabs .tab input { width: 110px; height: 20px; padding: 0 4px; border: 1px solid var(--focus-border); border-radius: 4px; background: var(--input-bg); color: var(--fg-strong); font: inherit; outline: none; }
+#tabs .add { flex: none; display: grid; place-items: center; width: 26px; height: 24px; margin-bottom: 1px; border-radius: 6px; font-size: 16px; color: var(--fg-muted); }
+#tabs .add:hover { background: var(--btn-hover); color: var(--fg-strong); }
 #ctxMenu { position: fixed; z-index: 50; min-width: 210px; padding: 4px; border: 1px solid var(--card-border); border-radius: 8px; background: var(--surface); box-shadow: 0 8px 28px rgba(0,0,0,.18), 0 1px 3px rgba(0,0,0,.1); }
 #ctxMenu button { display: flex; align-items: center; width: 100%; height: 26px; padding: 0 8px; border-radius: 5px; font-size: 12px; color: var(--fg); text-align: left; }
 #ctxMenu button span { flex: 1; }
@@ -497,6 +509,8 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
   <div id="work">
     <!-- ============ DATA SHEET ============ -->
     <section id="vData">
+      <!-- one tab per data sheet; each keeps its own data, test, figure options and undo -->
+      <div id="tabs" role="tablist" aria-label="Sheets"></div>
       <div id="sheetWrap">
         <div id="selBox" hidden></div>
         <table class="data-grid" id="dataTable" aria-label="Data grid"></table>
@@ -540,6 +554,7 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
       <dt>Two-way</dt><dd>Columns are the levels of one factor (e.g. Control / Drug); the row title names the level of the other (e.g. Male / Female). Put each replicate on its own row and repeat the row title.</dd>
       <dt>Clusters</dt><dd>For bars in clusters with letters over each bar (e.g. Control, P1–P3 × M1–M3), choose <i>One-way ANOVA across grouped cells</i>. The row title names the cluster on the x axis and each column is a bar colour; every row-title × column cell is one group, and cells may stay empty (a Control row fills only its own column).</dd>
       <dt>Exclude</dt><dd>Right-click a column (or a block of columns) and choose <i>Exclude from the analysis</i> to keep the data on the sheet but out of the test and the figure. The same menu includes it again.</dd>
+      <dt>Sheets</dt><dd>The tabs over the sheet each hold their own data, test, figure options and undo history: one tab per figure. <b>+</b> (or a double-click on the empty strip) adds one; double-click a tab to rename it; right-click to duplicate, move or delete. Save writes every tab into one .jgz file, and Open adds a file's tabs to the ones you have.</dd>
       <dt>Paste</dt><dd>Paste a block from Excel/Sheets into any cell (<kbd>⌘/Ctrl</kbd> <kbd>V</kbd>); the grid expands to fit. To replace the whole sheet, click the paste bar under the sheet (or Paste in the ribbon) and press <kbd>⌘/Ctrl</kbd> <kbd>V</kbd>: tables from Excel, Word, web pages, PDFs and CSV text all work, with or without a header row. You can also drop a .csv / .txt file on the bar.</dd>
       <dt>Select</dt><dd>Click a cell and just type to replace it; double-click or <kbd>F2</kbd> to edit inside it. Drag, or <kbd>Shift</kbd> + click / arrows, to select a block; click a row number or column letter for a whole row or column; <kbd>⌘/Ctrl</kbd> <kbd>A</kbd> selects everything. Click the empty grid to add rows and columns there.</dd>
       <dt>Move</dt><dd>Arrows, <kbd>Tab</kbd> and <kbd>Enter</kbd> move between cells (<kbd>Enter</kbd> on the last row adds one); <kbd>⌘/Ctrl</kbd> + arrow jumps to the edge.</dd>
@@ -1609,7 +1624,8 @@ let saveTimer = null;
 function scheduleSave() {
   clearTimeout(saveTimer);
   saveTimer = setTimeout(() => {
-    try { localStorage.setItem(STORE_KEY, JSON.stringify({ grid, titles, settings: collectSettings() })); } catch (e) { /* storage unavailable */ }
+    try { localStorage.setItem(STORE_KEY, JSON.stringify({ grid, titles, settings: collectSettings(),
+                                                           sheets: sheets.map((_, i) => sheetData(i)), cur: curSheet })); } catch (e) { /* storage unavailable */ }
   }, 300);
 }
 function loadSaved() {
@@ -2082,6 +2098,147 @@ addEventListener("mousedown", e => { if (!ctxMenu.hidden && !ctxMenu.contains(e.
 addEventListener("keydown", e => { if (e.key === "Escape" && !ctxMenu.hidden) { closeMenu(); e.stopPropagation(); } }, true);
 addEventListener("blur", closeMenu);
 $("sheetWrap").addEventListener("scroll", closeMenu);
+
+/* ============================================================
+   SHEET TABS
+   Each tab is a sheet with its own data, row titles, settings (test, chart, size …)
+   and undo history. The active sheet lives in the usual globals (grid, titles, the
+   ribbon's inputs, undoStack); the others are parked in `sheets`.
+   ============================================================ */
+let sheets = [{ name: "Sheet 1" }], curSheet = 0;
+const tabsEl = $("tabs");
+function nextSheetName(base = "Sheet") {
+  const used = new Set(sheets.map(s => s.name));
+  for (let i = 1; ; i++) if (!used.has(`${base} ${i}`)) return `${base} ${i}`;
+}
+/* the active sheet as plain data (for saving and switching) */
+function sheetData(i) {
+  const sh = sheets[i];
+  return i === curSheet ? { name: sh.name, grid, titles, settings: collectSettings() }
+                        : { name: sh.name, grid: sh.grid, titles: sh.titles, settings: sh.settings };
+}
+function stashSheet() {
+  commitEdit();
+  const sh = sheets[curSheet];
+  Object.assign(sh, { grid, titles, settings: collectSettings(), undo: undoStack.splice(0), redo: redoStack.splice(0) });
+}
+function showSheet(i, { stash = true } = {}) {
+  closeTitleEditor(true);
+  if (stash && sheets[curSheet]) stashSheet();
+  curSheet = i;
+  const sh = sheets[i];
+  grid = sanitizeGrid(sh.grid || []); titles = sanitizeTitles(sh.titles);
+  if (!grid.length) seedBlankData();
+  applySettings(sh.settings || {});
+  undoStack.length = 0; redoStack.length = 0;
+  undoStack.push(...(sh.undo || [])); redoStack.push(...(sh.redo || []));
+  delete sh.undo; delete sh.redo;
+  sel = null;
+  renderGrid(); renderTabs(); updateHistoryButtons(); syncSegs(); scheduleSave();
+  if (collectGroups().groups.some(g => g.values.length)) run(true); else { showWarnings([]); clearResults(); }
+}
+function seedBlankData() {
+  grid = [{ name: groupLabel(0), cells: Array(DEFAULT_ROWS).fill("") }, { name: groupLabel(1), cells: Array(DEFAULT_ROWS).fill("") }];
+  titles = [];
+}
+function addSheet(data, at = sheets.length) {
+  stashSheet();
+  sheets.splice(at, 0, Object.assign({ name: nextSheetName() }, data));
+  showSheet(at, { stash: false });
+}
+function duplicateSheet(i) {
+  const d = JSON.parse(JSON.stringify(sheetData(i)));
+  const base = d.name.replace(/ \(copy( \d+)?\)$/, ""), used = new Set(sheets.map(x => x.name));
+  d.name = base + " (copy)";
+  for (let n = 2; used.has(d.name); n++) d.name = `${base} (copy ${n})`;
+  addSheet(d, i + 1);
+}
+function deleteSheet(i) {
+  if (sheets.length < 2) return;
+  const d = sheetData(i);
+  const hasData = d.grid.some(g => g.cells.some(c => String(c).trim()));
+  if (hasData && !confirm(`Delete “${sheets[i].name}” and its data? This cannot be undone.`)) return;
+  if (i === curSheet) {
+    sheets.splice(i, 1);
+    showSheet(Math.min(i, sheets.length - 1), { stash: false });
+  } else {
+    sheets.splice(i, 1);
+    if (i < curSheet) curSheet--;
+    renderTabs(); scheduleSave();
+  }
+}
+function renameSheet(i) {
+  const tab = tabsEl.querySelector(`.tab[data-i="${i}"]`);
+  if (!tab) return;
+  const inp = document.createElement("input");
+  inp.value = sheets[i].name; inp.setAttribute("aria-label", "Sheet name");
+  tab.querySelector(".nm").replaceWith(inp);
+  inp.focus(); inp.select();
+  let done = false;
+  const finish = (keep) => {
+    if (done) return; done = true;
+    const v = inp.value.trim();
+    if (keep && v) { sheets[i].name = v; scheduleSave(); }
+    renderTabs();
+  };
+  inp.addEventListener("keydown", e => {
+    e.stopPropagation();
+    if (e.isComposing || e.keyCode === 229) return;
+    if (e.key === "Enter") finish(true); else if (e.key === "Escape") finish(false);
+  });
+  inp.addEventListener("blur", () => finish(true));
+}
+function renderTabs() {
+  tabsEl.innerHTML = sheets.map((sh, i) =>
+    `<div class="tab${i === curSheet ? " on" : ""}" role="tab" aria-selected="${i === curSheet}" data-i="${i}" title="${escapeHtml(sh.name)} — double-click to rename, right-click for more"><span class="nm">${escapeHtml(sh.name)}</span>` +
+    (sheets.length > 1 ? `<span class="x" data-x="${i}" role="button" aria-label="Close ${escapeHtml(sh.name)}">×</span>` : "") + `</div>`
+  ).join("") + `<button type="button" class="add" title="New sheet" aria-label="New sheet">+</button>`;
+  tabsEl.querySelector(".tab.on")?.scrollIntoView({ block: "nearest", inline: "nearest" });
+}
+tabsEl.addEventListener("click", e => {
+  if (e.target.closest("input")) return;
+  if (e.target.closest(".add")) { addSheet({}); return; }
+  const x = e.target.closest("[data-x]");
+  if (x) { deleteSheet(+x.dataset.x); return; }
+  const t = e.target.closest(".tab");
+  if (t && +t.dataset.i !== curSheet) showSheet(+t.dataset.i);
+});
+tabsEl.addEventListener("dblclick", e => {
+  const t = e.target.closest(".tab");
+  if (t && !e.target.closest("[data-x], input")) renameSheet(+t.dataset.i);
+  else if (!t && !e.target.closest(".add")) addSheet({});   // double-click the empty strip: new sheet
+});
+tabsEl.addEventListener("contextmenu", e => {
+  const t = e.target.closest(".tab");
+  if (!t) return;
+  e.preventDefault();
+  const i = +t.dataset.i;
+  ctxMenu.innerHTML = [["rename", "Rename"], ["dup", "Duplicate"], ["new", "New sheet"], "-", ["left", "Move left", i === 0], ["right", "Move right", i === sheets.length - 1], "-", ["del", "Delete", sheets.length < 2]]
+    .map(it => it === "-" ? "<hr>" : `<button type="button" data-tact="${it[0]}" data-i="${i}"${it[2] ? " disabled" : ""}><span>${it[1]}</span></button>`).join("");
+  ctxMenu.hidden = false;
+  ctxMenu.style.left = Math.min(e.clientX, innerWidth - ctxMenu.offsetWidth - 6) + "px";
+  ctxMenu.style.top = Math.min(e.clientY, innerHeight - ctxMenu.offsetHeight - 6) + "px";
+});
+ctxMenu.addEventListener("click", e => {
+  const b = e.target.closest("button[data-tact]");
+  if (!b) return;
+  closeMenu();
+  const i = +b.dataset.i;
+  const move = (d) => {
+    const j = i + d, [sh] = sheets.splice(i, 1);
+    sheets.splice(j, 0, sh);
+    if (curSheet === i) curSheet = j; else if (curSheet === j) curSheet = i;
+    renderTabs(); scheduleSave();
+  };
+  switch (b.dataset.tact) {
+    case "rename": renameSheet(i); break;
+    case "dup": duplicateSheet(i); break;
+    case "new": addSheet({}, i + 1); break;
+    case "left": move(-1); break;
+    case "right": move(1); break;
+    case "del": deleteSheet(i); break;
+  }
+});
 
 /* Paste a block copied from Excel/Sheets directly into the grid, starting at
    (startG, startR). Expands rows & groups as needed and detects a leading
@@ -3333,7 +3490,8 @@ $("dlSvg").onclick = () => downloadPlot("svg", $("dlSvg"));
    SESSION EXPORT / IMPORT  (.jgz = gzip-compressed JSON)
    ============================================================ */
 async function exportJH() {
-  const payload = JSON.stringify({ app: "plsig", v: 4, savedAt: new Date().toISOString(), grid, titles, settings: collectSettings(),
+  const payload = JSON.stringify({ app: "plsig", v: 5, savedAt: new Date().toISOString(), grid, titles, settings: collectSettings(),
+                                   sheets: sheets.map((_, i) => sheetData(i)), cur: curSheet,
                                    report: lastReport ? reportTSV(lastReport) : "" });
   let blob;
   if (typeof CompressionStream !== "undefined") {
@@ -3369,14 +3527,23 @@ $("importJH").onchange = async (e) => {
   try {
     const data = await readJH(file);
     if (!data || !Array.isArray(data.grid)) throw new Error("not a valid .jgz analysis file");
-    pushHistory();
-    grid = sanitizeGrid(data.grid);
-    titles = sanitizeTitles(data.titles);
-    renderGrid();
-    applySettings(data.settings);
-    scheduleSave();
-    run(); // re-runs analysis so results table + graph appear immediately
-    flash($("importLabel"), "✓ Loaded");
+    // the file's sheets open as new tabs (a blank current sheet is replaced); older files hold one sheet
+    const base = file.name.replace(/\.[^.]+$/, "");
+    const incoming = Array.isArray(data.sheets) && data.sheets.length ? data.sheets
+                   : [{ name: base, grid: data.grid, titles: data.titles, settings: data.settings }];
+    stashSheet();
+    const blank = !sheets[curSheet].grid.some(g => g.cells.some(c => String(c).trim()));
+    const at = blank ? curSheet : sheets.length;
+    if (blank) sheets.splice(curSheet, 1);
+    const used = new Set(sheets.map(s => s.name));
+    sheets.splice(at, 0, ...incoming.map((sh, k) => {
+      let name = String(sh.name || base || `Sheet ${k + 1}`), n = 2;
+      while (used.has(name)) name = `${sh.name || base} (${n++})`;
+      used.add(name);
+      return { name, grid: sh.grid, titles: sh.titles, settings: sh.settings };
+    }));
+    showSheet(at, { stash: false });
+    flash($("importLabel"), incoming.length > 1 ? `✓ ${incoming.length} sheets` : "✓ Loaded");
   } catch (err) {
     alert("Could not import this file: " + err.message);
   }
@@ -3418,7 +3585,10 @@ $("pasteBtn").onclick = armPaste;
    ============================================================ */
 (function init() {
   const saved = loadSaved();
-  if (saved && Array.isArray(saved.grid) && saved.grid.length) {
+  if (saved && Array.isArray(saved.sheets) && saved.sheets.length) {
+    sheets = saved.sheets.map((sh, i) => ({ name: String(sh.name || `Sheet ${i + 1}`), grid: sh.grid, titles: sh.titles, settings: sh.settings }));
+    showSheet(Math.max(0, Math.min(sheets.length - 1, saved.cur | 0)), { stash: false });
+  } else if (saved && Array.isArray(saved.grid) && saved.grid.length) {
     grid = sanitizeGrid(saved.grid);
     titles = sanitizeTitles(saved.titles);
     applySettings(saved.settings);
@@ -3429,6 +3599,7 @@ $("pasteBtn").onclick = armPaste;
     seedFromDemo();
     run();
   }
+  renderTabs();
   updateHistoryButtons();
   syncSegs();
 })();
