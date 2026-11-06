@@ -30,67 +30,67 @@ svg { display: block; }
    figure itself always renders on white paper (see THEMES) and is unaffected. */
 :root {
   color-scheme: dark;
-  /* Claude palette (shared with ocrp): warm charcoal, ivory text, terracotta accent */
-  --bg: #1f1e1d;                   /* ribbon + status bar */
-  --surface: #262624;              /* results */
-  --card-border: #3a3935;
+  /* neutral greys with a blue accent, as in the user's svguest (Nov 2026; the warm Claude palette was dropped) */
+  --bg: #1f1f1f;                   /* ribbon, tabs */
+  --surface: #262626;              /* results */
+  --card-border: #383838;
   --card-shadow: 0 1px 2px rgba(0,0,0,.6);
-  --grid-border: #3a3935;          /* inset boxes */
-  --panel: #2a2926;                /* neutral fills */
-  --side: #1f1e1d;                 /* figure area */
-  --seg-bg: rgba(245,244,239,.07);  --seg-on: #3a3935;
-  --canvas: #141413;
-  --fg: #f5f4ef;  --fg-strong: #faf9f5;  --fg-soft: #d6d4cc;
-  --fg-muted: #a3a196;  --fg-faint: #8f8d84;
-  --btn-bg: #2a2926;  --btn-hover: #35332f;  --btn-border: #3a3935;
-  --input-bg: #191817;  --input-border: #3a3935;
-  --input-hover-bg: #191817;  --input-hover-border: #57554f;
-  --focus-border: #e08a6a;  --focus-ring: 0 0 0 3px rgba(224,138,106,.25);
-  --cell-border: #2f2e2b;  --cell-focus-bg: #191817;
-  --bad-bg: rgba(224,112,95,.14);  --bad-border: #e0705f;  --bad-fg: #f6c9c1;
-  --thead-bg: #242321;  --row-alt: rgba(245,244,239,.03);
-  --scrollbar: rgba(245,244,239,.18);  --option-bg: #262624;
-  --accent: #e08a6a;  --accent-soft: rgba(217,119,87,.22);
-  --run-bg: #d97757;  --run-fg: #1f1e1d;  --run-hover: #e08a6a;   /* Analyze */
-  --danger-hover-bg: rgba(224,112,95,.12);  --danger-hover-fg: #e0705f;   /* Clear */
-  --ok: #7fbf8f;  --ok-bg: rgba(127,191,143,.16);                 /* significant */
-  --ok-box-bg: rgba(127,191,143,.08);  --ok-box-border: rgba(127,191,143,.35);
+  --grid-border: #383838;          /* inset boxes */
+  --panel: #2a2a2a;                /* neutral fills */
+  --side: #1f1f1f;                 /* figure area */
+  --seg-bg: rgba(255,255,255,.07);  --seg-on: #3d3d3d;
+  --canvas: #141414;
+  --fg: #e3e3e3;  --fg-strong: #f5f5f5;  --fg-soft: #cfcfcf;
+  --fg-muted: #a6a6a6;  --fg-faint: #8c8c8c;
+  --btn-bg: #303030;  --btn-hover: #3a3a3a;  --btn-border: #3d3d3d;
+  --input-bg: #1a1a1a;  --input-border: #383838;
+  --input-hover-bg: #1a1a1a;  --input-hover-border: #555555;
+  --focus-border: #4c8df6;  --focus-ring: 0 0 0 3px rgba(76,141,246,.3);
+  --cell-border: #2e2e2e;  --cell-focus-bg: #1a1a1a;
+  --bad-bg: rgba(240,122,112,.14);  --bad-border: #f07a70;  --bad-fg: #f8c6c1;
+  --thead-bg: #242424;  --row-alt: rgba(255,255,255,.03);
+  --scrollbar: rgba(255,255,255,.18);  --option-bg: #262626;
+  --accent: #4c8df6;  --accent-soft: rgba(76,141,246,.2);
+  --run-bg: #4c8df6;  --run-fg: #ffffff;  --run-hover: #6aa1f8;   /* Run, Download, primary actions */
+  --danger-hover-bg: rgba(240,122,112,.12);  --danger-hover-fg: #f07a70;   /* Clear */
+  --ok: #4fc27e;  --ok-bg: rgba(79,194,126,.16);                 /* significant */
+  --ok-box-bg: rgba(79,194,126,.08);  --ok-box-border: rgba(79,194,126,.35);
   --warn: #e2a33c;  --warn-bg: rgba(226,163,60,.1);  --warn-border: rgba(226,163,60,.32);
-  --err: #e0705f;
-  --ns-pill-bg: #35332f;  --ns-pill-fg: #d6d4cc;                  /* "ns" pill */
-  --plot-shadow: 0 0 0 1px #3a3935;   /* flat: a hairline edge, no drop shadow */
+  --err: #f07a70;
+  --ns-pill-bg: #383838;  --ns-pill-fg: #cfcfcf;                  /* "ns" pill */
+  --plot-shadow: 0 0 0 1px #383838;   /* flat: a hairline edge, no drop shadow */
 }
 [data-theme="light"] {
   color-scheme: light;
-  /* Claude palette (shared with ocrp): ivory paper, near-black ink, terracotta accent */
-  --bg: #f0eee6;
-  --surface: #faf9f5;
-  --card-border: #d9d6cd;
-  --card-shadow: 0 1px 2px rgba(20,20,19,.08);
-  --grid-border: #d9d6cd;
-  --panel: #f0eee6;
-  --side: #f0eee6;
-  --seg-bg: rgba(20,20,19,.06);  --seg-on: #fffefb;
-  --canvas: #e8e5dc;
-  --fg: #141413;  --fg-strong: #141413;  --fg-soft: #3d3c38;
-  --fg-muted: #63615a;  --fg-faint: #8a877d;
-  --btn-bg: #faf9f5;  --btn-hover: #e8e5dc;  --btn-border: #d9d6cd;
-  --input-bg: #fdfcf9;  --input-border: #d9d6cd;
-  --input-hover-bg: #fdfcf9;  --input-hover-border: #bfbbb0;
-  --focus-border: #c96442;  --focus-ring: 0 0 0 3px rgba(201,100,66,.16);
-  --cell-border: #e6e3da;  --cell-focus-bg: #ffffff;
-  --bad-bg: rgba(191,77,67,.08);  --bad-border: #bf4d43;  --bad-fg: #8f342c;
-  --thead-bg: #f0eee6;  --row-alt: #f5f3ec;
-  --scrollbar: rgba(20,20,19,.2);  --option-bg: #faf9f5;
-  --accent: #c96442;  --accent-soft: rgba(217,119,87,.15);
-  --run-bg: #c96442;  --run-fg: #ffffff;  --run-hover: #b5573a;
-  --danger-hover-bg: rgba(191,77,67,.08);  --danger-hover-fg: #bf4d43;
-  --ok: #3f8f5f;  --ok-bg: rgba(63,143,95,.12);
-  --ok-box-bg: rgba(63,143,95,.06);  --ok-box-border: rgba(63,143,95,.3);
+  /* plain white and light greys with a blue accent, as in svguest */
+  --bg: #f7f7f7;
+  --surface: #ffffff;
+  --card-border: #e3e3e3;
+  --card-shadow: 0 1px 2px rgba(0,0,0,.08);
+  --grid-border: #e3e3e3;
+  --panel: #f5f5f5;
+  --side: #f2f2f2;
+  --seg-bg: rgba(0,0,0,.05);  --seg-on: #ffffff;
+  --canvas: #ebebeb;
+  --fg: #262626;  --fg-strong: #1f1f1f;  --fg-soft: #404040;
+  --fg-muted: #6e6e6e;  --fg-faint: #8a8a8a;
+  --btn-bg: #fafafa;  --btn-hover: #ececec;  --btn-border: #dedede;
+  --input-bg: #ffffff;  --input-border: #e0e0e0;
+  --input-hover-bg: #ffffff;  --input-hover-border: #bdbdbd;
+  --focus-border: #1a73e8;  --focus-ring: 0 0 0 3px rgba(26,115,232,.16);
+  --cell-border: #ececec;  --cell-focus-bg: #ffffff;
+  --bad-bg: rgba(204,65,54,.07);  --bad-border: #cc4136;  --bad-fg: #a3342b;
+  --thead-bg: #f7f7f7;  --row-alt: #fafafa;
+  --scrollbar: rgba(0,0,0,.2);  --option-bg: #ffffff;
+  --accent: #1a73e8;  --accent-soft: rgba(26,115,232,.12);
+  --run-bg: #1a73e8;  --run-fg: #ffffff;  --run-hover: #1765cc;
+  --danger-hover-bg: rgba(204,65,54,.07);  --danger-hover-fg: #cc4136;
+  --ok: #2f8f55;  --ok-bg: rgba(47,143,85,.12);
+  --ok-box-bg: rgba(47,143,85,.06);  --ok-box-border: rgba(47,143,85,.3);
   --warn: #b4761a;  --warn-bg: rgba(180,118,26,.08);  --warn-border: rgba(180,118,26,.3);
-  --err: #bf4d43;
-  --ns-pill-bg: #e8e5dc;  --ns-pill-fg: #63615a;
-  --plot-shadow: 0 0 0 1px #d9d6cd;
+  --err: #cc4136;
+  --ns-pill-bg: #ededed;  --ns-pill-fg: #595959;
+  --plot-shadow: 0 0 0 1px #e0e0e0;
 }
 /* controls */
 .tb-btn{display:inline-flex;align-items:center;gap:5px;height:26px;padding:0 9px;background-color:var(--btn-bg);color:var(--fg);border:1px solid var(--btn-border);border-radius:6px;box-shadow:0 1px 1px rgba(0,0,0,.04);font-size:12px;line-height:1;white-space:nowrap;cursor:pointer}
@@ -208,7 +208,7 @@ a.tb-btn { text-decoration: none; }
 #plot.on-title, #plot.on-title * { cursor: text !important; }
 #vGraph { position: relative; }
 .axis-ed { position: absolute; z-index: 20; height: 26px; box-sizing: border-box; padding: 0 8px; font: 14px Arial, Helvetica, "PingFang SC", "Microsoft YaHei", sans-serif; text-align: center;
-           color: #141413; background: #fff; border: 1px solid var(--accent); border-radius: 6px; outline: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent); }
+           color: #1f1f1f; background: #fff; border: 1px solid var(--accent); border-radius: 6px; outline: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent); }
 #runBtn { display: flex; align-items: center; justify-content: center; gap: 5px; height: 24px; background: var(--run-bg); color: var(--run-fg); border: 0; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; }
 #runBtn svg { width: 10px; height: 10px; fill: currentColor; }
 #runBtn:hover:not(:disabled) { background: var(--run-hover); }
@@ -244,6 +244,8 @@ a.tb-btn { text-decoration: none; }
 #pasteZone.armed, #pasteZone.over { border-style: solid; border-color: var(--focus-border); background: var(--accent-soft); color: var(--fg-strong); }
 #pasteZone.done { border-style: solid; border-color: var(--ok-box-border); background: var(--ok-box-bg); color: var(--ok); }
 .paste-bar #loadDemoBtn { flex: none; height: 28px; border-color: transparent; background: transparent; box-shadow: none; color: var(--fg-muted); }
+.paste-bar #loadDemoBtn { gap: 6px; }
+.paste-bar #loadDemoBtn svg.chev { width: 9px; height: 9px; stroke-width: 1.6; }
 .paste-bar #loadDemoBtn:hover { background: var(--btn-hover); color: var(--fg-strong); }
 
 /* Data grid — spreadsheet look: column letters, hairline grid, sticky header + row numbers */
@@ -302,6 +304,17 @@ th.hd-on .col-letter { color: var(--accent); font-weight: 600; box-shadow: inset
 #tabs .tab input { width: 110px; height: 20px; padding: 0 4px; border: 1px solid var(--focus-border); border-radius: 4px; background: var(--input-bg); color: var(--fg-strong); font: inherit; outline: none; }
 #tabs .add { flex: none; display: grid; place-items: center; width: 26px; height: 24px; margin-bottom: 1px; border-radius: 6px; font-size: 16px; color: var(--fg-muted); }
 #tabs .add:hover { background: var(--btn-hover); color: var(--fg-strong); }
+/* first-run tour */
+#tourRing { position: fixed; z-index: 70; border-radius: 8px; box-shadow: 0 0 0 2px var(--accent), 0 0 0 9999px rgba(20,20,19,.38); pointer-events: none; transition: all .2s; }
+#tourBox { position: fixed; z-index: 71; width: 280px; padding: 12px 14px 10px; border: 1px solid var(--card-border); border-radius: 8px; background: var(--surface); box-shadow: 0 10px 30px rgba(0,0,0,.25); font-size: 12.5px; color: var(--fg); }
+#tourBox b { font-size: 13px; color: var(--fg-strong); }
+#tourBox p { margin: 5px 0 10px; line-height: 1.5; color: var(--fg-soft); }
+#tourBox footer { display: flex; align-items: center; gap: 6px; }
+#tourBox footer span { flex: 1; font-size: 11px; color: var(--fg-faint); }
+#tourBox footer button { height: 24px; padding: 0 10px; border-radius: 6px; font-size: 12px; color: var(--fg-muted); background: var(--seg-bg); }
+#tourBox footer button:hover { color: var(--fg-strong); }
+#tourBox footer button.primary { background: var(--run-bg); color: var(--run-fg); font-weight: 600; }
+#helpDlg header #tourBtn { height: 26px; margin-right: 6px; }
 #ctxMenu { position: fixed; z-index: 50; min-width: 210px; padding: 4px; border: 1px solid var(--card-border); border-radius: 8px; background: var(--surface); box-shadow: 0 8px 28px rgba(0,0,0,.18), 0 1px 3px rgba(0,0,0,.1); }
 #ctxMenu button { display: flex; align-items: center; width: 100%; height: 26px; padding: 0 8px; border-radius: 5px; font-size: 12px; color: var(--fg); text-align: left; }
 #ctxMenu button span { flex: 1; }
@@ -548,7 +561,7 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
             <span id="pasteMsg"></span>
             <textarea id="pasteCatch" class="sr-only" aria-label="Paste data here to replace the sheet" tabindex="-1"></textarea>
           </label>
-          <button id="loadDemoBtn" class="tb-btn" title="Replace the sheet with the demo data (Undo brings yours back)">Demo data</button>
+          <button id="loadDemoBtn" class="tb-btn menu-btn" aria-haspopup="listbox" title="Example data sets laid out for each kind of test; each opens in a new tab">Examples<svg class="chev" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4"/></svg></button>
         </div>
       </div>
     </section>
@@ -571,7 +584,7 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
   <div id="ctxMenu" role="menu" hidden></div>
 
   <dialog id="helpDlg"><form method="dialog">
-    <header><h3>Tips</h3><button type="submit" value="" aria-label="Close">×</button></header>
+    <header><h3>Tips</h3><button type="button" id="tourBtn" class="tb-btn">Take the tour</button><button type="submit" value="" aria-label="Close">×</button></header>
     <dl>
       <dt>Layout</dt><dd>One column per group. Paired, repeated-measures and Friedman tests match values by row (one subject per row). Correlation uses column A as X and B as Y. Contingency tables hold counts: columns are groups, rows are outcomes (named by the row titles).</dd>
       <dt>Two-way</dt><dd>Columns are the levels of one factor (e.g. Control / Drug); the row title names the level of the other (e.g. Male / Female). Put each replicate on its own row and repeat the row title.</dd>
@@ -1548,7 +1561,7 @@ menuPop.addEventListener("click", e => {
 });
 menuPop.addEventListener("keydown", e => {
   const items = [...menuPop.querySelectorAll("button[data-v]")], i = items.indexOf(document.activeElement);
-  const go = (j) => { e.preventDefault(); items[Math.max(0, Math.min(items.length - 1, j))].focus(); };
+  const go = (j) => { e.preventDefault(); if (items.length) items[Math.max(0, Math.min(items.length - 1, j))].focus(); };
   if (e.key === "ArrowDown") go(i + 1);
   else if (e.key === "ArrowUp") go(i - 1);
   else if (e.key === "Home") go(0);
@@ -2468,7 +2481,121 @@ $("clearBtn").onclick = () => {
   clearResults();
   const u = $("undoBtn"); u.classList.add("pulse"); setTimeout(() => u.classList.remove("pulse"), 1600);   // point at Undo, which brings the data back
 };
-$("loadDemoBtn").onclick = () => { pushHistory(); seedFromDemo(); scheduleSave(); run(); };
+/* example gallery: one data set per kind of test, laid out the way that test reads it;
+   each opens in its own tab (a blank current tab is reused) */
+const EXAMPLES = [
+  { name: "Two groups", hint: "unpaired t-test", test: "ttest",
+    cols: { Control: [5.1, 4.8, 5.5, 4.9, 5.3, 5.0, 4.7, 5.2], Treatment: [7.2, 6.9, 7.8, 7.1, 6.5, 7.4, 7.0, 6.8] } },
+  { name: "Several groups", hint: "one-way ANOVA, letters", test: "anova", posthoc: "tukey",
+    cols: { Control: [12.1, 11.4, 12.8, 11.9, 12.5, 11.7], "Low dose": [13.0, 13.6, 12.7, 13.9, 13.2, 12.9],
+            "Mid dose": [14.8, 15.3, 14.1, 15.6, 14.9, 15.1], "High dose": [15.2, 16.0, 15.7, 14.9, 15.8, 16.3] } },
+  { name: "Before / after", hint: "paired t-test, one subject per row", test: "paired",
+    cols: { Before: [142, 135, 151, 128, 147, 139, 156, 133], After: [131, 129, 140, 125, 136, 132, 144, 127] } },
+  { name: "Two factors", hint: "two-way ANOVA, row titles = sex", test: "twoway", posthoc: "tukey",
+    titles: ["Male", "Male", "Male", "Male", "Female", "Female", "Female", "Female"],
+    cols: { Control: [24.1, 22.8, 25.3, 23.6, 20.2, 21.5, 19.8, 20.9], Drug: [30.4, 29.1, 31.8, 30.0, 23.4, 24.8, 22.9, 24.1] } },
+  { name: "Clustered treatments", hint: "letters per bar, Control + P × M", test: "cells", posthoc: "tukey", xLabel: "",
+    titles: ["Control", "Control", "Control", "P1", "P1", "P1", "P2", "P2", "P2", "P3", "P3", "P3"],
+    cols: { Control: [10.2, 10.6, 10.1, "", "", "", "", "", "", "", "", ""],
+            M1: ["", "", "", 10.3, 10.6, 10.5, 10.6, 10.9, 11.0, 11.8, 12.1, 11.9],
+            M2: ["", "", "", 10.4, 10.8, 10.6, 10.5, 10.8, 10.9, 11.9, 12.0, 12.2],
+            M3: ["", "", "", 10.2, 10.7, 10.6, 10.6, 11.2, 11.3, 12.0, 12.3, 12.1] } },
+  { name: "Dose–response", hint: "correlation + regression, A = X", test: "corr",
+    cols: { "Dose (mg)": [0, 5, 10, 15, 20, 25, 30, 35, 40], Response: [2.1, 3.4, 4.2, 5.9, 6.3, 7.8, 8.4, 9.9, 10.6] } },
+  { name: "Counts", hint: "chi-square / Fisher, rows = outcomes", test: "chisq", titles: ["Responded", "No response"],
+    cols: { Placebo: [8, 22], Drug: [19, 11] } },
+];
+function openExample(ex) {
+  const names = Object.keys(ex.cols), n = Math.max(...names.map(k => ex.cols[k].length));
+  const g = names.map(k => ({ name: k, cells: Array.from({ length: n }, (_, i) => ex.cols[k][i] == null ? "" : String(ex.cols[k][i])) }));
+  const settings = Object.assign(collectSettings(), { testSelect: ex.test, xLabel: ex.xLabel ?? GRAPH_DEFAULTS.xLabel, yLabel: GRAPH_DEFAULTS.yLabel, plotW: "", plotH: "" },
+                                 ex.posthoc ? { posthocSelect: ex.posthoc } : {});
+  stashSheet();
+  const cur = sheets[curSheet], blank = !cur.grid.some(c => c.cells.some(v => String(v).trim()));
+  const used = new Set(sheets.filter((_, i) => !(blank && i === curSheet)).map(x => x.name));
+  let name = ex.name;
+  for (let k = 2; used.has(name); k++) name = `${ex.name} ${k}`;
+  const data = { name, grid: g, titles: ex.titles ? ex.titles.slice() : [], settings };
+  if (blank) { sheets[curSheet] = data; showSheet(curSheet, { stash: false }); }
+  else { sheets.push(data); showSheet(sheets.length - 1, { stash: false }); }
+}
+const exampleAnchor = { _btn: $("loadDemoBtn") };
+$("loadDemoBtn").onclick = () => {
+  if (menuFor === exampleAnchor) { closeMenuPop(); return; }
+  closeMenuPop();
+  menuFor = exampleAnchor;
+  menuPop.innerHTML = `<h4>Examples — each opens in a new tab</h4>` + EXAMPLES.map((ex, i) =>
+    `<button type="button" role="option" data-ex="${i}"><span>${escapeHtml(ex.name)}</span><small>${escapeHtml(ex.hint)}</small></button>`).join("");
+  menuPop.hidden = false;
+  const r = $("loadDemoBtn").getBoundingClientRect();
+  menuPop.style.minWidth = "300px"; menuPop.style.maxHeight = "";
+  menuPop.style.top = Math.max(6, r.top - menuPop.offsetHeight - 4) + "px";   // opens upwards from the paste bar
+  menuPop.style.left = Math.max(6, Math.min(r.left, innerWidth - menuPop.offsetWidth - 6)) + "px";
+  $("loadDemoBtn").classList.add("open");
+  menuPop.querySelector("button").focus({ preventScroll: true });
+};
+menuPop.addEventListener("click", e => {
+  const b = e.target.closest("button[data-ex]");
+  if (!b || menuFor !== exampleAnchor) return;
+  closeMenuPop();
+  openExample(EXAMPLES[+b.dataset.ex]);
+});
+menuPop.addEventListener("keydown", e => {
+  if (menuFor !== exampleAnchor && menuFor !== exportAnchor && menuFor !== styleAnchor) return;
+  const items = [...menuPop.querySelectorAll("button")], i = items.indexOf(document.activeElement);
+  if (e.key === "ArrowDown" || e.key === "ArrowUp") { e.preventDefault(); items[Math.max(0, Math.min(items.length - 1, i + (e.key === "ArrowDown" ? 1 : -1)))].focus(); }
+});
+
+/* ============================================================
+   FIRST-RUN TOUR: a few callouts over the real interface, shown once
+   (replay from Help). A ring spotlights each part; Next / Back / Skip.
+   ============================================================ */
+const TOUR = [
+  { el: () => $("sheetWrap"), title: "Your data", text: "Type or paste values here, one column per group. Click a cell and type; right-click for more. Each tab above is its own sheet and figure." },
+  { el: () => $("testSelect")._btn, title: "Pick a test", text: "Choose the analysis. Results and the figure update by themselves while you edit." },
+  { el: () => $("plot"), title: "The figure", text: "Click an axis title to rename it. Graph and Style in the ribbon change the chart, colours, error bars, fonts and frame." },
+  { el: () => $("exportBtnFig"), title: "Export", text: "Download at a journal width and DPI (PNG or SVG), lay every tab out as panels A, B, C…, or Copy to paste into slides." },
+  { el: () => $("loadDemoBtn"), title: "Examples", text: "Ready-made data sets show the layout each test expects. Paste a whole table from Excel, Word or a web page into the bar on the left." },
+];
+let tourStep = -1;
+const tourBox = document.createElement("div"), tourRing = document.createElement("div");
+tourBox.id = "tourBox"; tourRing.id = "tourRing"; tourBox.hidden = tourRing.hidden = true;
+tourBox.setAttribute("role", "dialog"); tourBox.setAttribute("aria-live", "polite");
+document.body.append(tourRing, tourBox);
+function showTour(i) {
+  tourStep = i;
+  const st = TOUR[i], el = st.el();
+  if (!el) return endTour();
+  el.scrollIntoView({ block: "nearest", inline: "nearest" });
+  const r = el.getBoundingClientRect(), pad = 4;
+  Object.assign(tourRing.style, { left: r.left - pad + "px", top: r.top - pad + "px", width: r.width + 2 * pad + "px", height: r.height + 2 * pad + "px" });
+  tourBox.innerHTML = `<b>${st.title}</b><p>${st.text}</p><footer><span>${i + 1} / ${TOUR.length}</span>
+    <button type="button" data-t="skip">Skip</button>${i ? '<button type="button" data-t="back">Back</button>' : ""}
+    <button type="button" data-t="next" class="primary">${i === TOUR.length - 1 ? "Done" : "Next"}</button></footer>`;
+  tourRing.hidden = tourBox.hidden = false;
+  const bw = tourBox.offsetWidth, bh = tourBox.offsetHeight;
+  // beside the target where it fits: below, above, right, left, else inside it
+  let x = r.left, y = r.bottom + 10;
+  if (y + bh > innerHeight - 8) y = r.top - bh - 10;
+  if (y < 8) { y = Math.max(8, r.top + 12); x = r.right + 12 + bw < innerWidth ? r.right + 12 : r.left - bw - 12 < 8 ? r.left + 12 : r.left - bw - 12; }
+  tourBox.style.left = Math.max(8, Math.min(x, innerWidth - bw - 8)) + "px";
+  tourBox.style.top = Math.max(8, Math.min(y, innerHeight - bh - 8)) + "px";
+  tourBox.querySelector(".primary").focus({ preventScroll: true });
+}
+function endTour() {
+  tourStep = -1; tourBox.hidden = tourRing.hidden = true;
+  try { localStorage.setItem("plsig:toured", "1"); } catch (_) { /* fine */ }
+}
+tourBox.addEventListener("click", e => {
+  const b = e.target.closest("button[data-t]");
+  if (!b) return;
+  if (b.dataset.t === "skip") endTour();
+  else if (b.dataset.t === "back") showTour(tourStep - 1);
+  else if (tourStep >= TOUR.length - 1) endTour(); else showTour(tourStep + 1);
+});
+addEventListener("keydown", e => { if (tourStep >= 0 && e.key === "Escape") { e.preventDefault(); endTour(); } }, true);
+addEventListener("resize", () => { if (tourStep >= 0) showTour(tourStep); });
+$("tourBtn").onclick = () => { $("helpDlg").close(); showTour(0); };
 
 document.addEventListener("keydown", e => {
   if (!(e.metaKey || e.ctrlKey) || e.altKey) return;
@@ -3883,6 +4010,9 @@ $("pasteBtn").onclick = armPaste;
     syncTestOptions();
     seedFromDemo();
     run();
+    let toured = false;
+    try { toured = !!localStorage.getItem("plsig:toured"); } catch (_) { toured = true; }
+    if (!toured) setTimeout(() => showTour(0), 900);
   }
   renderTabs();
   updateHistoryButtons();
