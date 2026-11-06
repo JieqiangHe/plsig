@@ -199,6 +199,10 @@ a.tb-btn { text-decoration: none; }
 #menuPop .st-num:focus { border-color: var(--focus-border); }
 #menuPop .st-num.bad { border-color: var(--bad-border); }
 #menuPop .st-clear { justify-content: center; margin-top: 6px; height: 24px; font-size: 11.5px; color: var(--fg-muted); background: var(--seg-bg); }
+#menuPop .st-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
+#menuPop .st-cols > div { min-width: 260px; }
+#menuPop .st-pick { display: flex; flex-direction: column; gap: 2px; max-height: 180px; overflow-y: auto; margin: 4px 4px 2px 8px; }
+#menuPop .st-pick label { display: flex; align-items: center; gap: 7px; font-size: 12px; color: var(--fg); cursor: pointer; white-space: nowrap; }
 #menuPop .st-mine { display: flex; gap: 6px; padding: 0 4px; }
 #menuPop .st-mine button { flex: 1; justify-content: center; height: 24px; font-size: 12px; background: var(--seg-bg); }
 #menuPop .stepper { display: flex; align-items: center; gap: 4px; margin: 2px 0 4px; }
@@ -315,6 +319,12 @@ th.hd-on .col-letter { color: var(--accent); font-weight: 600; box-shadow: inset
 #tabs .tab input { width: 110px; height: 20px; padding: 0 4px; border: 1px solid var(--focus-border); border-radius: 4px; background: var(--input-bg); color: var(--fg-strong); font: inherit; outline: none; }
 #tabs .add { flex: none; display: grid; place-items: center; width: 26px; height: 24px; margin-bottom: 1px; border-radius: 6px; font-size: 16px; color: var(--fg-muted); }
 #tabs .add:hover { background: var(--btn-hover); color: var(--fg-strong); }
+#tabs .tabs-fill { flex: 1; }
+#tabs .tab-tool { flex: none; height: 24px; margin: 0 0 2px 6px; padding: 0 8px; gap: 5px; border-color: transparent; background: var(--seg-bg); box-shadow: none; font-size: 12px; color: var(--fg-muted); }
+#tabs .tab-tool:hover, #tabs .tab-tool.open { background: var(--btn-hover); color: var(--fg-strong); }
+#tabs .tab-tool.on { color: var(--accent); font-weight: 600; }
+#tabs .tab-tool svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; }
+#tabs .tab-tool svg.chev { width: 9px; height: 9px; }
 /* first-run tour */
 #tourRing { position: fixed; z-index: 70; border-radius: 8px; box-shadow: 0 0 0 2px var(--accent), 0 0 0 9999px rgba(20,20,19,.38); pointer-events: none; transition: all .2s; }
 #tourBox { position: fixed; z-index: 71; width: 280px; padding: 12px 14px 10px; border: 1px solid var(--card-border); border-radius: 8px; background: var(--surface); box-shadow: 0 10px 30px rgba(0,0,0,.25); font-size: 12.5px; color: var(--fg); }
@@ -535,6 +545,13 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
         <select id="pointStyle" hidden><option value="filled" selected>Filled</option><option value="hollow">Hollow</option><option value="none">Hidden</option></select>
         <select id="frame" hidden><option value="box" selected>Box</option><option value="open">Axes</option></select>
         <select id="yScale" hidden><option value="linear" selected>Linear</option><option value="log">Log</option></select>
+        <select id="errDir" hidden><option value="both" selected>Both</option><option value="up">Up</option></select>
+        <select id="sigMarks" hidden><option value="letters" selected>Letters</option><option value="brackets">Brackets</option></select>
+        <select id="sigShow" hidden><option value="auto" selected>Auto</option><option value="sig">Significant</option><option value="all">All</option><option value="first">Vs first</option><option value="pick">Pick</option></select>
+        <input id="sigPick" hidden />
+        <select id="journal" hidden><option value="" selected>None</option><option value="nature">Nature</option><option value="cell">Cell</option><option value="science">Science</option><option value="pnas">PNAS</option></select>
+        <select id="transform" hidden><option value="none" selected>None</option><option value="pct">% of first column</option><option value="log10">log10</option><option value="ln">ln</option></select>
+        <select id="avgReps" hidden><option value="off" selected>Keep</option><option value="on">Average</option></select>
         <input id="yMin" hidden /><input id="yMax" hidden /><input id="refY" hidden /><input id="bandLo" hidden /><input id="bandHi" hidden />
         <span class="flat"><button id="styleBtn" class="tb-btn menu-btn" aria-haspopup="dialog" title="Figure style: font, dots, bar width, points, frame"><svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg><span class="lbl">Style</span><svg class="chev" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4"/></svg></button></span>
         <input id="plotH" type="number" min="220" step="20" value="" placeholder="400" title="Height in px (blank = automatic, fitted to the figure)" class="num-field size-src" hidden />
@@ -1490,9 +1507,11 @@ const DEMO = [
 ];
 const DEFAULT_ROWS = 10;
 const STORE_KEY = "plsig:v1", OLD_STORE_KEY = "ministat:v1";   // the app was called ministat before
-const SETTING_IDS = ["testSelect", "posthocSelect", "dunnAdj", "mu0", "chartType", "errType", "themeSelect", "sigLabel", "xLabel", "yLabel", "plotW", "plotH", "dotSize", "fontSize", "barWidth", "pointStyle", "frame", "yScale", "yMin", "yMax", "refY", "bandLo", "bandHi"];
+const SETTING_IDS = ["testSelect", "posthocSelect", "dunnAdj", "mu0", "chartType", "errType", "themeSelect", "sigLabel", "xLabel", "yLabel", "plotW", "plotH", "dotSize", "fontSize", "barWidth", "pointStyle", "frame", "yScale", "yMin", "yMax", "refY", "bandLo", "bandHi",
+                     "errDir", "sigMarks", "sigShow", "sigPick", "journal", "transform", "avgReps"];
 const GRAPH_DEFAULTS = { chartType: "bar", errType: "sem", themeSelect: "claude", sigLabel: "stars", xLabel: "Group", yLabel: "Value", plotW: "", plotH: "", dotSize: "6", fontSize: "13", barWidth: "0.6", pointStyle: "filled", frame: "box",
-                         yScale: "linear", yMin: "", yMax: "", refY: "", bandLo: "", bandHi: "" };
+                         yScale: "linear", yMin: "", yMax: "", refY: "", bandLo: "", bandHi: "",
+                         errDir: "both", sigMarks: "letters", sigShow: "auto", sigPick: "", journal: "" };
 
 let grid = [];          // array of groups: {name, cells:[string,...]}
 let titles = [];        // row titles (text, left of the data; the row factor / outcome names)
@@ -1588,7 +1607,7 @@ function closeMenuPop(refocus) {
   if (!menuFor) return;
   const b = menuFor._btn;
   b.classList.remove("open"); b.setAttribute("aria-expanded", "false");
-  menuFor = null; menuPop.hidden = true;
+  menuFor = null; menuPop.hidden = true; menuPop.style.maxWidth = "";
   if (refocus) b.focus();
 }
 menuPop.addEventListener("click", e => {
@@ -1676,16 +1695,27 @@ function styleHtml() {
   const seg = (id, name) => `<div class="st-row"><span>${name}</span><div class="seg">${[...$(id).options].map(o =>
     `<button type="button" data-sid="${id}" data-sv="${o.value}"${o.value === $(id).value ? ' class="on"' : ""}>${o.text}</button>`).join("")}</div></div>`;
   const num = (id, ph) => `<input class="st-num" data-nid="${id}" inputmode="decimal" placeholder="${ph}" value="${escapeHtml($(id).value)}" aria-label="${id}" />`;
-  return `<h4>Figure style</h4>` + Object.entries(STYLE_STEPS).map(([id, c]) => step(id, c)).join("") +
-         Object.entries(STYLE_SEGS).map(([id, n]) => seg(id, n)).join("") +
-         `<h4>Y axis</h4>` + seg("yScale", "Scale") +
+  // comparisons that can be picked: from the figure on screen
+  let pick = "";
+  if ($("sigShow").value === "pick") {
+    const keys = comparisonKeys(), on = new Set(pickedKeys());
+    pick = keys.length ? `<div class="st-pick">${keys.map(k => `<label><input type="checkbox" data-pick="${escapeHtml(k)}"${on.has(k) ? " checked" : ""}/><span>${escapeHtml(k)}</span></label>`).join("")}</div>`
+                       : `<p class="ex-note">Pick works with brackets: choose Brackets above (one-way tests) or a two-way design.</p>`;
+  }
+  const left = `<h4>Figure style</h4>` + Object.entries(STYLE_STEPS).map(([id, c]) => step(id, c)).join("") +
+         Object.entries(STYLE_SEGS).map(([id, n]) => seg(id, n)).join("") + seg("errDir", "Error bars") +
+         `<h4>Journal</h4>` + seg("journal", "Preset") +
+         `<p class="ex-note">${$("journal").value ? "7 pt text and thin lines at the journal's column width; Export uses that width." : "Sets 7 pt text and thin lines for the journal's column width."}</p>` +
+         `<h4>My default</h4><div class="st-mine"><button type="button" data-mine="save">Save as my default</button>` +
+         (hasMyStyle() ? `<button type="button" data-mine="forget">Forget it</button>` : "") + `</div>` +
+         `<p class="ex-note">${hasMyStyle() ? "Reset, new visits and Examples use your saved style." : "Saves chart, error bars, colours, labels and this style for Reset, new visits and Examples."}</p>`;
+  const right = `<h4>Y axis</h4>` + seg("yScale", "Scale") +
          `<div class="st-row"><span>Range</span><div class="st-pair">${num("yMin", "auto")}<i>to</i>${num("yMax", "auto")}</div></div>` +
          `<div class="st-row"><span>Line</span><div class="st-pair">${num("refY", "y =")}<i></i><span class="st-hint">dashed reference</span></div></div>` +
          `<div class="st-row"><span>Band</span><div class="st-pair">${num("bandLo", "from")}<i>to</i>${num("bandHi", "to")}</div></div>` +
          `<button type="button" class="st-clear" data-sclear="1">Clear axis settings</button>` +
-         `<h4>My default</h4><div class="st-mine"><button type="button" data-mine="save">Save as my default</button>` +
-         (hasMyStyle() ? `<button type="button" data-mine="forget">Forget it</button>` : "") + `</div>` +
-         `<p class="ex-note">${hasMyStyle() ? "Reset, new visits and Examples use your saved style." : "Saves chart, error bars, colours, labels and this style for Reset, new visits and Examples."}</p>`;
+         `<h4>Significance</h4>` + seg("sigMarks", "Marks") + seg("sigShow", "Show") + pick;
+  return `<div class="st-cols"><div>${left}</div><div>${right}</div></div>`;
 }
 $("styleBtn").onclick = () => {
   if (menuFor === styleAnchor) { closeMenuPop(); return; }
@@ -1694,7 +1724,7 @@ $("styleBtn").onclick = () => {
   menuPop.innerHTML = styleHtml();
   menuPop.hidden = false;
   const r = $("styleBtn").getBoundingClientRect();
-  menuPop.style.minWidth = "240px"; menuPop.style.maxHeight = "";
+  menuPop.style.minWidth = "240px"; menuPop.style.maxWidth = "620px"; menuPop.style.maxHeight = innerHeight - r.bottom - 12 + "px";
   menuPop.style.top = r.bottom + 4 + "px";
   menuPop.style.left = Math.max(6, Math.min(r.left, innerWidth - menuPop.offsetWidth - 6)) + "px";
   $("styleBtn").classList.add("open"); $("styleBtn").setAttribute("aria-expanded", "true");
@@ -1713,6 +1743,15 @@ menuPop.addEventListener("click", e => {
     b.parentElement.querySelectorAll("button").forEach(x => x.classList.toggle("on", x === b));
   }
   scheduleSave(); redraw();
+  if (["sigShow", "sigMarks", "journal"].includes(id)) {   // these change what the panel shows
+    const sc = menuPop.scrollTop; menuPop.innerHTML = styleHtml(); menuPop.scrollTop = sc;
+  }
+});
+menuPop.addEventListener("change", e => {
+  const c = e.target.closest("input[data-pick]");
+  if (!c || menuFor !== styleAnchor) return;
+  $("sigPick").value = JSON.stringify([...menuPop.querySelectorAll("input[data-pick]:checked")].map(x => x.dataset.pick));
+  scheduleSave(); redraw();
 });
 let styleNumTimer = null;
 menuPop.addEventListener("input", e => {
@@ -1725,7 +1764,7 @@ menuPop.addEventListener("input", e => {
   styleNumTimer = setTimeout(() => { scheduleSave(); redraw(); }, 250);
 });
 /* "my default": the figure options a user wants every time, kept in this browser */
-const MY_STYLE_IDS = ["chartType", "errType", "themeSelect", "sigLabel", "dotSize", "fontSize", "barWidth", "pointStyle", "frame"];
+const MY_STYLE_IDS = ["chartType", "errType", "themeSelect", "sigLabel", "dotSize", "fontSize", "barWidth", "pointStyle", "frame", "errDir", "sigMarks", "journal"];
 let myStyle = {};
 try { myStyle = JSON.parse(localStorage.getItem("plsig:mystyle") || "{}") || {}; } catch (_) { myStyle = {}; }
 const hasMyStyle = () => Object.keys(myStyle).length > 0;
@@ -2408,10 +2447,46 @@ function renderTabs() {
   tabsEl.innerHTML = sheets.map((sh, i) =>
     `<div class="tab${i === curSheet ? " on" : ""}" role="tab" aria-selected="${i === curSheet}" data-i="${i}" title="${escapeHtml(sh.name)} — double-click to rename, right-click for more"><span class="nm">${escapeHtml(sh.name)}</span>` +
     (sheets.length > 1 ? `<span class="x" data-x="${i}" role="button" aria-label="Close ${escapeHtml(sh.name)}">×</span>` : "") + `</div>`
-  ).join("") + `<button type="button" class="add" title="New sheet" aria-label="New sheet">+</button>`;
+  ).join("") + `<button type="button" class="add" title="New sheet" aria-label="New sheet">+</button>` +
+    `<span class="tabs-fill"></span><button type="button" class="tb-btn menu-btn tab-tool${transformOn() ? " on" : ""}" id="transformBtn" aria-haspopup="dialog" title="Transform the data before the analysis: % of the first column, log, average replicates">` +
+    `<svg viewBox="0 0 24 24"><path d="M4 18c4 0 4-12 8-12s4 12 8 12"/></svg><span class="lbl">${transformLabel()}</span><svg class="chev" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4"/></svg></button>`;
   tabsEl.querySelector(".tab.on")?.scrollIntoView({ block: "nearest", inline: "nearest" });
 }
+const transformOn = () => $("transform").value !== "none" || $("avgReps").value === "on";
+function transformLabel() {
+  const t = $("transform").value, a = $("avgReps").value === "on";
+  const n = { none: "", pct: "% of 1st", log10: "log10", ln: "ln" }[t];
+  return "Transform" + (n || a ? ": " + [n, a ? "avg" : ""].filter(Boolean).join(" + ") : "");
+}
+const transformAnchor = { get _btn() { return $("transformBtn"); } };
+function transformHtml() {
+  const seg = (id, name) => `<div class="st-row"><span>${name}</span><div class="seg">${[...$(id).options].map(o =>
+    `<button type="button" data-tid="${id}" data-tv="${o.value}"${o.value === $(id).value ? ' class="on"' : ""}>${o.text}</button>`).join("")}</div></div>`;
+  return `<h4>Transform the data before the analysis</h4>` + seg("transform", "Values") + seg("avgReps", "Replicates") +
+    `<p class="ex-note">Average: rows that share a row title become one row (their mean). The sheet itself is not changed.</p>`;
+}
+function openTransformPop() {
+  closeMenuPop();
+  menuFor = transformAnchor;
+  menuPop.innerHTML = transformHtml(); menuPop.hidden = false;
+  const r = $("transformBtn").getBoundingClientRect();
+  menuPop.style.minWidth = "380px"; menuPop.style.maxWidth = "460px"; menuPop.style.maxHeight = "";
+  menuPop.style.top = r.bottom + 4 + "px";
+  menuPop.style.left = Math.max(6, Math.min(r.right - menuPop.offsetWidth, innerWidth - menuPop.offsetWidth - 6)) + "px";
+  $("transformBtn").classList.add("open");
+  menuPop.querySelector("button").focus({ preventScroll: true });
+}
+menuPop.addEventListener("click", e => {
+  const b = e.target.closest("button[data-tid]");
+  if (!b || menuFor !== transformAnchor) return;
+  $(b.dataset.tid).value = b.dataset.tv;
+  menuPop.innerHTML = transformHtml();
+  const lbl = $("transformBtn").querySelector(".lbl"); lbl.textContent = transformLabel();
+  $("transformBtn").classList.toggle("on", transformOn());
+  scheduleSave(); run(true);
+});
 tabsEl.addEventListener("click", e => {
+  if (e.target.closest("#transformBtn")) { menuFor === transformAnchor ? closeMenuPop() : openTransformPop(); return; }
   if (e.target.closest("input")) return;
   if (e.target.closest(".add")) { addSheet({}); return; }
   const x = e.target.closest("[data-x]");
@@ -2422,7 +2497,7 @@ tabsEl.addEventListener("click", e => {
 tabsEl.addEventListener("dblclick", e => {
   const t = e.target.closest(".tab");
   if (t && !e.target.closest("[data-x], input")) renameSheet(+t.dataset.i);
-  else if (!t && !e.target.closest(".add")) addSheet({});   // double-click the empty strip: new sheet
+  else if (!t && !e.target.closest(".add, .tab-tool")) addSheet({});   // double-click the empty strip: new sheet
 });
 tabsEl.addEventListener("contextmenu", e => {
   const t = e.target.closest(".tab");
@@ -2726,6 +2801,19 @@ const ZH = {
   "Cohen's dz (mean diff / SD of diffs)": "Cohen's dz（均值差 / 差值标准差）", "Discrepancy (mean − hypothetical)": "差异（均值 − 假设值）", "Discrepancy": "差异",
   "Std. error of mean difference": "均值差标准误", "Tests": "检验", "Wilcoxon matched-pairs signed-rank test": "Wilcoxon 配对符号秩检验",
   "One-sample Wilcoxon signed-rank test": "单样本 Wilcoxon 符号秩检验", "Student's unpaired t-test": "Student 非配对 t 检验", "Del": "Del",
+  "Error bars": "误差线", "Both": "双向", "Up": "仅向上", "Journal": "期刊", "Preset": "预设", "None": "无",
+  "7 pt text and thin lines at the journal's column width; Export uses that width.": "按期刊栏宽设为 7 pt 文字和细线；导出时使用该宽度。",
+  "Sets 7 pt text and thin lines for the journal's column width.": "按期刊栏宽设置 7 pt 文字和细线。",
+  "Significance": "显著性", "Marks": "标记", "Brackets": "括号", "Show": "显示", "Significant": "仅显著", "All": "全部", "Vs first": "与第一组比较", "Pick": "自选",
+  "Pick works with brackets: choose Brackets above (one-way tests) or a two-way design.": "自选需要括号标记：在上方选择“括号”（单因素检验），或使用双因素设计。",
+  "Transform": "数据变换", "Transform the data before the analysis": "分析前变换数据", "Values": "数值", "Replicates": "重复", "Keep": "保留", "Average": "取平均",
+  "% of first column": "第一列的百分比", "log10": "log10", "ln": "ln",
+  "Average: rows that share a row title become one row (their mean). The sheet itself is not changed.": "取平均：行标题相同的行合并为一行（取均值）。表格本身不会改变。",
+  "Transform the data before the analysis: % of the first column, log, average replicates": "分析前变换数据：第一列百分比、取对数、重复取平均",
+  "Transform is off for this test: it works on counts or X / Y pairs.": "此检验不进行数据变换：它处理的是计数或 X / Y 数据对。",
+  "Average replicates is off for this test: its row titles name the factor levels.": "此检验不对重复取平均：其行标题表示因素水平。",
+  "Average replicates: no rows share a row title, so nothing was averaged.": "重复取平均：没有行标题相同的行，未做平均。",
+  "% of first column: the first column's mean is 0 or missing, so values were left as they are.": "第一列百分比：第一列均值为 0 或缺失，数值保持不变。",
   "Switch the interface to Chinese": "界面切换为中文", "Switch the interface to English": "Switch the interface to English",
 };
 const ZH_PATTERNS = [
@@ -2759,6 +2847,8 @@ const ZH_PATTERNS = [
   [/^✓ (\d+) panels$/, "✓ $1 个子图"], [/^✓ (\d+) sheets$/, "✓ $1 个表格"],
   [/^(.+) — double-click to rename, right-click for more$/, "$1 — 双击重命名，右键更多操作"],
   [/^Close (.+)$/, "关闭 $1"],
+  [/^Transform: (.+)$/, (m, v) => "数据变换：" + v.replace("% of 1st", "第一列 %").replace("avg", "取平均")],
+  [/^(\d+) value\(s\) ≤ 0 cannot be log-transformed and were left out\.$/, "$1 个 ≤ 0 的值无法取对数，已排除。"],
   [/^Rank-biserial r \(\+ ⇒ (.+) larger\)$/, "秩二列相关 r（+ ⇒ $1 较大）"], [/^Sum of ranks \((.+)\)$/, "秩和（$1）"],
   [/^Risk in (.+) \/ (.+)$/, "$1 / $2 的风险"], [/^Std\. error of difference$/, "差值标准误"],
 ];
@@ -2939,6 +3029,63 @@ function collectGroups() {
   return { groups, warns, decimalComma };
 }
 
+/* Data transforms, applied before every analysis (Transform, over the sheet):
+   - average replicates: rows that share a row title become one row (their mean, per column);
+   - % of first column: every value as a percentage of the first column's mean;
+   - log10 / ln: values ≤ 0 cannot be logged and are left out, with a note.
+   Counts (contingency) and XY data are left as they are. */
+let lastTransform = { kind: "none", ref: "" };
+function transformGroups(groups, test, problems) {
+  const tf = $("transform").value, avg = $("avgReps").value === "on";
+  lastTransform = { kind: "none", ref: "", avg: false };
+  if (tf === "none" && !avg) return groups;
+  if (test === "chisq" || test === "corr") { problems.push("Transform is off for this test: it works on counts or X / Y pairs."); return groups; }
+  let out = groups.map(g => Object.assign({}, g, { values: g.values.slice(), rows: g.rows.slice() }));
+  if (avg) {
+    if (test === "twoway" || test === "cells") problems.push("Average replicates is off for this test: its row titles name the factor levels.");
+    else {
+      // the first row of each title stands for the averaged row, so paired tests still match by row
+      const firstRow = new Map();
+      titles.forEach((t, r) => { const k = (t || "").trim(); if (k && !firstRow.has(k)) firstRow.set(k, r); });
+      let merged = 0;
+      out = out.map(g => {
+        const by = new Map(), order = [];
+        g.values.forEach((v, q) => {
+          const k = (titles[g.rows[q]] || "").trim();
+          const key = k ? "t:" + k : "r:" + g.rows[q];
+          if (!by.has(key)) { by.set(key, { sum: 0, n: 0, row: k ? firstRow.get(k) : g.rows[q] }); order.push(key); }
+          const b = by.get(key); b.sum += v; b.n++;
+        });
+        merged += g.values.length - order.length;
+        return Object.assign(g, { values: order.map(k => by.get(k).sum / by.get(k).n), rows: order.map(k => by.get(k).row) });
+      });
+      if (merged) lastTransform.avg = true;
+      else problems.push("Average replicates: no rows share a row title, so nothing was averaged.");
+    }
+  }
+  if (tf === "pct") {
+    const ref = out[0] && out[0].values.length ? out[0].values.reduce((a, b) => a + b, 0) / out[0].values.length : NaN;
+    if (!Number.isFinite(ref) || ref === 0) problems.push("% of first column: the first column's mean is 0 or missing, so values were left as they are.");
+    else { out.forEach(g => { g.values = g.values.map(v => 100 * v / ref); }); lastTransform = Object.assign(lastTransform, { kind: "pct", ref: out[0].name }); }
+  } else if (tf === "log10" || tf === "ln") {
+    let dropped = 0;
+    out.forEach(g => {
+      const keep = g.values.map(v => v > 0);
+      dropped += keep.filter(x => !x).length;
+      g.rows = g.rows.filter((_, q) => keep[q]);
+      g.values = g.values.filter(v => v > 0).map(v => tf === "log10" ? Math.log10(v) : Math.log(v));
+    });
+    if (dropped) problems.push(`${dropped} value(s) ≤ 0 cannot be log-transformed and were left out.`);
+    lastTransform = Object.assign(lastTransform, { kind: tf });
+  }
+  return out;
+}
+/* the y title a transform implies, used while the y title is still the default */
+function yDefault() {
+  const t = lastTransform;
+  return t.kind === "pct" ? `% of ${t.ref}` : t.kind === "log10" ? "log₁₀ value" : t.kind === "ln" ? "ln value" : GRAPH_DEFAULTS.yLabel;
+}
+
 /* rows where both groups have a value → matched pairs (warns about unmatched values) */
 function pairedData(a, b, problems) {
   const mb = new Map(b.rows.map((r, i) => [r, b.values[i]]));
@@ -2990,6 +3137,7 @@ function run(quiet) {
   let groups = raw.filter(g => g.values.length > 0);
   const test = $("testSelect").value;
   const problems = [...warns];
+  groups = transformGroups(groups, test, problems).filter(g => g.values.length > 0);
 
   const minGroups = ONE_GROUP.has(test) ? 1 : 2;
   if (groups.length < minGroups) problems.push(minGroups === 1 ? "Enter some values first." : "Need at least 2 non-empty columns for this analysis.");
@@ -3087,6 +3235,10 @@ function methodsText(test, groups, plot) {
   const errTxt = { sd: L("mean ± SD", "均值 ± 标准差（SD）"), sem: L("mean ± SEM", "均值 ± 标准误（SEM）"), ci: L("mean with 95% confidence interval", "均值及 95% 置信区间") }[err];
   const meanBased = !["corr", "chisq"].includes(test);
   const parts = [];
+  const tf = lastTransform;
+  if (tf.avg) parts.push(L("Technical replicates (rows sharing a label) were averaged before analysis.", "分析前先对技术重复（行标题相同的行）取平均。"));
+  if (tf.kind === "pct") parts.push(L(`Values were expressed as a percentage of the mean of ${tf.ref}.`, `数值以 ${tf.ref} 均值的百分比表示。`));
+  if (tf.kind === "log10" || tf.kind === "ln") parts.push(L(`Values were ${tf.kind === "log10" ? "log10" : "natural-log"}-transformed before analysis.`, `分析前对数值进行了${tf.kind === "log10" ? "常用对数（log10）" : "自然对数"}转换。`));
   const chart = $("chartType").value;
   if (meanBased && nTxt && (chart === "box" || chart === "violin")) parts.push(L(`Data are shown as ${chart === "box" ? "box plots" : "violin plots"} (median and interquartile range; ${nShow}${ns.length > 1 ? " per group" : ""}).`, `数据以${chart === "box" ? "箱线图" : "小提琴图"}表示（中位数及四分位距；${ns.length > 1 ? "每组 " : ""}${nShow}）。`));
   else if (meanBased && nTxt) parts.push(L(`Data are presented as ${errTxt} (${nShow}${ns.length > 1 ? " per group" : ""}).`, `数据以${errTxt}表示（每组 ${nShow}）。`.replace("（每组 ", ns.length > 1 ? "（每组 " : "（")));
@@ -3308,7 +3460,7 @@ const ANALYSES = {
     else {
       const letters = S.compactLetters(av.k, pairs, av.desc.map(d => d.mean));
       sections.push(cldSection(names, av.desc.map(d => fmt(d.mean)), "Mean", letters));
-      plot = { groups, mode: "letters", letters };
+      plot = { groups, mode: "letters", letters, pairs };
     }
     sections.push(assumptionSection(groups, { variance: true, parametric: true }));
     return {
@@ -3336,7 +3488,7 @@ const ANALYSES = {
         posthocSection(`Dunn's multiple comparisons — ${adj === "holm" ? "Holm" : "Bonferroni"} adjusted`, pairs, names, "Mean rank diff.", false),
         cldSection(names, kw.meanRanks.map(m => fmt(m, 2)), "Mean rank", letters),
       ] },
-      plot: { groups, mode: "letters", letters },
+      plot: { groups, mode: "letters", letters, pairs },
     };
   },
 
@@ -3400,7 +3552,7 @@ const ANALYSES = {
     else {
       const letters = S.compactLetters(rm.k, pairs, rm.desc.map(d => d.mean));
       sections.push(cldSection(names, rm.desc.map(d => fmt(d.mean)), "Mean", letters));
-      plot = { groups: m.groups, mode: "letters", letters, paired: true };
+      plot = { groups: m.groups, mode: "letters", letters, paired: true, pairs };
     }
     return {
       verdict: verdict(`Is there a significant difference among the ${rm.k} matched columns?`,
@@ -3430,7 +3582,7 @@ const ANALYSES = {
         posthocSection(`Dunn's multiple comparisons — ${adj === "holm" ? "Holm" : "Bonferroni"} adjusted`, pairs, names, "Mean rank diff.", false),
         cldSection(names, fr.meanRanks.map(r => fmt(r, 2)), "Mean rank", letters),
       ] },
-      plot: { groups: m.groups, mode: "letters", letters, paired: true },
+      plot: { groups: m.groups, mode: "letters", letters, paired: true, pairs },
     };
   },
 
@@ -3704,10 +3856,64 @@ function baseLayout(theme, xTitle, yTitle) {
   };
 }
 const barW = () => parseFloat($("barWidth").value) || 0.6;
+/* the picked comparisons, kept as a JSON list in a hidden input (an input cannot hold line breaks) */
+const pickedKeys = () => { try { const v = JSON.parse($("sigPick").value || "[]"); return Array.isArray(v) ? v.map(String) : []; } catch (_) { return []; } };
+/* which comparisons the figure marks: Auto (each mode's default), Significant, All, Vs first, or Pick */
+function pickPairs(list, keyOf, autoKeep) {
+  const m = $("sigShow").value;
+  if (m === "all") return list;
+  if (m === "sig") return list.filter(p => p.p < 0.05);
+  if (m === "first") return list.filter(p => p.i === 0 || p.j === 0);
+  if (m === "pick") { const on = new Set(pickedKeys()); return list.filter(p => on.has(keyOf(p))); }
+  return list.filter(autoKeep);
+}
+/* every comparison the current figure could mark, as "A vs B" (two-way: "Row: A vs B") */
+function comparisonKeys() {
+  const sp = lastPlot;
+  if (!sp || !sp.pairs || !sp.pairs.length) return [];
+  if (sp.mode === "grouped") return sp.pairs.map(pr => `${sp.levels[pr.row]}: ${sp.names[pr.i]} vs ${sp.names[pr.j]}`);
+  if (sp.groups && $("sigMarks").value === "brackets") return sp.pairs.map(pr => `${sp.groups[pr.i].name} vs ${sp.groups[pr.j].name}`);
+  return [];
+}
+/* brackets over a column figure: shortest first, each placed above the bars it spans and any
+   bracket already drawn over them; returns the highest point used */
+function placeBrackets(layout, list, tops, span, theme, xOf = (i) => i) {
+  const placed = [], line = { color: theme.line, width: 1.2 };
+  let highest = -Infinity;
+  list.slice().sort((a, b) => Math.abs(a.i - a.j) - Math.abs(b.i - b.j)).forEach(pr => {
+    const lo = Math.min(pr.i, pr.j), hi = Math.max(pr.i, pr.j);
+    let y = Math.max(...tops.slice(lo, hi + 1)) + span * 0.07;
+    placed.forEach(q => { if (q.lo <= hi && q.hi >= lo) y = Math.max(y, q.y + span * 0.09); });
+    placed.push({ lo, hi, y });
+    const x0 = xOf(lo), x1 = xOf(hi);
+    layout.shapes.push({ name: "sig", type: "line", x0, x1, y0: y, y1: y, line },
+                       { name: "sig", type: "line", x0, x1: x0, y0: y - span * 0.025, y1: y, line }, { name: "sig", type: "line", x0: x1, x1, y0: y - span * 0.025, y1: y, line });
+    layout.annotations.push({ name: "sig", x: (x0 + x1) / 2, y, text: sigText(pr.p), showarrow: false, yanchor: "bottom", font: { size: 12, color: theme.font } });
+    highest = Math.max(highest, y + span * 0.07);
+  });
+  return highest;
+}
 /* figure style from the Style popover, applied to a finished figure: every font scales with
    the chosen size (13 = default), and data points become hollow or are hidden */
+const JOURNALS = { nature: { name: "Nature", one: 8.9, two: 18.3 }, cell: { name: "Cell", one: 8.5, two: 17.4 },
+                   science: { name: "Science", one: 5.7, two: 12.1 }, pnas: { name: "PNAS", one: 8.7, two: 17.8 } };
+const journalCm = (two) => { const j = JOURNALS[$("journal").value]; return j ? (two ? j.two : j.one) : null; };
 function applyStyle(traces, layout) {
-  const k = (parseInt($("fontSize").value, 10) || 13) / 13;
+  // a journal preset: 7 pt text and 0.75 pt lines once the figure is printed at the journal's column width
+  const jcm = journalCm(false), ptPerPx = jcm ? (jcm / 2.54 * 72) / plotSize().w : null;
+  let k = (parseInt($("fontSize").value, 10) || 13) / 13;
+  if (ptPerPx) {
+    k = 7 / ptPerPx / 13;
+    const lw = Math.max(0.5, 0.75 / ptPerPx);
+    ["xaxis", "yaxis"].forEach(a => Object.assign(layout[a], { linewidth: lw, tickwidth: lw, ticklen: Math.max(3, 3 / ptPerPx) }));
+    traces.forEach(t => { if (t.error_y) t.error_y.thickness = lw; if (t.marker && t.marker.line && t.type === "bar") t.marker.line.width = lw; });
+    layout.shapes.forEach(sh => { if (sh.line && sh.name === "sig") sh.line.width = lw; });
+  }
+  // error bars drawn upwards only
+  if ($("errDir").value === "up") traces.forEach(t => {
+    if (!t.error_y || !t.error_y.array) return;
+    t.error_y = Object.assign({}, t.error_y, { symmetric: false, arrayminus: t.error_y.array.map(() => 0) });
+  });
   if (k !== 1) {
     const sc = (f) => { if (f && f.size) f.size = Math.round(f.size * k * 10) / 10; };
     sc(layout.font); sc(layout.legend && layout.legend.font);
@@ -3876,7 +4082,7 @@ function drawPlot(spec) {
     const e = errType === "sd" ? d.sd : errType === "ci" ? d.ciHi - d.mean : d.sem;
     return Number.isFinite(e) ? e : 0;
   };
-  const layout = baseLayout(theme, $("xLabel").value, $("yLabel").value);
+  const layout = baseLayout(theme, $("xLabel").value, axisTitle("yLabel", yDefault()));
   Object.assign(layout.xaxis, { tickvals: xIdx, ticktext: names.map(escapeHtml), range: [-0.7, groups.length - 0.3], showgrid: false });
   const traces = [];
 
@@ -3935,10 +4141,17 @@ function drawPlot(spec) {
 
   const above = (i, text, size = 13) => layout.annotations.push({ name: "sig", x: i, y: tops[i] + span * 0.04, text, showarrow: false, yanchor: "bottom", font: { size, color: theme.font } });
   if (spec.ref != null) layout.shapes.push({ type: "line", xref: "paper", x0: 0, x1: 1, y0: spec.ref, y1: spec.ref, line: { color: theme.line, width: 1.2, dash: "dash" } });
-  if (spec.mode === "letters") spec.letters.forEach((l, i) => above(i, "<b>" + escapeHtml(l) + "</b>", 15));
-  else if (spec.mode === "control") spec.ps.forEach((p, i) => { if (i) above(i, sigText(p)); });
-  else if (spec.mode === "each") spec.ps.forEach((p, i) => above(i, sigText(p)));
-  else if (spec.mode === "two") {
+  const hideNs = $("sigShow").value === "sig";
+  if (spec.mode === "letters" && $("sigMarks").value === "brackets" && spec.pairs) {
+    const names = groups.map(g => g.name);
+    const list = pickPairs(spec.pairs, pr => `${names[pr.i]} vs ${names[pr.j]}`, pr => pr.p < 0.05);
+    const top = placeBrackets(layout, list, tops, span, theme);
+    if (top > layout.yaxis.range[1]) layout.yaxis.range[1] = top + span * 0.03;
+  }
+  else if (spec.mode === "letters") spec.letters.forEach((l, i) => above(i, "<b>" + escapeHtml(l) + "</b>", 15));
+  else if (spec.mode === "control") spec.ps.forEach((p, i) => { if (i && !(hideNs && p >= 0.05)) above(i, sigText(p)); });
+  else if (spec.mode === "each") spec.ps.forEach((p, i) => { if (!(hideNs && p >= 0.05)) above(i, sigText(p)); });
+  else if (spec.mode === "two" && !(hideNs && spec.p >= 0.05)) {
     const yBar = yMax + span * 0.12, yLeg = yMax + span * 0.03, line = { color: theme.line, width: 1.4 };
     layout.shapes.push(
       { name: "sig", type: "line", x0: 0, x1: 0, y0: yLeg, y1: yBar, line },
@@ -3966,7 +4179,7 @@ function drawGrouped(spec, theme) {
   const cells = spec.cells;
   const desc = cells.map(r => r.map(c => c.length ? S.describe(c) : null));
   const errOf = (d) => { const e = errType === "sd" ? d.sd : errType === "ci" ? d.ciHi - d.mean : d.sem; return Number.isFinite(e) ? e : 0; };
-  const layout = baseLayout(theme, axisTitle("xLabel", ""), $("yLabel").value);
+  const layout = baseLayout(theme, axisTitle("xLabel", ""), axisTitle("yLabel", yDefault()));
   Object.assign(layout.xaxis, { tickvals: levels.map((_, i) => i), ticktext: levels.map(escapeHtml), range: [-0.6, levels.length - 0.4], showgrid: false });
   bottomLegend(layout, names.filter((_, j) => keep[j]));
   const traces = [];
@@ -4003,7 +4216,7 @@ function drawGrouped(spec, theme) {
   const span = (yMax - yMin) || 1, line = { color: theme.line, width: 1.2 };
   // brackets: all for 2 columns or Dunnett, otherwise the significant ones; shortest lowest,
   // and brackets that don't overlap share a level
-  const shown = sigOff() ? [] : (spec.method === "dunnett" || b === 2 ? pairs : pairs.filter(pr => pr.p < 0.05))
+  const shown = sigOff() ? [] : pickPairs(pairs, pr => `${levels[pr.row]}: ${names[pr.i]} vs ${names[pr.j]}`, pr => spec.method === "dunnett" || b === 2 || pr.p < 0.05)
     .slice().sort((p, q) => Math.abs(p.i - p.j) - Math.abs(q.i - q.j));
   const used = levels.map(() => []);           // per row title: occupied [lo, hi] column spans per level
   let highest = yMax;
@@ -4154,7 +4367,7 @@ function exportHtml() {
 }
 function exportNote() {
   const n = exportPrefs.what === "all" ? sheets.length : 1;
-  const wcm = exportPrefs.width === "auto" ? null : +exportPrefs.width;
+  const wcm = exportPrefs.width === "auto" ? (journalCm(exportPrefs.what === "all" && sheets.length > 1) || null) : +exportPrefs.width;
   const size = wcm ? `${wcm} cm wide` : "on-screen size";
   return exportPrefs.fmt === "png" ? `${n > 1 ? n + " sheets, " : ""}${size}, ${exportPrefs.dpi} dpi` : `${n > 1 ? n + " sheets, " : ""}${size}, vector`;
 }
@@ -4225,7 +4438,7 @@ async function exportFigure() {
   const figs = P.what === "all" ? await allFigures() : [currentFigure()].filter(Boolean);
   if (!figs.length) { flash(btn, "Run a test first"); return; }
   const cols = P.what === "all" ? Math.min(+P.cols, figs.length) : 1;
-  const wcm = P.width === "auto" ? null : +P.width;
+  const wcm = P.width === "auto" ? (journalCm(P.what === "all" && sheets.length > 1) || null) : +P.width;
   // layout units are CSS px (96 per inch); the chosen width in cm fixes the physical size
   const L = panelLayout(figs, cols), W = L.W;
   const multi = figs.length > 1, lab = (k) => String.fromCharCode(65 + k);
