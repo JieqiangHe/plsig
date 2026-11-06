@@ -41,7 +41,9 @@ The project was called ministat until Nov 2026, when the repository was renamed.
 
 - `Stats`: pure statistics functions with no DOM access.
 - `ANALYSES[test](groups, problems)`: each returns `{ verdict, report, plot }`. `cells` (One-way ANOVA across grouped cells) treats every row-title × column cell as a group, reuses `ANALYSES.anova`, and draws clusters with letters per bar; cells may be empty (a Control row with one column), as in clustered paper figures. The report model drives both the on-screen tables and the copied TSV.
-- `drawPlot(spec)`: dispatches on `spec.mode`. Column plots use `two` / `letters` / `control` / `each` / `none`; the other modes are `xy`, `counts` and `grouped`.
+- Curves (Nov 2026): `dose` fits a 4PL (`S.fit4pl`, Levenberg–Marquardt on log10 dose, SEs from s²(JᵀJ)⁻¹, checked against scipy curve_fit); `survival` uses `S.kaplanMeier` + `S.logRank` (checked against scipy.stats.ecdf / logrank). Layouts: column A = dose or time, other columns = replicate responses, or 1 event / 0 censored per group.
+- Outliers: `flagOutliers` runs `S.grubbs` (two-sided, α = 0.05, repeated; checked against the NIST handbook example) on each analysed column, highlights cells (`td.flag`) and lists them; nothing is removed. Single values are excluded by right-click → Exclude value: rows kept in `grid[g].xr` (shifted by insert / delete row), shown struck through, skipped by `collectGroups`; the methods paragraph counts them.
+- `drawPlot(spec)`: dispatches on `spec.mode`. Column plots use `two` / `letters` / `control` / `each` / `none`; the other modes are `xy`, `counts`, `grouped`, `dose` and `surv`.
 - Data model:
   - `grid`: an array of columns, each `{ name, cells }`;
   - `titles`: the row titles, which name the row-factor levels for two-way ANOVA and the outcomes of contingency tables.
