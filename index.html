@@ -359,6 +359,19 @@ th.hd-on .col-letter { color: var(--accent); font-weight: 600; box-shadow: inset
 #vResults { padding: 14px 18px 24px; background: var(--surface); }
 .res-head { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
 .res-head h2 { flex: 1; margin: 0; font-size: 13.5px; font-weight: 600; color: var(--fg-strong); }
+/* Results fold: the header folds every table away (the verdict stays); each table's title folds that table */
+#resToggle { display: inline-flex; align-items: center; gap: 6px; margin-left: -4px; padding: 2px 6px 2px 4px; border-radius: 6px; font-weight: 600; color: inherit; }
+#resToggle:hover { background: var(--btn-hover); }
+#resToggle .chev, #report .sec-t .chev { width: 9px; height: 9px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; transition: transform .15s; }
+#vResults.folded #resToggle .chev { transform: rotate(-90deg); }
+#vResults.folded #report, #vResults.folded #copyStats { display: none; }
+#vResults.folded .res-head { margin-bottom: 8px; }
+#report .sec-t { display: flex; align-items: baseline; gap: 5px; cursor: pointer; user-select: none; }
+#report .sec-t .chev { align-self: center; color: var(--fg-faint); }
+#report .sec-t:hover .chev { color: var(--fg-strong); }
+#report .rsec.shut .sec-t .chev { transform: rotate(-90deg); }
+#report .rsec.shut > :not(.sec-t) { display: none; }
+#report .rsec.shut .sec-t { color: var(--fg-muted); }
 
 /* results */
 #verdict > div { padding: 9px 12px; border: 1px solid var(--grid-border); border-radius: 6px; background: var(--panel); color: var(--fg-soft); font-size: 12.5px; font-weight: 500; line-height: 1.5; }
@@ -613,7 +626,7 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
       <div id="vGraph"><div id="plot" style="height: 400px;"></div><p id="plotHint" hidden>Click any text on the figure to edit it</p></div>
       <div id="vResults">
         <div class="res-head">
-          <h2>Results</h2>
+          <h2><button type="button" id="resToggle" aria-expanded="true" title="Fold or unfold the result tables (the conclusion stays)"><svg class="chev" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4"/></svg>Results</button></h2>
           <button id="copyStats" class="tb-btn" title="Copy all result tables as TSV"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>Copy table</button>
         </div>
         <div id="verdict"></div>
@@ -643,6 +656,7 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
       <dt>Y axis</dt><dd>Style → Y axis: linear or log scale, a fixed range (blank = automatic), a dashed reference line at a value, and a shaded band between two values.</dd>
       <dt>Style</dt><dd>Style in the ribbon sets the figure's font size, dot size, bar width, hollow or hidden points, and a box or open (left and bottom axes) frame.</dd>
       <dt>My style</dt><dd>Style → Save as my default keeps the chart type, error bars, colours, significance labels and style in this browser: Reset, new visits and Examples then use it. Forget it returns to the built-in defaults.</dd>
+      <dt>Results</dt><dd>Click <b>Results</b> to fold the tables away (the one-line conclusion stays), or click one table's title to fold just that table. Folds are remembered.</dd>
       <dt>Methods</dt><dd>Under the results, a ready-to-copy paragraph for a paper's methods section describes the test that ran, its post-hoc test, how the data are shown and the sample size.</dd>
       <dt>Curves</dt><dd><i>Dose–response curve (4PL)</i>: column A = dose, the other columns = replicate responses; a four-parameter logistic is fitted on log10(dose) and reports EC50 / IC50 with its 95% CI. <i>Kaplan–Meier survival</i>: column A = time, each other column a group with 1 = event and 0 = censored (blank = not in that group); curves are compared with the log-rank test.</dd>
       <dt>Outliers</dt><dd>Grubbs' test (α = 0.05) runs on every column; suspected outliers are highlighted on the sheet and listed in the results, but nothing is removed. Right-click a cell → Exclude value to leave it out (it stays on the sheet, struck through); the same menu includes it again.</dd>
@@ -671,6 +685,7 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
       <dt>Y 轴</dt><dd>样式 → Y 轴：线性或对数刻度、固定范围（留空为自动）、某个值处的虚线参考线，以及两个值之间的阴影带。</dd>
       <dt>样式</dt><dd>功能区的样式可设置字号、点大小、柱宽、空心或隐藏数据点，以及完整方框或只留左边和底边坐标轴的边框。</dd>
       <dt>我的样式</dt><dd>样式 → 存为我的默认，会在本浏览器保存图表类型、误差线、配色、显著性标记和样式：之后重置、新访问和示例都会使用它。"忘掉它"恢复内置默认。</dd>
+      <dt>结果</dt><dd>点击"结果"可折叠所有表格（一句话结论保留），点击某个表格的标题只折叠该表格。折叠状态会被记住。</dd>
       <dt>方法</dt><dd>结果下方有一段可直接复制的论文方法部分文字，描述所做的检验、事后检验、数据表示方式和样本量。</dd>
       <dt>曲线</dt><dd><i>剂量–反应曲线（4PL）</i>：A 列为剂量，其余列为重复的反应值；以 log10(剂量) 拟合四参数 logistic 模型，给出 EC50 / IC50 及其 95% 置信区间。<i>Kaplan–Meier 生存分析</i>：A 列为时间，其余每列是一组，1 = 事件、0 = 删失（留空 = 不属于该组）；用 log-rank 检验比较生存曲线。</dd>
       <dt>离群值</dt><dd>每列都会做 Grubbs 检验（α = 0.05），可疑离群值在表格中高亮并列在结果里，但不会被删除。右键单元格 → 排除该值即可排除（以删除线保留在表格中），同一菜单可重新纳入。</dd>
@@ -3055,6 +3070,7 @@ const ZH = {
   "Copy a link that opens these sheets (data and settings) in any browser": "复制一个链接，在任何浏览器中打开这些表格（含数据和设置）",
   "Fill": "填充", "Colour": "彩色", "Pattern": "图案", "Grey": "灰度",
   "Open a saved .jgz session, an Excel .xlsx file (each worksheet becomes a tab) or a .csv / .txt table": "打开 .jgz 会话、Excel .xlsx 文件（每个工作表成为一个标签）或 .csv / .txt 表格",
+  "Fold or unfold the result tables (the conclusion stays)": "折叠或展开结果表格（结论保留）", "Click to fold or unfold this table": "点击折叠或展开此表格", "Click to fold or unfold": "点击折叠或展开",
   "Switch the interface to Chinese": "界面切换为中文", "Switch the interface to English": "Switch the interface to English",
 };
 const ZH_PATTERNS = [
@@ -3466,10 +3482,30 @@ function tableHtml(head, rows, kv) {
   h += "<tbody>" + rows.map(r => `<tr>${r.map((c, i) => `<td class="${i ? "num" : (kv ? "key" : "")}">${cellHtml(c)}</td>`).join("")}</tr>`).join("") + "</tbody></table>";
   return h;
 }
+/* folded result tables, by section title, remembered in this browser (the report re-renders on every edit) */
+let shutSections = new Set();
+try { shutSections = new Set(JSON.parse(localStorage.getItem("plsig:shut") || "[]")); } catch (_) { /* none */ }
+function setResultsFolded(f) {
+  $("vResults").classList.toggle("folded", f);
+  $("resToggle").setAttribute("aria-expanded", String(!f));
+  try { localStorage.setItem("plsig:resFolded", f ? "1" : "0"); } catch (_) { /* fine */ }
+}
+$("resToggle").onclick = () => setResultsFolded(!$("vResults").classList.contains("folded"));
+try { if (localStorage.getItem("plsig:resFolded") === "1") setResultsFolded(true); } catch (_) { /* fine */ }
+$("report").addEventListener("click", e => {
+  const t = e.target.closest(".sec-t");
+  if (!t || e.target.closest("button")) return;   // the methods paragraph's Copy button sits in a title
+  const sec = t.parentElement, key = sec.dataset.sec, shut = !sec.classList.contains("shut");
+  sec.classList.toggle("shut", shut);
+  if (shut) shutSections.add(key); else shutSections.delete(key);
+  try { localStorage.setItem("plsig:shut", JSON.stringify([...shutSections])); } catch (_) { /* fine */ }
+});
 function reportHtml(rep) {
-  const methods = rep.methods ? `<div class="methods"><h3 class="h3">${uiText("Methods paragraph")} <button type="button" class="tb-btn" id="copyMethods">${uiText("Copy")}</button></h3><p>${escapeHtml(rep.methods)}</p></div>` : "";
+  const mShut = shutSections.has("Methods paragraph");
+  const methods = rep.methods ? `<div class="methods rsec${mShut ? " shut" : ""}" data-sec="Methods paragraph"><h3 class="h3 sec-t" title="Click to fold or unfold"><svg class="chev" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4"/></svg><span>${uiText("Methods paragraph")}</span> <button type="button" class="tb-btn" id="copyMethods">${uiText("Copy")}</button></h3><p>${escapeHtml(rep.methods)}</p></div>` : "";
   return methodsSlot(rep.sections.map(s => {
-    let h = `<div><h3 class="h3">${escapeHtml(s.title)}${s.note ? ` <span class="note">${escapeHtml(s.note)}</span>` : ""}</h3>`;
+    const shut = shutSections.has(s.title);
+    let h = `<div class="rsec${shut ? " shut" : ""}" data-sec="${escapeHtml(s.title)}"><h3 class="h3 sec-t" title="Click to fold or unfold this table"><svg class="chev" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4"/></svg><span>${escapeHtml(s.title)}</span>${s.note ? ` <span class="note">${escapeHtml(s.note)}</span>` : ""}</h3>`;
     h += tableHtml(s.head, s.rows, !s.head);
     if (s.extra && s.extra.length) {
       h += `<details class="more"><summary>More…</summary><div>${tableHtml(s.head, s.extra, !s.head)}</div></details>`;
