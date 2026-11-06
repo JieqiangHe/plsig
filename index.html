@@ -190,6 +190,13 @@ a.tb-btn { text-decoration: none; }
 #menuPop .ex-go { justify-content: center; gap: 6px; margin-top: 2px; background: var(--run-bg); color: var(--run-fg); font-weight: 600; }
 #menuPop .ex-go:hover { filter: brightness(1.06); }
 #menuPop .ex-go svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+#menuPop .st-pair { flex: 1; display: flex; align-items: center; gap: 6px; }
+#menuPop .st-pair i { font-style: normal; font-size: 11px; color: var(--fg-faint); min-width: 12px; text-align: center; }
+#menuPop .st-hint { font-size: 11px; color: var(--fg-faint); white-space: nowrap; }
+#menuPop .st-num { width: 64px; height: 22px; padding: 0 6px; border: 1px solid var(--input-border); border-radius: 5px; background: var(--input-bg); color: var(--fg-strong); font-size: 12px; font-variant-numeric: tabular-nums; outline: none; }
+#menuPop .st-num:focus { border-color: var(--focus-border); }
+#menuPop .st-num.bad { border-color: var(--bad-border); }
+#menuPop .st-clear { justify-content: center; margin-top: 6px; height: 24px; font-size: 11.5px; color: var(--fg-muted); background: var(--seg-bg); }
 #menuPop .stepper { display: flex; align-items: center; gap: 4px; margin: 2px 0 4px; }
 #menuPop .stepper button { width: 30px; flex: none; justify-content: center; font-size: 15px; background: var(--btn-hover); }
 #menuPop .stepper output { flex: 1; text-align: center; font-size: 12.5px; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--fg-strong); }
@@ -521,6 +528,8 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
         <select id="barWidth" hidden><option value="0.45">Narrow</option><option value="0.6" selected>Normal</option><option value="0.8">Wide</option></select>
         <select id="pointStyle" hidden><option value="filled" selected>Filled</option><option value="hollow">Hollow</option><option value="none">Hidden</option></select>
         <select id="frame" hidden><option value="box" selected>Box</option><option value="open">Axes</option></select>
+        <select id="yScale" hidden><option value="linear" selected>Linear</option><option value="log">Log</option></select>
+        <input id="yMin" hidden /><input id="yMax" hidden /><input id="refY" hidden /><input id="bandLo" hidden /><input id="bandHi" hidden />
         <span class="flat"><button id="styleBtn" class="tb-btn menu-btn" aria-haspopup="dialog" title="Figure style: font, dots, bar width, points, frame"><svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg><span class="lbl">Style</span><svg class="chev" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4"/></svg></button></span>
         <input id="plotH" type="number" min="220" step="20" value="" placeholder="400" title="Height in px (blank = automatic, fitted to the figure)" class="num-field size-src" hidden />
         <span class="flat"><button id="resetGraph" class="tb-btn" title="Restore graph to default options, size &amp; view"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>Reset</button></span>
@@ -568,7 +577,7 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
 
     <!-- ============ OUTPUT: graph + results ============ -->
     <section id="vOut">
-      <div id="vGraph"><div id="plot" style="height: 400px;"></div><p id="plotHint" hidden>Click an axis title to rename it</p></div>
+      <div id="vGraph"><div id="plot" style="height: 400px;"></div><p id="plotHint" hidden>Click any text on the figure to edit it</p></div>
       <div id="vResults">
         <div class="res-head">
           <h2>Results</h2>
@@ -597,7 +606,8 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
       <dt>Edit</dt><dd>Copy, cut and paste work on blocks; one copied value pasted onto a block fills it. <kbd>Delete</kbd> clears the block, <kbd>⌘/Ctrl</kbd> <kbd>D</kbd> fills down, <kbd>Esc</kbd> cancels a change. Type a value with a block selected and press <kbd>⌘/Ctrl</kbd> <kbd>Enter</kbd> to put it in every cell. Right-click for insert / delete rows and columns. Drag a column by the dotted handle at the left of its name (or right-click → Move left / right) to reorder it; the figure follows. Results update as you type.</dd>
       <dt>Undo</dt><dd><kbd>⌘/Ctrl</kbd> <kbd>Z</kbd>; add <kbd>Shift</kbd> for redo.</dd>
       <dt>Session</dt><dd>Saved in this browser automatically; Save / Open (.jgz) moves a session between machines.</dd>
-      <dt>Axes</dt><dd>Click an axis title on the figure to rename it; <kbd>Enter</kbd> keeps the change, <kbd>Esc</kbd> cancels. Clear the box to drop the title: a faint placeholder stays on screen so you can click it again, and exports leave it out. <i>Off</i> next to *** / P = hides the letters and stars on the figure. Reset in the ribbon restores the default titles.</dd>
+      <dt>Figure text</dt><dd>Click any text on the figure to edit it: an axis title, a group name under the x axis, or a legend entry. Group names and legend entries rename the column or row title on the sheet (<kbd>⌘/Ctrl</kbd> <kbd>Z</kbd> undoes it). <kbd>Enter</kbd> keeps the change, <kbd>Esc</kbd> cancels. A cleared axis title stays as a faint placeholder on screen so you can click it again; exports leave it out. <i>Off</i> next to *** / P = hides the letters and stars on the figure.</dd>
+      <dt>Y axis</dt><dd>Style → Y axis: linear or log scale, a fixed range (blank = automatic), a dashed reference line at a value, and a shaded band between two values.</dd>
       <dt>Style</dt><dd>Style in the ribbon sets the figure's font size, dot size, bar width, hollow or hidden points, and a box or open (left and bottom axes) frame.</dd>
       <dt>Export</dt><dd>Export opens the options: this figure or every sheet as one panel figure lettered A, B, C…, PNG or SVG, the on-screen size or a journal column width (8.5 / 11.4 / 17.4 cm), and 300 or 600 dpi (written into the PNG, so Word and Illustrator open it at that size). Copy puts the figure on the clipboard for PowerPoint, Word or a chat.</dd>
       <dt>Theme</dt><dd>The sun / moon button in the ribbon's View group switches between light and dark.</dd>
@@ -1449,8 +1459,9 @@ const DEMO = [
 ];
 const DEFAULT_ROWS = 10;
 const STORE_KEY = "plsig:v1", OLD_STORE_KEY = "ministat:v1";   // the app was called ministat before
-const SETTING_IDS = ["testSelect", "posthocSelect", "dunnAdj", "mu0", "chartType", "errType", "themeSelect", "sigLabel", "xLabel", "yLabel", "plotW", "plotH", "dotSize", "fontSize", "barWidth", "pointStyle", "frame"];
-const GRAPH_DEFAULTS = { chartType: "bar", errType: "sem", themeSelect: "claude", sigLabel: "stars", xLabel: "Group", yLabel: "Value", plotW: "", plotH: "", dotSize: "6", fontSize: "13", barWidth: "0.6", pointStyle: "filled", frame: "box" };
+const SETTING_IDS = ["testSelect", "posthocSelect", "dunnAdj", "mu0", "chartType", "errType", "themeSelect", "sigLabel", "xLabel", "yLabel", "plotW", "plotH", "dotSize", "fontSize", "barWidth", "pointStyle", "frame", "yScale", "yMin", "yMax", "refY", "bandLo", "bandHi"];
+const GRAPH_DEFAULTS = { chartType: "bar", errType: "sem", themeSelect: "claude", sigLabel: "stars", xLabel: "Group", yLabel: "Value", plotW: "", plotH: "", dotSize: "6", fontSize: "13", barWidth: "0.6", pointStyle: "filled", frame: "box",
+                         yScale: "linear", yMin: "", yMax: "", refY: "", bandLo: "", bandHi: "" };
 
 let grid = [];          // array of groups: {name, cells:[string,...]}
 let titles = [];        // row titles (text, left of the data; the row factor / outcome names)
@@ -1633,8 +1644,14 @@ function styleHtml() {
   const step = (id, c) => `<div class="st-row"><span>${c.name}</span><div class="stepper"><button type="button" data-sid="${id}" data-sstep="-1" aria-label="Smaller">−</button><output>${$(id).value}</output><button type="button" data-sid="${id}" data-sstep="1" aria-label="Larger">+</button></div></div>`;
   const seg = (id, name) => `<div class="st-row"><span>${name}</span><div class="seg">${[...$(id).options].map(o =>
     `<button type="button" data-sid="${id}" data-sv="${o.value}"${o.value === $(id).value ? ' class="on"' : ""}>${o.text}</button>`).join("")}</div></div>`;
+  const num = (id, ph) => `<input class="st-num" data-nid="${id}" inputmode="decimal" placeholder="${ph}" value="${escapeHtml($(id).value)}" aria-label="${id}" />`;
   return `<h4>Figure style</h4>` + Object.entries(STYLE_STEPS).map(([id, c]) => step(id, c)).join("") +
-         Object.entries(STYLE_SEGS).map(([id, n]) => seg(id, n)).join("");
+         Object.entries(STYLE_SEGS).map(([id, n]) => seg(id, n)).join("") +
+         `<h4>Y axis</h4>` + seg("yScale", "Scale") +
+         `<div class="st-row"><span>Range</span><div class="st-pair">${num("yMin", "auto")}<i>to</i>${num("yMax", "auto")}</div></div>` +
+         `<div class="st-row"><span>Line</span><div class="st-pair">${num("refY", "y =")}<i></i><span class="st-hint">dashed reference</span></div></div>` +
+         `<div class="st-row"><span>Band</span><div class="st-pair">${num("bandLo", "from")}<i>to</i>${num("bandHi", "to")}</div></div>` +
+         `<button type="button" class="st-clear" data-sclear="1">Clear axis settings</button>`;
 }
 $("styleBtn").onclick = () => {
   if (menuFor === styleAnchor) { closeMenuPop(); return; }
@@ -1662,6 +1679,21 @@ menuPop.addEventListener("click", e => {
     b.parentElement.querySelectorAll("button").forEach(x => x.classList.toggle("on", x === b));
   }
   scheduleSave(); redraw();
+});
+let styleNumTimer = null;
+menuPop.addEventListener("input", e => {
+  const f = e.target.closest("input[data-nid]");
+  if (!f || menuFor !== styleAnchor) return;
+  const v = f.value.trim().replace(",", ".");
+  f.classList.toggle("bad", v !== "" && !Number.isFinite(+v));
+  $(f.dataset.nid).value = v !== "" && Number.isFinite(+v) ? v : "";
+  clearTimeout(styleNumTimer);
+  styleNumTimer = setTimeout(() => { scheduleSave(); redraw(); }, 250);
+});
+menuPop.addEventListener("click", e => {
+  if (!e.target.closest("[data-sclear]") || menuFor !== styleAnchor) return;
+  ["yScale", "yMin", "yMax", "refY", "bandLo", "bandHi"].forEach(id => { $(id).value = GRAPH_DEFAULTS[id]; });
+  menuPop.innerHTML = styleHtml(); scheduleSave(); redraw();
 });
 addEventListener("mousedown", e => { if (menuFor && !menuPop.contains(e.target) && !menuFor._btn.contains(e.target)) closeMenuPop(); }, true);
 addEventListener("resize", () => closeMenuPop());
@@ -2642,7 +2674,7 @@ function collectGroups() {
       if (isFinite(n)) { values.push(n); rows.push(r); }
       else if (!g.off) bad.push({ t, name: g.name || groupLabel(gi), r });
     });
-    return { name: g.name.trim() || groupLabel(gi), values, rows, off: !!g.off };
+    return { name: g.name.trim() || groupLabel(gi), values, rows, off: !!g.off, gi };
   }).filter(g => !g.off);   // excluded columns stay on the sheet but out of every analysis
   const warns = bad.slice(0, 5).map(b => `“${b.t}” in ${b.name} (row ${b.r + 1}) is not a number — skipped.`);
   if (bad.length > 5) warns.push(`…and ${bad.length - 5} more non-numeric cells.`);
@@ -2657,7 +2689,7 @@ function pairedData(a, b, problems) {
   a.rows.forEach((r, i) => { if (mb.has(r)) { x.push(a.values[i]); y.push(mb.get(r)); } });
   const dropped = a.values.length + b.values.length - 2 * x.length;
   if (dropped) problems.push(`${dropped} value(s) without a partner in the same row were excluded from the paired analysis.`);
-  return { x, y, groups: [{ name: a.name, values: x }, { name: b.name, values: y }] };
+  return { x, y, groups: [{ name: a.name, values: x, gi: a.gi }, { name: b.name, values: y, gi: b.gi }] };
 }
 
 function showWarnings(list, decimalComma) {
@@ -3251,7 +3283,7 @@ const ANALYSES = {
     return {
       verdict: verdict("Is the distribution of outcomes different between the columns?", is22 ? "Fisher's exact test" : `χ²(${ct.df}) = ${fmt(ct.chi2, 3)}`, pMain),
       report: { test: "Contingency table", sections },
-      plot: { mode: "counts", names, rowNames, table: t, p: pMain },
+      plot: { mode: "counts", names, rowNames, rows, table: t, p: pMain },
     };
   },
 };
@@ -3368,6 +3400,28 @@ function applyStyle(traces, layout) {
     ["xaxis", "yaxis"].forEach(a => { sc(layout[a].title.font); layout[a].tickfont = { size: Math.round(13 * k * 10) / 10 }; });
     layout.annotations.forEach(a => sc(a.font));
   }
+  // y axis: log scale, fixed range, a dashed reference line and a shaded band
+  const num = (id) => { const v = parseFloat($(id).value); return Number.isFinite(v) ? v : null; };
+  const yAxis = layout.yaxis, ink = layout.xaxis.linecolor || "#141413";
+  const lo = num("yMin"), hi = num("yMax"), ref = num("refY"), b0 = num("bandLo"), b1 = num("bandHi");
+  const log = $("yScale").value === "log" && !(lastPlot && lastPlot.mode === "counts");
+  if (b0 != null && b1 != null) layout.shapes.unshift({ type: "rect", xref: "paper", x0: 0, x1: 1, y0: Math.min(b0, b1), y1: Math.max(b0, b1),
+                                                         fillcolor: "rgba(0,0,0,0.07)", line: { width: 0 }, layer: "below" });
+  if (ref != null) layout.shapes.push({ type: "line", xref: "paper", x0: 0, x1: 1, y0: ref, y1: ref, line: { color: ink, width: 1.2, dash: "dash" } });
+  if (log) {
+    // annotations on a log axis are placed in log10 units; marks at or below zero cannot be drawn
+    yAxis.type = "log";
+    layout.annotations = layout.annotations.filter(a => a.yref === "paper" || a.y > 0);
+    layout.annotations.forEach(a => { if (a.yref !== "paper") a.y = Math.log10(a.y); });
+    layout.shapes = layout.shapes.filter(sh => sh.yref === "paper" || (sh.y0 > 0 && sh.y1 > 0));
+    delete yAxis.range; yAxis.autorange = true;
+    if (lo > 0 && hi > lo) { yAxis.range = [Math.log10(lo), Math.log10(hi)]; yAxis.autorange = false; }
+    yAxis.exponentformat = "power";
+  } else if (lo != null || hi != null) {
+    const cur = yAxis.range || [lo ?? 0, hi ?? 1];
+    const r = [lo ?? cur[0], hi ?? cur[1]];
+    if (r[1] > r[0]) { yAxis.range = r; yAxis.autorange = false; }
+  }
   const ps = $("pointStyle").value, chart = $("chartType").value;
   traces.forEach((t, i) => {
     if (t.meta !== "pts") return;
@@ -3383,7 +3437,7 @@ function bottomLegend(layout, labels) {
   const itemW = 46 + 7 * Math.max(...labels.map(l => String(l).length), 1);
   const rows = Math.ceil(labels.length / Math.max(1, Math.floor((width - 20) / itemW)));
   Object.assign(layout, { showlegend: true, legend: { orientation: "h", traceorder: "normal", x: 0.5, xanchor: "center",
-    yref: "container", y: 0, yanchor: "bottom", font: { size: 12 } } });
+    yref: "container", y: 0, yanchor: "bottom", font: { size: 12 }, itemclick: false, itemdoubleclick: false } });   // a click edits the entry instead
   layout.margin.b = 58 + 20 * rows;
 }
 /* a darker tone of a group colour: error bars and mean lines stay matched to their bar yet visible on it */
@@ -3406,6 +3460,12 @@ function render(traces, layout) {
 /* Axis titles are renamed in a small text box laid over the title. (Plotly's own in-place
    editor lost the text in some browsers, e.g. with an input method, and an emptied title
    could not be clicked again.) An empty title shows a faint placeholder on screen only. */
+/* Text on the figure is edited where it stands: click an axis title, a group name under the
+   x axis or a legend entry, and a small text box opens over it. Axis titles are stored in
+   xLabel / yLabel; group names and legend entries rename the column or row title they come
+   from (one undo step). Plotly's own in-place editor lost the text in some browsers (e.g. with
+   an input method), so this is our own <input>; an empty axis title shows a faint placeholder
+   on screen only. */
 const AXIS_IDS = { xtitle: "xLabel", ytitle: "yLabel" };
 let titleEd = null;
 function closeTitleEditor(commit) {
@@ -3413,25 +3473,22 @@ function closeTitleEditor(commit) {
   if (!ed) return;
   titleEd = null;
   ed.input.remove();
-  if (commit && ed.input.value.trim() !== ed.start) {
-    $(ed.id).value = ed.input.value.trim();
-    scheduleSave(); redraw();
-  }
+  const v = ed.input.value.trim();
+  if (commit && v !== ed.start && (v || ed.allowEmpty)) ed.commit(v);
 }
-function openTitleEditor(textEl, id) {
+function openTextEditor(textEl, { value, placeholder, allowEmpty = true, commit }) {
   closeTitleEditor(true);
   const host = $("vGraph"), r = textEl.getBoundingClientRect(), hr = host.getBoundingClientRect();
   const input = document.createElement("input");
   input.className = "axis-ed"; input.type = "text";
-  input.value = placeholderAxes.has(id) ? "" : (textEl.textContent || "").trim();
-  input.placeholder = id === "xLabel" ? "X axis title" : "Y axis title";
-  input.setAttribute("aria-label", input.placeholder);
-  const w = Math.max(150, Math.min(260, Math.max(r.width, r.height) + 40));
+  input.value = value; input.placeholder = placeholder;
+  input.setAttribute("aria-label", placeholder);
+  const w = Math.max(130, Math.min(260, Math.max(r.width, r.height) + 40));
   input.style.width = w + "px";
   input.style.left = (r.left + r.width / 2 - hr.left + host.scrollLeft - w / 2) + "px";
   input.style.top = (r.top + r.height / 2 - hr.top + host.scrollTop - 13) + "px";
   host.appendChild(input);
-  titleEd = { input, id, start: input.value.trim() };
+  titleEd = { input, start: value.trim(), allowEmpty, commit };
   input.addEventListener("keydown", e => {
     if (e.isComposing || e.keyCode === 229) return;   // Enter that confirms an input-method candidate
     if (e.key === "Enter") { e.preventDefault(); closeTitleEditor(true); }
@@ -3440,28 +3497,49 @@ function openTitleEditor(textEl, id) {
   input.addEventListener("blur", () => { if (titleEd && titleEd.input === input) closeTitleEditor(true); });
   input.focus(); input.select();
 }
+/* the grid column a plotted group came from (by index when known, else by name) */
+function columnOf(g) {
+  if (g && Number.isInteger(g.gi) && grid[g.gi]) return g.gi;
+  return grid.findIndex((c, i) => !c.off && (c.name.trim() || groupLabel(i)) === (g && g.name));
+}
+const renameColumn = (gi, v) => { if (gi >= 0) mutate(() => { grid[gi].name = v; }); };
+const renameLevel = (old, v) => mutate(() => { titles = titles.map(t => (t || "").trim() === old ? v : t); });
+/* everything on the current figure that can be edited, with what an edit does */
+function textTargets() {
+  const out = [], spec = lastPlot;
+  if (!spec) return out;
+  Object.entries(AXIS_IDS).forEach(([cls, id]) => {
+    const el = document.querySelector("#plot ." + cls);
+    if (el) out.push({ el, value: placeholderAxes.has(id) ? "" : (el.textContent || "").trim(),
+                       placeholder: id === "xLabel" ? "X axis title" : "Y axis title",
+                       commit: (v) => { $(id).value = v; scheduleSave(); redraw(); } });
+  });
+  const ticks = [...document.querySelectorAll("#plot .xtick text")];
+  const legend = [...document.querySelectorAll("#plot .legendtext")];
+  const col = (name) => grid.findIndex((c, i) => !c.off && (c.name.trim() || groupLabel(i)) === name);
+  if (spec.groups && spec.mode !== "xy") {
+    ticks.forEach((el, i) => { const g = spec.groups[i]; if (g) out.push({ el, value: g.name, placeholder: "Group name", allowEmpty: false, commit: (v) => renameColumn(columnOf(g), v) }); });
+  } else if (spec.mode === "grouped") {
+    ticks.forEach((el, i) => { const l = spec.levels[i]; if (l != null) out.push({ el, value: l, placeholder: "Row title", allowEmpty: false, commit: (v) => renameLevel(l, v) }); });
+    const shown = spec.names.filter((_, j) => spec.levels.some((_, i) => spec.cells[i][j].length));
+    legend.forEach((el, k) => { const n = shown[k]; if (n != null) out.push({ el, value: n, placeholder: "Column name", allowEmpty: false, commit: (v) => renameColumn(col(n), v) }); });
+  } else if (spec.mode === "counts") {
+    ticks.forEach((el, i) => { const n = spec.names[i]; if (n != null) out.push({ el, value: n, placeholder: "Column name", allowEmpty: false, commit: (v) => renameColumn(col(n), v) }); });
+    legend.forEach((el, k) => { const r = spec.rows && spec.rows[k]; if (r != null) out.push({ el, value: spec.rowNames[k], placeholder: "Row title", allowEmpty: false, commit: (v) => mutate(() => { titles[r] = v; }) }); });
+  }
+  return out;
+}
+const hitText = (e) => textTargets().find(t => {
+  const r = t.el.getBoundingClientRect(), pad = 5;
+  return r.width && e.clientX >= r.left - pad && e.clientX <= r.right + pad && e.clientY >= r.top - pad && e.clientY <= r.bottom + pad;
+});
 // the figure's drag layer swallows mousedown, so focus would stay in the box: commit on any press outside it
 addEventListener("mousedown", e => { if (titleEd && e.target !== titleEd.input) closeTitleEditor(true); }, true);
 $("plot").addEventListener("click", e => {
-  if (!lastPlot) return;
-  for (const [cls, id] of Object.entries(AXIS_IDS)) {
-    const t = document.querySelector("#plot ." + cls);
-    if (!t) continue;
-    const r = t.getBoundingClientRect(), pad = 6;
-    if (e.clientX >= r.left - pad && e.clientX <= r.right + pad && e.clientY >= r.top - pad && e.clientY <= r.bottom + pad) {
-      openTitleEditor(t, id); return;
-    }
-  }
-});
-$("plot").addEventListener("mousemove", e => {
-  const hit = Object.keys(AXIS_IDS).some(cls => {
-    const t = document.querySelector("#plot ." + cls);
-    if (!t) return false;
-    const r = t.getBoundingClientRect();
-    return e.clientX >= r.left - 6 && e.clientX <= r.right + 6 && e.clientY >= r.top - 6 && e.clientY <= r.bottom + 6;
-  });
-  $("plot").classList.toggle("on-title", hit);
-});
+  const t = hitText(e);
+  if (t) { e.stopPropagation(); openTextEditor(t.el, t); }
+}, true);   // capture: a legend click would otherwise hide that series
+$("plot").addEventListener("mousemove", e => { $("plot").classList.toggle("on-title", !!hitText(e)); });
 
 function drawPlot(spec) {
   lastPlot = spec;
