@@ -296,6 +296,9 @@ th.drop-after { box-shadow: inset -3px 0 0 var(--accent); }
 th.off .grp-name { opacity: .45; text-decoration: line-through; }
 th.off .col-letter { color: var(--fg-faint); }
 td.off .cell-input { opacity: .4; text-decoration: line-through; }
+/* a single value left out (right-click → Exclude values), and a value Grubbs' test flags */
+td.xval .cell-input { color: var(--accent); font-style: italic; text-decoration: line-through; }
+td.flag .cell-input { background: var(--warn-bg); box-shadow: inset 0 0 0 1px var(--warn-border); }
 .delGrp:hover { color: var(--err); background: var(--danger-hover-bg); }
 /* selection: a box around a range; the row numbers and column letters of the selection light up */
 #selBox { position: absolute; z-index: 0; pointer-events: none; border: 2px solid var(--focus-border); background: var(--accent-soft); opacity: .9; }
@@ -477,6 +480,10 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
           </optgroup>
           <optgroup label="XY — column A = X, column B = Y">
             <option value="corr" data-hint="Pearson + Spearman">Correlation + linear regression</option>
+            <option value="dose" data-hint="EC50 / IC50" title="Column A = dose (concentration); the other columns = responses (replicates). Four-parameter logistic fit on log10(dose).">Dose–response curve (4PL)</option>
+          </optgroup>
+          <optgroup label="Survival — column A = time, others = 1 event / 0 censored">
+            <option value="survival" data-hint="log-rank" title="Column A = time; each other column is a group, with 1 = event (e.g. death) and 0 = censored, blank = not in that group.">Kaplan–Meier survival + log-rank</option>
           </optgroup>
           <optgroup label="Contingency — counts (rows = outcomes)">
             <option value="chisq" data-hint="counts">Chi-square / Fisher's exact test</option>
@@ -635,6 +642,8 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
       <dt>Style</dt><dd>Style in the ribbon sets the figure's font size, dot size, bar width, hollow or hidden points, and a box or open (left and bottom axes) frame.</dd>
       <dt>My style</dt><dd>Style → Save as my default keeps the chart type, error bars, colours, significance labels and style in this browser: Reset, new visits and Examples then use it. Forget it returns to the built-in defaults.</dd>
       <dt>Methods</dt><dd>Under the results, a ready-to-copy paragraph for a paper's methods section describes the test that ran, its post-hoc test, how the data are shown and the sample size.</dd>
+      <dt>Curves</dt><dd><i>Dose–response curve (4PL)</i>: column A = dose, the other columns = replicate responses; a four-parameter logistic is fitted on log10(dose) and reports EC50 / IC50 with its 95% CI. <i>Kaplan–Meier survival</i>: column A = time, each other column a group with 1 = event and 0 = censored (blank = not in that group); curves are compared with the log-rank test.</dd>
+      <dt>Outliers</dt><dd>Grubbs' test (α = 0.05) runs on every column; suspected outliers are highlighted on the sheet and listed in the results, but nothing is removed. Right-click a cell → Exclude value to leave it out (it stays on the sheet, struck through); the same menu includes it again.</dd>
       <dt>Export</dt><dd>Export opens the options: this figure or every sheet as one panel figure lettered A, B, C…, PNG or SVG, the on-screen size or a journal column width (8.5 / 11.4 / 17.4 cm), and 300 or 600 dpi (written into the PNG, so Word and Illustrator open it at that size). Copy puts the figure on the clipboard for PowerPoint, Word or a chat.</dd>
       <dt>Theme</dt><dd>The sun / moon button in the ribbon's View group switches between light and dark; 中 / EN switches the interface between Chinese and English (the figure itself stays in English, for papers).</dd>
       <dt>Privacy</dt><dd>Everything runs in this browser; your data is never uploaded.</dd>
@@ -657,6 +666,8 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
       <dt>样式</dt><dd>功能区的样式可设置字号、点大小、柱宽、空心或隐藏数据点，以及完整方框或只留左边和底边坐标轴的边框。</dd>
       <dt>我的样式</dt><dd>样式 → 存为我的默认，会在本浏览器保存图表类型、误差线、配色、显著性标记和样式：之后重置、新访问和示例都会使用它。"忘掉它"恢复内置默认。</dd>
       <dt>方法</dt><dd>结果下方有一段可直接复制的论文方法部分文字，描述所做的检验、事后检验、数据表示方式和样本量。</dd>
+      <dt>曲线</dt><dd><i>剂量–反应曲线（4PL）</i>：A 列为剂量，其余列为重复的反应值；以 log10(剂量) 拟合四参数 logistic 模型，给出 EC50 / IC50 及其 95% 置信区间。<i>Kaplan–Meier 生存分析</i>：A 列为时间，其余每列是一组，1 = 事件、0 = 删失（留空 = 不属于该组）；用 log-rank 检验比较生存曲线。</dd>
+      <dt>离群值</dt><dd>每列都会做 Grubbs 检验（α = 0.05），可疑离群值在表格中高亮并列在结果里，但不会被删除。右键单元格 → 排除该值即可排除（以删除线保留在表格中），同一菜单可重新纳入。</dd>
       <dt>导出</dt><dd>导出可选：当前图，或把所有表格拼成标好 A、B、C… 的组图；PNG 或 SVG；屏幕尺寸或期刊栏宽（8.5 / 11.4 / 17.4 cm）；300 或 600 dpi（写入 PNG，Word 和 Illustrator 打开即为该尺寸）。复制会把图放到剪贴板，可粘贴到 PowerPoint、Word 或聊天中。</dd>
       <dt>主题与语言</dt><dd>功能区视图组里的太阳 / 月亮按钮切换浅色和深色；"中 / EN"按钮切换界面语言。图本身始终是英文排版，方便投稿。</dd>
       <dt>隐私</dt><dd>所有计算都在本浏览器中完成，数据不会上传。</dd>
@@ -1465,7 +1476,141 @@ const fmt = (x, d = 4) => (x == null || !isFinite(x)) ? "—"
   : (Math.abs(x) >= 1e5 || (Math.abs(x) < 1e-4 && x !== 0) ? x.toExponential(2) : (+x.toFixed(d)).toString());
 const fmtP = (p) => (p == null || !isFinite(p)) ? "—" : (p < 0.0001 ? "< 0.0001" : p.toFixed(4));
 
+/* ---- small dense linear algebra for the curve fit ---- */
+function solveLin(A, b) {   // Gaussian elimination with partial pivoting; null if singular
+  const n = b.length, M = A.map((r, i) => [...r, b[i]]);
+  for (let c = 0; c < n; c++) {
+    let piv = c;
+    for (let r = c + 1; r < n; r++) if (Math.abs(M[r][c]) > Math.abs(M[piv][c])) piv = r;
+    if (Math.abs(M[piv][c]) < 1e-300) return null;
+    [M[c], M[piv]] = [M[piv], M[c]];
+    for (let r = 0; r < n; r++) if (r !== c) { const f = M[r][c] / M[c][c]; for (let k = c; k <= n; k++) M[r][k] -= f * M[c][k]; }
+  }
+  return M.map((r, i) => r[n] / r[i]);
+}
+function invMat(A) {
+  const n = A.length, cols = [];
+  for (let j = 0; j < n; j++) { const e = Array(n).fill(0); e[j] = 1; const c = solveLin(A, e); if (!c) return null; cols.push(c); }
+  return A.map((_, i) => cols.map(c => c[i]));
+}
+
+/* Four-parameter logistic (variable slope) dose–response, as in Prism:
+     Y = Bottom + (Top − Bottom) / (1 + 10^((LogEC50 − X)·HillSlope)),  X = log10(dose).
+   Least squares by Levenberg–Marquardt on every replicate point; standard errors from
+   s²·(JᵀJ)⁻¹ with s² = SS / (n − 4); 95% CIs with t(0.975, n − 4). */
+function fit4pl(x, y) {
+  const n = x.length;
+  const f = (p, xi) => p[0] + (p[1] - p[0]) / (1 + Math.pow(10, (p[2] - xi) * p[3]));
+  const jac = (p, xi) => {
+    const E = Math.pow(10, (p[2] - xi) * p[3]), D = 1 + E, span = p[1] - p[0], L = Math.LN10;
+    return [1 - 1 / D, 1 / D, -span * E * L * p[3] / (D * D), -span * E * L * (p[2] - xi) / (D * D)];
+  };
+  const ssOf = (p) => x.reduce((s, xi, i) => s + (y[i] - f(p, xi)) ** 2, 0);
+  // start: plateaus from the extremes, LogEC50 where the response crosses half way, slope sign from the trend
+  const ymin = Math.min(...y), ymax = Math.max(...y), xs = [...new Set(x)].sort((a, b) => a - b);
+  const meanAt = (v) => { const ys = y.filter((_, i) => x[i] === v); return ys.reduce((a, b) => a + b, 0) / ys.length; };
+  const rising = meanAt(xs[xs.length - 1]) >= meanAt(xs[0]);
+  const half = (ymin + ymax) / 2;
+  let c0 = xs[0], best = Infinity;
+  xs.forEach(v => { const d = Math.abs(meanAt(v) - half); if (d < best) { best = d; c0 = v; } });
+  let p = [ymin, ymax, c0, rising ? 1 : -1];
+  if (!rising) p = [ymin, ymax, c0, -1];
+  let ss = ssOf(p), lambda = 1e-3, iter = 0;
+  for (; iter < 500; iter++) {
+    const A = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]], g = [0, 0, 0, 0];
+    x.forEach((xi, i) => {
+      const J = jac(p, xi), r = y[i] - f(p, xi);
+      for (let a = 0; a < 4; a++) { g[a] += J[a] * r; for (let b = 0; b < 4; b++) A[a][b] += J[a] * J[b]; }
+    });
+    let improved = false;
+    for (let tries = 0; tries < 30 && !improved; tries++) {
+      const Al = A.map((row, a) => row.map((v, b) => a === b ? v * (1 + lambda) + 1e-12 : v));
+      const d = solveLin(Al, g);
+      if (!d) { lambda *= 10; continue; }
+      const q = p.map((v, a) => v + d[a]), sq = ssOf(q);
+      if (Number.isFinite(sq) && sq < ss) {
+        const rel = (ss - sq) / Math.max(ss, 1e-300);
+        p = q; ss = sq; lambda = Math.max(lambda / 10, 1e-12); improved = true;
+        if (rel < 1e-14) iter = 1e9;
+      } else lambda *= 10;
+    }
+    if (!improved) break;
+  }
+  const df = n - 4;
+  const A = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]];
+  x.forEach(xi => { const J = jac(p, xi); for (let a = 0; a < 4; a++) for (let b = 0; b < 4; b++) A[a][b] += J[a] * J[b]; });
+  const inv = invMat(A), s2 = df > 0 ? ss / df : NaN;
+  const se = inv ? inv.map((r, i) => Math.sqrt(Math.max(0, r[i] * s2))) : [NaN, NaN, NaN, NaN];
+  const tc = df > 0 ? jStat.studentt.inv(0.975, df) : NaN;
+  const ci = p.map((v, i) => [v - tc * se[i], v + tc * se[i]]);
+  const ym = y.reduce((a, b) => a + b, 0) / n, sst = y.reduce((s, v) => s + (v - ym) ** 2, 0);
+  return { bottom: p[0], top: p[1], logEC50: p[2], hill: p[3], ec50: Math.pow(10, p[2]), se, ci,
+           ec50CI: [Math.pow(10, ci[2][0]), Math.pow(10, ci[2][1])], ss, df, n, r2: 1 - ss / sst, syx: Math.sqrt(s2),
+           predict: (xi) => f(p, xi), converged: iter >= 1e9 || Number.isFinite(ss) };
+}
+
+/* Kaplan–Meier estimate for one group: times and events (1 = event, 0 = censored).
+   Returns the step points, the censored marks and the median survival (first time S ≤ 0.5). */
+function kaplanMeier(times, events) {
+  const idx = times.map((_, i) => i).sort((a, b) => times[a] - times[b]);
+  let atRisk = times.length, S = 1, median = null;
+  const steps = [{ t: 0, s: 1 }], censored = [];
+  for (let k = 0; k < idx.length;) {
+    const t = times[idx[k]];
+    let d = 0, c = 0;
+    while (k < idx.length && times[idx[k]] === t) { if (events[idx[k]]) d++; else c++; k++; }
+    if (d) { S *= 1 - d / atRisk; steps.push({ t, s: S }); if (median === null && S <= 0.5) median = t; }
+    if (c) censored.push({ t, s: S });
+    atRisk -= d + c;
+  }
+  return { steps, censored, median, n: times.length, events: events.filter(Boolean).length };
+}
+/* Log-rank (Mantel–Cox) test for k groups: χ² = (O − E)ᵀ V⁻¹ (O − E) over k − 1 groups.
+   For two groups the hazard ratio is (O₁/E₁)/(O₂/E₂) (the log-rank estimate). */
+function logRank(groups) {   // groups: [{ times, events }]
+  const k = groups.length, all = [];
+  groups.forEach((g, j) => g.times.forEach((t, i) => all.push({ t, e: g.events[i] ? 1 : 0, j })));
+  const times = [...new Set(all.filter(r => r.e).map(r => r.t))].sort((a, b) => a - b);
+  const O = Array(k).fill(0), E = Array(k).fill(0), V = Array.from({ length: k }, () => Array(k).fill(0));
+  times.forEach(t => {
+    const n = groups.map((_, j) => all.filter(r => r.j === j && r.t >= t).length);
+    const d = groups.map((_, j) => all.filter(r => r.j === j && r.t === t && r.e).length);
+    const N = n.reduce((a, b) => a + b, 0), D = d.reduce((a, b) => a + b, 0);
+    if (N < 1) return;
+    for (let a = 0; a < k; a++) {
+      O[a] += d[a]; E[a] += D * n[a] / N;
+      if (N > 1) for (let b = 0; b < k; b++) V[a][b] += D * (N - D) / (N - 1) * (n[a] / N) * ((a === b ? 1 : 0) - n[b] / N);
+    }
+  });
+  const m = k - 1, diff = O.slice(0, m).map((o, a) => o - E[a]), Vm = V.slice(0, m).map(r => r.slice(0, m));
+  const inv = invMat(Vm);
+  const chi2 = inv ? diff.reduce((s, da, a) => s + da * diff.reduce((t, db, b) => t + inv[a][b] * db, 0), 0) : NaN;
+  const p = Number.isFinite(chi2) ? 1 - jStat.chisquare.cdf(chi2, m) : NaN;
+  const hr = k === 2 && E[0] > 0 && E[1] > 0 && O[1] > 0 ? (O[0] / E[0]) / (O[1] / E[1]) : null;
+  return { chi2, df: m, p, O, E, hr };
+}
+
+/* Grubbs' test (two-sided, α = 0.05), repeated until no further outlier: G = max |x − mean| / SD,
+   critical G = (n − 1)/√n · √(t² / (n − 2 + t²)) with t = t(1 − α/(2n), n − 2). Needs n ≥ 3. */
+function grubbs(values, alpha = 0.05) {
+  const idx = values.map((_, i) => i), out = [];
+  while (idx.length >= 3) {
+    const v = idx.map(i => values[i]), n = v.length, m = v.reduce((a, b) => a + b, 0) / n;
+    const sd = Math.sqrt(v.reduce((s, x) => s + (x - m) ** 2, 0) / (n - 1));
+    if (!(sd > 0)) break;
+    let far = 0;
+    v.forEach((x, q) => { if (Math.abs(x - m) > Math.abs(v[far] - m)) far = q; });
+    const G = Math.abs(v[far] - m) / sd, t = jStat.studentt.inv(1 - alpha / (2 * n), n - 2);
+    const crit = (n - 1) / Math.sqrt(n) * Math.sqrt(t * t / (n - 2 + t * t));
+    if (G <= crit) break;
+    out.push({ index: idx[far], value: values[idx[far]], G, crit });
+    idx.splice(far, 1);
+  }
+  return out;
+}
+
 return {
+  fit4pl, kaplanMeier, logRank, grubbs,
   parseNum, parseDelimited, describe, quantile,
   tTest, pairedTTest, mannWhitney, wilcoxonSignedRank,
   anova, anovaPosthoc, kruskalWallis, dunnTest, adjustP,
@@ -1813,7 +1958,8 @@ const hasTitles = () => titles.some(t => t.trim());
 function sanitizeGrid(g) {
   return g.map((c, i) => Object.assign({ name: String(c && c.name != null ? c.name : groupLabel(i)),
                             cells: (c && Array.isArray(c.cells) ? c.cells : []).map(v => String(v ?? "")) },
-                          c && c.off ? { off: true } : {}));   // off: column left out of the analysis
+                          c && c.off ? { off: true } : {},   // off: column left out of the analysis
+                          c && Array.isArray(c.xr) && c.xr.length ? { xr: c.xr.filter(Number.isInteger) } : {}));   // xr: rows of single values left out
 }
 
 let saveTimer = null;
@@ -1907,7 +2053,8 @@ function renderGrid() {
     html += `<td class="title-col"><input class="row-title" data-r="${r}" value="${escapeHtml(titles[r])}" aria-label="Title of row ${r + 1}" /></td>`;
     grid.forEach((g, gi) => {
       const v = g.cells[r];
-      html += `<td${g.off ? ' class="off"' : ""}><input class="cell-input${isBad(v) ? " bad" : ""}" data-g="${gi}" data-r="${r}" value="${escapeHtml(v)}" aria-label="${escapeHtml(g.name)}, row ${r + 1}" inputmode="decimal" /></td>`;
+      const xc = g.off ? "off" : g.xr && g.xr.includes(r) ? "xval" : "";
+      html += `<td${xc ? ` class="${xc}"` : ""}><input class="cell-input${isBad(v) ? " bad" : ""}" data-g="${gi}" data-r="${r}" value="${escapeHtml(v)}" aria-label="${escapeHtml(g.name)}, row ${r + 1}" inputmode="decimal" /></td>`;
     });
     html += "</tr>";
   }
@@ -2028,7 +2175,7 @@ function pasteText(text) {
   pasteBlock(text, R.g0, R.r0);
 }
 const insertRows = (at, n = 1) => mutate(() => {
-  grid.forEach(g => g.cells.splice(at, 0, ...Array(n).fill("")));
+  grid.forEach(g => { g.cells.splice(at, 0, ...Array(n).fill("")); if (g.xr) g.xr = g.xr.map(r => r >= at ? r + n : r); });
   titles.splice(at, 0, ...Array(n).fill(""));
 });
 const insertCols = (at, n = 1) => mutate(() => {
@@ -2036,7 +2183,8 @@ const insertCols = (at, n = 1) => mutate(() => {
 });
 function deleteRows(r0, r1) {
   mutate(() => {
-    grid.forEach(g => g.cells.splice(r0, r1 - r0 + 1));
+    const k = r1 - r0 + 1;
+    grid.forEach(g => { g.cells.splice(r0, k); if (g.xr) g.xr = g.xr.filter(r => r < r0 || r > r1).map(r => r > r1 ? r - k : r); });
     titles.splice(r0, r1 - r0 + 1);
     if (!nRows()) { grid.forEach(g => g.cells.push("")); titles.push(""); }
   });
@@ -2252,7 +2400,8 @@ table.addEventListener("contextmenu", e => {
     ["colLeft", `Insert ${colsWord} left`], ["colRight", `Insert ${colsWord} right`], "-",
     ["delRows", `Delete ${rowsWord}`], ["delCols", `Delete ${colsWord}`, "", ng < 1 || ng >= grid.length], "-",
     ["colMoveL", `Move ${colsWord} left`, "", ng < 1 || gs === 0], ["colMoveR", `Move ${colsWord} right`, "", ng < 1 || R.g1 >= grid.length - 1], "-",
-    grid.slice(gs, R.g1 + 1).every(c => c.off) ? ["include", `Include ${colsWord} in the analysis`] : ["exclude", `Exclude ${colsWord} from the analysis`, "", ng < 1], "-",
+    grid.slice(gs, R.g1 + 1).every(c => c.off) ? ["include", `Include ${colsWord} in the analysis`] : ["exclude", `Exclude ${colsWord} from the analysis`, "", ng < 1],
+    blockExcluded(R) ? ["valIn", "Include values again"] : ["valOut", nr * ng > 1 ? "Exclude values from the analysis" : "Exclude value from the analysis", "", ng < 1], "-",
     ["fill", "Fill down", kb("D")], ["clear", "Clear contents", "Del"],
   ];
   ctxMenu.innerHTML = items.map(it => it === "-" ? `<hr>` :
@@ -2287,6 +2436,15 @@ ctxMenu.addEventListener("click", async e => {
       mutate(() => grid.slice(gs, R.g1 + 1).forEach(c => { if (off) c.off = true; else delete c.off; }));
       break;
     }
+    case "valOut": case "valIn": {
+      const out = b.dataset.act === "valOut";
+      mutate(() => grid.slice(gs, R.g1 + 1).forEach(c => {
+        const set = new Set(c.xr || []);
+        for (let r = R.r0; r <= R.r1; r++) { if (out && String(c.cells[r] ?? "").trim()) set.add(r); else if (!out) set.delete(r); }
+        if (set.size) c.xr = [...set].sort((a, b) => a - b); else delete c.xr;
+      }));
+      break;
+    }
     case "colMoveL": case "colMoveR": {
       const d = b.dataset.act === "colMoveL" ? -1 : 1;
       mutate(() => {   // move the whole block one place
@@ -2306,6 +2464,16 @@ addEventListener("keydown", e => { if (e.key === "Escape" && !ctxMenu.hidden) { 
 addEventListener("blur", closeMenu);
 $("sheetWrap").addEventListener("scroll", closeMenu);
 
+/* is every filled cell of the selected block excluded already? */
+function blockExcluded(R) {
+  let any = false;
+  for (let g = Math.max(0, R.g0); g <= R.g1; g++) for (let r = R.r0; r <= R.r1; r++) {
+    if (!grid[g] || !String(grid[g].cells[r] ?? "").trim()) continue;
+    if (!(grid[g].xr || []).includes(r)) return false;
+    any = true;
+  }
+  return any;
+}
 /* drag a column by its handle onto another header to move it; the figure's order follows */
 let dragCol = -1;
 table.addEventListener("dragstart", e => {
@@ -2660,15 +2828,23 @@ const EXAMPLES = [
             M1: ["", "", "", 10.3, 10.6, 10.5, 10.6, 10.9, 11.0, 11.8, 12.1, 11.9],
             M2: ["", "", "", 10.4, 10.8, 10.6, 10.5, 10.8, 10.9, 11.9, 12.0, 12.2],
             M3: ["", "", "", 10.2, 10.7, 10.6, 10.6, 11.2, 11.3, 12.0, 12.3, 12.1] } },
-  { name: "Dose–response", hint: "correlation + regression, A = X", test: "corr",
+  { name: "Correlation", hint: "correlation + regression, A = X", test: "corr",
     cols: { "Dose (mg)": [0, 5, 10, 15, 20, 25, 30, 35, 40], Response: [2.1, 3.4, 4.2, 5.9, 6.3, 7.8, 8.4, 9.9, 10.6] } },
+  { name: "Dose–response curve", hint: "4PL fit, IC50, A = dose", test: "dose", yLabel: "Viability (%)",
+    cols: { "Dose (µM)": [0.001, 0.01, 0.03, 0.1, 0.3, 1, 3, 10, 30, 100], "Rep 1": [99.1, 97.4, 94.8, 86.2, 70.1, 47.9, 24.6, 12.3, 7.1, 5.6],
+            "Rep 2": [101.3, 98.8, 92.1, 88.9, 66.4, 51.2, 27.8, 10.8, 8.4, 4.9], "Rep 3": [97.6, 99.5, 95.6, 83.7, 72.9, 45.1, 22.3, 13.9, 6.2, 6.1] } },
+  { name: "Survival", hint: "Kaplan–Meier + log-rank, A = days", test: "survival",
+    cols: { Days: [5, 8, 12, 14, 18, 21, 25, 28, 30, 30, 9, 15, 22, 27, 30, 33, 37, 40, 45, 45],
+            Control: [1, 1, 1, 0, 1, 1, 1, 1, 0, 0, "", "", "", "", "", "", "", "", "", ""],
+            Treated: ["", "", "", "", "", "", "", "", "", "", 1, 0, 1, 1, 0, 1, 1, 0, 0, 0] } },
   { name: "Counts", hint: "chi-square / Fisher, rows = outcomes", test: "chisq", titles: ["Responded", "No response"],
     cols: { Placebo: [8, 22], Drug: [19, 11] } },
 ];
 function openExample(ex) {
   const names = Object.keys(ex.cols), n = Math.max(...names.map(k => ex.cols[k].length));
   const g = names.map(k => ({ name: k, cells: Array.from({ length: n }, (_, i) => ex.cols[k][i] == null ? "" : String(ex.cols[k][i])) }));
-  const settings = Object.assign(collectSettings(), myStyle, { testSelect: ex.test, xLabel: ex.xLabel ?? GRAPH_DEFAULTS.xLabel, yLabel: GRAPH_DEFAULTS.yLabel, plotW: "", plotH: "" },
+  const settings = Object.assign(collectSettings(), myStyle, { testSelect: ex.test, xLabel: ex.xLabel ?? GRAPH_DEFAULTS.xLabel, yLabel: ex.yLabel ?? GRAPH_DEFAULTS.yLabel, plotW: "", plotH: "",
+                                 transform: "none", avgReps: "off" },
                                  ex.posthoc ? { posthocSelect: ex.posthoc } : {});
   stashSheet();
   const cur = sheets[curSheet], blank = !cur.grid.some(c => c.cells.some(v => String(v).trim()));
@@ -2814,6 +2990,17 @@ const ZH = {
   "Average replicates is off for this test: its row titles name the factor levels.": "此检验不对重复取平均：其行标题表示因素水平。",
   "Average replicates: no rows share a row title, so nothing was averaged.": "重复取平均：没有行标题相同的行，未做平均。",
   "% of first column: the first column's mean is 0 or missing, so values were left as they are.": "第一列百分比：第一列均值为 0 或缺失，数值保持不变。",
+  "Dose–response curve (4PL)": "剂量–反应曲线（4PL）", "EC50 / IC50": "EC50 / IC50", "Kaplan–Meier survival + log-rank": "Kaplan–Meier 生存分析 + log-rank", "log-rank": "log-rank",
+  "Survival — column A = time, others = 1 event / 0 censored": "生存 — A 列为时间，其余列 1 = 事件 / 0 = 删失",
+  "Best-fit values": "最佳拟合值", "(four-parameter logistic, variable slope)": "（四参数 logistic，可变斜率）", "Bottom": "底部平台", "Top": "顶部平台", "Hill slope": "Hill 斜率",
+  "Span": "跨度", "Goodness of fit": "拟合优度", "Sum of squares": "平方和", "Degrees of freedom": "自由度", "Number of points": "数据点数", "Number of doses": "剂量数",
+  "Survival summary": "生存概况", "Events": "事件数", "Censored": "删失数", "Median survival": "中位生存时间", "undefined": "未达到",
+  "Log-rank (Mantel–Cox) test": "Log-rank（Mantel–Cox）检验", "Observed and expected events": "观察与期望事件数", "Observed": "观察值", "Expected": "期望值",
+  "Possible outliers": "可能的离群值", "(Grubbs' test, two-sided, α = 0.05; highlighted on the sheet)": "（Grubbs 检验，双侧，α = 0.05；已在表格中高亮）",
+  "Nothing was removed. To leave a value out, right-click its cell → Exclude value; it stays on the sheet, struck through.": "未删除任何数据。若要排除某个值，右键该单元格 → 排除该值；它会以删除线保留在表格中。",
+  "Exclude value from the analysis": "从分析中排除该值", "Exclude values from the analysis": "从分析中排除这些值", "Include values again": "重新纳入这些值",
+  "Dose–response curve": "剂量–反应曲线", "Survival": "生存分析", "Correlation ": "相关", "4PL fit, IC50, A = dose": "4PL 拟合，IC50，A 列为剂量", "Kaplan–Meier + log-rank, A = days": "Kaplan–Meier + log-rank，A 列为天数",
+  "Row": "行", "Column": "列", "Value": "数值", "Critical G": "临界 G",
   "Switch the interface to Chinese": "界面切换为中文", "Switch the interface to English": "Switch the interface to English",
 };
 const ZH_PATTERNS = [
@@ -2847,6 +3034,8 @@ const ZH_PATTERNS = [
   [/^✓ (\d+) panels$/, "✓ $1 个子图"], [/^✓ (\d+) sheets$/, "✓ $1 个表格"],
   [/^(.+) — double-click to rename, right-click for more$/, "$1 — 双击重命名，右键更多操作"],
   [/^Close (.+)$/, "关闭 $1"],
+  [/^Are the survival curves different\?$/, "生存曲线是否不同？"],
+  [/^Hazard ratio \((.+), log-rank\)$/, "风险比（$1，log-rank）"],
   [/^Transform: (.+)$/, (m, v) => "数据变换：" + v.replace("% of 1st", "第一列 %").replace("avg", "取平均")],
   [/^(\d+) value\(s\) ≤ 0 cannot be log-transformed and were left out\.$/, "$1 个 ≤ 0 的值无法取对数，已排除。"],
   [/^Rank-biserial r \(\+ ⇒ (.+) larger\)$/, "秩二列相关 r（+ ⇒ $1 较大）"], [/^Sum of ranks \((.+)\)$/, "秩和（$1）"],
@@ -3018,6 +3207,7 @@ function collectGroups() {
       const t = String(c).trim();
       if (t === "") return;
       const n = S.parseNum(t);
+      if (g.xr && g.xr.includes(r)) return;   // a value excluded by right-click → Exclude values
       if (isFinite(n)) { values.push(n); rows.push(r); }
       else if (!g.off) bad.push({ t, name: g.name || groupLabel(gi), r });
     });
@@ -3039,7 +3229,7 @@ function transformGroups(groups, test, problems) {
   const tf = $("transform").value, avg = $("avgReps").value === "on";
   lastTransform = { kind: "none", ref: "", avg: false };
   if (tf === "none" && !avg) return groups;
-  if (test === "chisq" || test === "corr") { problems.push("Transform is off for this test: it works on counts or X / Y pairs."); return groups; }
+  if (["chisq", "corr", "dose", "survival"].includes(test)) { problems.push("Transform is off for this test: it works on counts, X / Y pairs, doses or times."); return groups; }
   let out = groups.map(g => Object.assign({}, g, { values: g.values.slice(), rows: g.rows.slice() }));
   if (avg) {
     if (test === "twoway" || test === "cells") problems.push("Average replicates is off for this test: its row titles name the factor levels.");
@@ -3079,6 +3269,29 @@ function transformGroups(groups, test, problems) {
     lastTransform = Object.assign(lastTransform, { kind: tf });
   }
   return out;
+}
+/* Possible outliers: Grubbs' test (two-sided, α = 0.05, repeated) on each column the test used.
+   Flagged cells are highlighted on the sheet and listed in the results; nothing is removed
+   unless the user excludes the value (right-click → Exclude value). */
+let lastExcluded = 0;
+function flagOutliers(test, groups, report) {
+  document.querySelectorAll("#dataTable td.flag").forEach(td => td.classList.remove("flag"));
+  lastExcluded = grid.reduce((n, g) => n + (g.off ? 0 : (g.xr || []).filter(r => String(g.cells[r] ?? "").trim()).length), 0);
+  if (["chisq", "corr", "dose", "survival"].includes(test)) return;
+  const rows = [];
+  groups.forEach(g => {
+    if (g.values.length < 3) return;
+    S.grubbs(g.values).forEach(o => {
+      const r = g.rows[o.index];
+      rows.push([g.name, String(r + 1), fmt(g.values[o.index]), fmt(o.G, 3), fmt(o.crit, 3)]);
+      const gi = Number.isInteger(g.gi) ? g.gi : -1;
+      const td = gi >= 0 && document.querySelector(`#dataTable .cell-input[data-g="${gi}"][data-r="${r}"]`);
+      if (td) td.parentElement.classList.add("flag");
+    });
+  });
+  if (rows.length) report.sections.push({ title: "Possible outliers", note: "(Grubbs' test, two-sided, α = 0.05; highlighted on the sheet)",
+    head: ["Column", "Row", "Value", "G", "Critical G"], rows,
+    hint: "Nothing was removed. To leave a value out, right-click its cell → Exclude value; it stays on the sheet, struck through." });
 }
 /* the y title a transform implies, used while the y title is still the default */
 function yDefault() {
@@ -3155,6 +3368,7 @@ function run(quiet) {
       showWarnings(problems, decimalComma);
       if (!res) { clearResults(); return; }
       lastReport = res.report;
+      flagOutliers(test, groups, res.report);
       res.report.methods = methodsText(test, groups, res.plot);
       verdictBox(res.verdict.sig, res.verdict.html);
       $("report").innerHTML = reportHtml(res.report);
@@ -3233,9 +3447,10 @@ function methodsText(test, groups, plot) {
   if (plot && plot.paired && ns.length) ns = [ns[0]];   // matched designs: n = subjects, not per group
   const nShow = plot && plot.paired && nTxt ? nTxt + L(" subjects", " 个受试对象") : nTxt;
   const errTxt = { sd: L("mean ± SD", "均值 ± 标准差（SD）"), sem: L("mean ± SEM", "均值 ± 标准误（SEM）"), ci: L("mean with 95% confidence interval", "均值及 95% 置信区间") }[err];
-  const meanBased = !["corr", "chisq"].includes(test);
+  const meanBased = !["corr", "chisq", "dose", "survival"].includes(test);
   const parts = [];
   const tf = lastTransform;
+  if (lastExcluded) parts.push(L(`${lastExcluded} value${lastExcluded > 1 ? "s were" : " was"} excluded from the analysis.`, `${lastExcluded} 个数值被排除在分析之外。`));
   if (tf.avg) parts.push(L("Technical replicates (rows sharing a label) were averaged before analysis.", "分析前先对技术重复（行标题相同的行）取平均。"));
   if (tf.kind === "pct") parts.push(L(`Values were expressed as a percentage of the mean of ${tf.ref}.`, `数值以 ${tf.ref} 均值的百分比表示。`));
   if (tf.kind === "log10" || tf.kind === "ln") parts.push(L(`Values were ${tf.kind === "log10" ? "log10" : "natural-log"}-transformed before analysis.`, `分析前对数值进行了${tf.kind === "log10" ? "常用对数（log10）" : "自然对数"}转换。`));
@@ -3259,6 +3474,8 @@ function methodsText(test, groups, plot) {
     twoway: L(`Effects of the two factors and their interaction were tested by two-way ANOVA (Type III sums of squares), followed by ${PH[ph]} comparing columns within each row level.`, `两个因素及其交互作用采用双因素方差分析（III 型平方和）检验，并在各行水平内采用${PH[ph]}比较各列。`),
     cells: L(`Each treatment combination was treated as one group, and differences among all groups were tested by one-way ANOVA followed by ${PH[ph]}.`, `将每个处理组合视为一组，各组间差异采用单因素方差分析，事后比较采用${PH[ph]}。`),
     corr: L("Associations were assessed by Pearson correlation (with Spearman rank correlation as a non-parametric check) and simple linear regression.", "相关性采用 Pearson 相关分析（以 Spearman 秩相关作为非参数验证）及简单线性回归评估。"),
+    dose: L(`Dose–response data were fitted by least squares to a four-parameter logistic model (variable slope) on log10-transformed doses; ${plot && plot.label || "EC50"} values are reported with 95% confidence intervals.`, `剂量–反应数据以 log10 剂量为自变量，采用最小二乘法拟合四参数 logistic 模型（可变斜率），${plot && plot.label || "EC50"} 以 95% 置信区间报告。`),
+    survival: L("Survival was estimated with the Kaplan–Meier method and curves were compared with the log-rank (Mantel–Cox) test.", "生存率采用 Kaplan–Meier 法估计，生存曲线比较采用 log-rank（Mantel–Cox）检验。"),
     chisq: plot && plot.table && plot.table.length === 2 && plot.names.length === 2
       ? L("Proportions were compared with Fisher's exact test.", "率的比较采用 Fisher 精确检验。")
       : L("The distribution of outcomes across groups was compared with the chi-square test of independence.", "各组结局分布的比较采用卡方独立性检验。"),
@@ -3714,6 +3931,80 @@ const ANALYSES = {
     return res;
   },
 
+  /* ---- dose–response: column A = dose, other columns = response replicates; 4PL on log10(dose) ---- */
+  dose(groups, problems) {
+    const X = groups[0], Ys = groups.slice(1);
+    const xOf = new Map(X.rows.map((r, i) => [r, X.values[i]]));
+    const dose = [], x = [], y = [];
+    let zero = 0;
+    Ys.forEach(g => g.values.forEach((v, q) => {
+      const d = xOf.get(g.rows[q]);
+      if (d === undefined) return;
+      if (!(d > 0)) { zero++; return; }
+      dose.push(d); x.push(Math.log10(d)); y.push(v);
+    }));
+    if (zero) problems.push(`${zero} response(s) at dose ≤ 0 were left out: the curve is fitted on log10(dose).`);
+    if (new Set(x).size < 4 || x.length < 5) { problems.push("A dose–response fit needs at least 4 different doses (> 0) and 5 points: column A = dose, the other columns = responses."); return null; }
+    const ft = S.fit4pl(x, y);
+    if (!Number.isFinite(ft.ss) || !Number.isFinite(ft.logEC50)) { problems.push("The curve did not converge; check that the responses change with dose."); return null; }
+    const inhib = ft.hill < 0, L50 = inhib ? "IC50" : "EC50";
+    if (ft.logEC50 < Math.min(...x) || ft.logEC50 > Math.max(...x)) problems.push(`The fitted ${L50} lies outside the doses tested, so it is an extrapolation.`);
+    const ci = (c) => `${fmt(c[0], 4)} to ${fmt(c[1], 4)}`;
+    const P = ["Bottom", "Top", "Log" + L50, "Hill slope"];
+    const sections = [
+      { title: "Best-fit values", note: "(four-parameter logistic, variable slope)", head: ["Parameter", "Best-fit value", "Std. error", "95% CI"], rows: [
+        ...P.map((nm, i) => [nm, fmt([ft.bottom, ft.top, ft.logEC50, ft.hill][i], 4), fmt(ft.se[i], 4), ci(ft.ci[i])]),
+        [L50, bold(fmt(ft.ec50, 4)), "—", ci(ft.ec50CI)],
+        ["Span", fmt(ft.top - ft.bottom, 4), "—", "—"],
+      ] },
+      { title: "Goodness of fit", rows: [["R squared", fmt(ft.r2, 4)], ["Sy.x", fmt(ft.syx, 4)], ["Sum of squares", fmt(ft.ss, 4)],
+        ["Degrees of freedom", String(ft.df)], ["Number of points", String(ft.n)], ["Number of doses", String(new Set(x).size)]] },
+    ];
+    return {
+      verdict: { sig: false, html: `${L50} = <b>${fmt(ft.ec50, 4)}</b> (95% CI ${ci(ft.ec50CI)}); Hill slope ${fmt(ft.hill, 3)}; <i>R</i>² = ${fmt(ft.r2, 3)}.` },
+      report: { test: "Dose–response (4PL)", sections },
+      plot: { mode: "dose", dose, y, fit: ft, label: L50, xName: X.name, yName: Ys.length === 1 ? Ys[0].name : "Response" },
+    };
+  },
+
+  /* ---- survival: column A = time; each other column a group, 1 = event, 0 = censored, blank = not in it ---- */
+  survival(groups, problems) {
+    const T = groups[0], tOf = new Map(T.rows.map((r, i) => [r, T.values[i]]));
+    const G = [];
+    let bad = 0;
+    groups.slice(1).forEach(g => {
+      const times = [], events = [];
+      g.values.forEach((v, q) => {
+        const t = tOf.get(g.rows[q]);
+        if (t === undefined || !(t >= 0) || (v !== 0 && v !== 1)) { bad++; return; }
+        times.push(t); events.push(v);
+      });
+      if (times.length) G.push({ name: g.name, times, events, km: S.kaplanMeier(times, events) });
+    });
+    if (bad) problems.push(`${bad} cell(s) skipped: each group cell must be 1 (event) or 0 (censored), in a row with a time ≥ 0.`);
+    if (!G.length) { problems.push("Survival data: column A = time; each other column is a group with 1 = event and 0 = censored (blank = not in that group)."); return null; }
+    const lr = G.length > 1 ? S.logRank(G) : null;
+    const sections = [
+      { title: "Survival summary", head: ["Group", "N", "Events", "Censored", "Median survival"],
+        rows: G.map(g => [g.name, String(g.km.n), String(g.km.events), String(g.km.n - g.km.events), g.km.median === null ? "undefined" : fmt(g.km.median)]) },
+    ];
+    if (lr) {
+      const rows = [["Chi-square", fmt(lr.chi2, 4)], ["df", String(lr.df)], ["P value", bold(fmtP(lr.p))], ["Significance", sigCell(lr.p)]];
+      if (lr.hr) {
+        const se = Math.sqrt(1 / lr.E[0] + 1 / lr.E[1]);
+        rows.push([`Hazard ratio (${G[0].name} / ${G[1].name}, log-rank)`, `${fmt(lr.hr, 3)} (95% CI ${fmt(Math.exp(Math.log(lr.hr) - 1.96 * se), 3)} to ${fmt(Math.exp(Math.log(lr.hr) + 1.96 * se), 3)})`]);
+      }
+      sections.push({ title: "Log-rank (Mantel–Cox) test", rows },
+                    { title: "Observed and expected events", head: ["Group", "Observed", "Expected"], rows: G.map((g, j) => [g.name, String(lr.O[j]), fmt(lr.E[j], 3)]) });
+    }
+    return {
+      verdict: lr ? verdict("Are the survival curves different?", `log-rank χ²(${lr.df}) = ${fmt(lr.chi2, 3)}`, lr.p)
+                  : { sig: false, html: `Kaplan–Meier curve for ${escapeHtml(G[0].name)}; add a second group column to compare curves.` },
+      report: { test: "Kaplan–Meier survival", sections },
+      plot: { mode: "surv", curves: G.map(g => ({ name: g.name, km: g.km, tmax: Math.max(...g.times) })), p: lr ? lr.p : null, xName: T.name },
+    };
+  },
+
   /* ---- contingency: columns = groups, rows = outcomes (counts) ---- */
   chisq(groups, problems) {
     const rows = [...new Set(groups.flatMap(g => g.rows))].sort((p, q) => p - q)
@@ -3948,7 +4239,7 @@ function applyStyle(traces, layout) {
     if (ps === "hollow") {
       const c = t.marker.color;
       t.marker = Object.assign({}, t.marker, { color: "rgba(255,255,255,0)", line: { color: typeof c === "string" && c.startsWith("#") ? shade(c, 0.6) : c, width: 1.5 } });
-    } else if (ps === "none" && chart !== "dot" && !(lastPlot && lastPlot.mode === "xy")) t.visible = false;
+    } else if (ps === "none" && chart !== "dot" && !(lastPlot && ["xy", "dose", "surv"].includes(lastPlot.mode))) t.visible = false;
   });
 }
 /* legend in its own band at the foot of the figure, under the x-axis title (never over it) */
@@ -4043,6 +4334,8 @@ function textTargets() {
     ticks.forEach((el, i) => { const l = spec.levels[i]; if (l != null) out.push({ el, value: l, placeholder: "Row title", allowEmpty: false, commit: (v) => renameLevel(l, v) }); });
     const shown = spec.names.filter((_, j) => spec.levels.some((_, i) => spec.cells[i][j].length));
     legend.forEach((el, k) => { const n = shown[k]; if (n != null) out.push({ el, value: n, placeholder: "Column name", allowEmpty: false, commit: (v) => renameColumn(col(n), v) }); });
+  } else if (spec.mode === "surv") {
+    legend.forEach((el, k) => { const n = spec.curves[k] && spec.curves[k].name; if (n != null) out.push({ el, value: n, placeholder: "Group name", allowEmpty: false, commit: (v) => renameColumn(col(n), v) }); });
   } else if (spec.mode === "counts") {
     ticks.forEach((el, i) => { const n = spec.names[i]; if (n != null) out.push({ el, value: n, placeholder: "Column name", allowEmpty: false, commit: (v) => renameColumn(col(n), v) }); });
     legend.forEach((el, k) => { const r = spec.rows && spec.rows[k]; if (r != null) out.push({ el, value: spec.rowNames[k], placeholder: "Row title", allowEmpty: false, commit: (v) => mutate(() => { titles[r] = v; }) }); });
@@ -4067,6 +4360,8 @@ function drawPlot(spec) {
   const theme = THEMES[$("themeSelect").value] || THEMES.claude;
   if (spec.mode === "xy") return drawXY(spec, theme);
   if (spec.mode === "counts") return drawCounts(spec, theme);
+  if (spec.mode === "dose") return drawDose(spec, theme);
+  if (spec.mode === "surv") return drawSurv(spec, theme);
   if (spec.mode === "grouped") return drawGrouped(spec, theme);
   const { groups } = spec;
   const errType = $("errType").value;
@@ -4247,6 +4542,46 @@ function drawGrouped(spec, theme) {
 }
 
 /* XY: points, least-squares line and its 95% confidence band */
+/* dose–response: every replicate point on a log dose axis, with the fitted 4PL curve */
+function drawDose(spec, theme) {
+  const { dose, y, fit } = spec;
+  const dotSize = Math.max(2, parseInt($("dotSize").value, 10) || 6);
+  const layout = baseLayout(theme, axisTitle("xLabel", spec.xName), axisTitle("yLabel", spec.yName));
+  const lo = Math.log10(Math.min(...dose)), hi = Math.log10(Math.max(...dose)), pad = (hi - lo) * 0.06 || 0.5;
+  const xs = Array.from({ length: 160 }, (_, i) => lo - pad + (hi - lo + 2 * pad) * i / 159);
+  Object.assign(layout.xaxis, { type: "log", range: [lo - pad, hi + pad], exponentformat: "power" });
+  const c = theme.colors[0];
+  const traces = [
+    { type: "scatter", mode: "lines", x: xs.map(v => Math.pow(10, v)), y: xs.map(v => fit.predict(v)), line: { color: theme.line, width: 1.8 }, hoverinfo: "skip" },
+    { type: "scatter", mode: "markers", meta: "pts", x: dose, y, marker: { color: c, size: dotSize + 1, line: { color: theme.markerLine, width: 1 } },
+      hovertemplate: "dose %{x}<br>%{y:.3f}<extra></extra>" },
+  ];
+  const ys = [...y, ...xs.map(v => fit.predict(v))], ymin = Math.min(...ys), ymax = Math.max(...ys), span = (ymax - ymin) || 1;
+  layout.yaxis.range = [ymin - span * 0.06, ymax + span * 0.12];
+  layout.annotations.push({ name: "sig", xref: "paper", yref: "paper", x: fit.hill < 0 ? 0.97 : 0.03, y: 0.97, xanchor: fit.hill < 0 ? "right" : "left", yanchor: "top", showarrow: false, align: "left",
+    text: `${spec.label} = ${fmt(fit.ec50, 3)}<br>Hill = ${fmt(fit.hill, 2)}<br><i>R</i>² = ${fmt(fit.r2, 3)}`, font: { size: 12, color: theme.font } });
+  render(traces, layout);
+}
+/* Kaplan–Meier: step curves in percent, a tick at each censored time, legend under the plot */
+function drawSurv(spec, theme) {
+  const layout = baseLayout(theme, axisTitle("xLabel", spec.xName || "Time"), axisTitle("yLabel", "Percent survival"));
+  const traces = [];
+  spec.curves.forEach((cv, j) => {
+    const col = theme.colors[j % theme.colors.length];
+    const xs = cv.km.steps.map(s => s.t), ys = cv.km.steps.map(s => 100 * s.s);
+    if (cv.tmax > xs[xs.length - 1]) { xs.push(cv.tmax); ys.push(ys[ys.length - 1]); }
+    traces.push({ type: "scatter", mode: "lines", name: escapeHtml(cv.name), legendgroup: cv.name, x: xs, y: ys, line: { shape: "hv", color: col, width: 2 },
+                  hovertemplate: escapeHtml(cv.name) + "<br>t = %{x}<br>%{y:.1f}%<extra></extra>" });
+    if (cv.km.censored.length) traces.push({ type: "scatter", mode: "markers", meta: "pts", legendgroup: cv.name, showlegend: false, x: cv.km.censored.map(c => c.t), y: cv.km.censored.map(c => 100 * c.s),
+      marker: { symbol: "line-ns-open", size: 9, color: col, line: { color: col, width: 1.6 } }, hoverinfo: "skip" });
+  });
+  layout.yaxis.range = [0, 108];
+  layout.xaxis.rangemode = "tozero";
+  if (spec.curves.length > 1) bottomLegend(layout, spec.curves.map(c => c.name));
+  if (spec.p != null) layout.annotations.push({ name: "sig", xref: "paper", yref: "paper", x: 0.97, y: 0.97, xanchor: "right", yanchor: "top", showarrow: false,
+    text: `Log-rank <i>P</i> ${pRel(spec.p)}`, font: { size: 12, color: theme.font } });
+  render(traces, layout);
+}
 function drawXY(spec, theme) {
   const { x, y, fit } = spec;
   const dotSize = Math.max(2, parseInt($("dotSize").value, 10) || 6);
@@ -4292,7 +4627,8 @@ function drawCounts(spec, theme) {
 let autoSize = { w: 300, h: 400 };
 const clampN = (v, lo, hi) => Math.round(Math.max(lo, Math.min(hi, v)) / 10) * 10;
 function sizeFor(spec) {
-  if (spec.mode === "xy") return { w: 380, h: 340 };
+  if (spec.mode === "xy" || spec.mode === "dose") return { w: 380, h: 340 };
+  if (spec.mode === "surv") return { w: 420, h: spec.curves.length > 1 ? 400 : 360 };
   if (spec.mode === "counts") return { w: clampN(170 + 70 * spec.names.length, 260, 560), h: 400 };
   if (spec.mode === "grouped") {
     const bars = spec.levels.reduce((n, _, i) => n + spec.names.filter((_, j) => spec.cells[i][j].length).length, 0);
