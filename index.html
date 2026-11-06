@@ -151,12 +151,15 @@ body { display: grid; grid-template-rows: auto minmax(0, 1fr); grid-template-col
 .unit:hover { border-color: var(--input-hover-border); }
 .unit:focus-within { border-color: var(--focus-border); box-shadow: var(--focus-ring); }
 .unit label { font-size: 11px; color: var(--fg-faint); }
+.unit .num-field::placeholder { color: var(--fg-muted); opacity: 1; }
 .unit .num-field { flex: 1; min-width: 0; width: 30px; border: 0; height: 24px; padding: 0; background: transparent; box-shadow: none !important; }
 .unit.wide label { white-space: nowrap; }
 .unit.txt .num-field { width: 52px; text-align: left; font-variant-numeric: normal; }
 .rg .row { display: flex; align-items: center; gap: 6px; }
 .rg-end { margin-left: auto; }
 .rg .tb-btn.icon { justify-content: center; padding: 0 6px; }
+.tb-btn svg.filled { fill: currentColor; stroke: none; }
+a.tb-btn { text-decoration: none; }
 /* Analysis: test + Run on top, the test's option underneath; results also re-run by themselves on every edit */
 .rg-analysis { grid-template-columns: 242px 52px; }
 .rg-analysis > .menu-btn { grid-area: 1 / 1; }
@@ -187,8 +190,10 @@ body { display: grid; grid-template-rows: auto minmax(0, 1fr); grid-template-col
 #ribbon .toggle.on { background: var(--accent-soft); color: var(--fg-strong); }
 #ribbon .toggle.on svg { color: var(--accent); }
 /* axis titles on the figure are editable: show it on hover */
-#plot .xtitle, #plot .ytitle { cursor: text !important; }
-#plot .xtitle:hover, #plot .ytitle:hover { text-decoration: underline dotted; }
+#plot.on-title, #plot.on-title * { cursor: text !important; }
+#vGraph { position: relative; }
+.axis-ed { position: absolute; z-index: 20; height: 26px; box-sizing: border-box; padding: 0 8px; font: 14px Arial, Helvetica, "PingFang SC", "Microsoft YaHei", sans-serif; text-align: center;
+           color: #141413; background: #fff; border: 1px solid var(--accent); border-radius: 6px; outline: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent); }
 #runBtn { display: flex; align-items: center; justify-content: center; gap: 5px; height: 24px; background: var(--run-bg); color: var(--run-fg); border: 0; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; }
 #runBtn svg { width: 10px; height: 10px; fill: currentColor; }
 #runBtn:hover:not(:disabled) { background: var(--run-hover); }
@@ -247,6 +252,10 @@ table.data-grid thead .title-col { z-index: 3; }
 .grp-name:focus { outline: none; background: var(--cell-focus-bg); box-shadow: inset 0 0 0 2px var(--focus-border); }
 .delGrp { position: absolute; top: 50%; right: 4px; transform: translateY(-50%); width: 16px; height: 16px; border-radius: 4px; font-size: 13px; line-height: 15px; color: var(--fg-faint); opacity: 0; transition: opacity .12s; }
 th:hover .delGrp, th:focus-within .delGrp { opacity: 1; }
+/* a column excluded from the analysis: kept on the sheet, greyed and struck through */
+th.off .grp-name { opacity: .45; text-decoration: line-through; }
+th.off .col-letter { color: var(--fg-faint); }
+td.off .cell-input { opacity: .4; text-decoration: line-through; }
 .delGrp:hover { color: var(--err); background: var(--danger-hover-bg); }
 /* selection: a box around a range; the row numbers and column letters of the selection light up */
 #selBox { position: absolute; z-index: 0; pointer-events: none; border: 2px solid var(--focus-border); background: var(--accent-soft); opacity: .9; }
@@ -283,16 +292,16 @@ th.hd-on .col-letter { color: var(--accent); font-weight: 600; box-shadow: inset
 #verdict > .v-yes { border-color: var(--ok-box-border); background: var(--ok-box-bg); color: var(--ok); }
 #verdict:empty { display: none; }
 #verdict:not(:empty) + #report { margin-top: 16px; }
-#report > div + div { margin-top: 18px; }
-#report .h3 { font-size: 12.5px; font-weight: 600; margin: 0 0 6px; }
+#report > div + div { margin-top: 12px; }
+#report .h3 { font-size: 12.5px; font-weight: 600; margin: 0 0 4px; }
 #report .note { font-size: 11.5px; font-weight: 400; color: var(--fg-muted); }
 #report .hint { margin-top: 4px; font-size: 12px; color: var(--warn); }
 #report .err { font-size: 12.5px; color: var(--err); }
 .more { margin-top: 4px; }
 .more > summary { font-size: 12px; color: var(--fg-muted); }
 .more > summary:hover { color: var(--fg); }
-.stat-table { border-collapse: collapse; width: 100%; font-size: 12px; color: var(--fg); }
-.stat-table th, .stat-table td { border: 0; border-bottom: 1px solid var(--cell-border); padding: 5px 8px; text-align: left; }
+.stat-table { border-collapse: collapse; width: 100%; font-size: 12px; line-height: 1.3; color: var(--fg); }
+.stat-table th, .stat-table td { border: 0; border-bottom: 1px solid var(--cell-border); padding: 2px 8px; text-align: left; }
 .stat-table thead th { background: var(--thead-bg); font-size: 11px; font-weight: 600; color: var(--fg-muted); border-bottom-color: var(--grid-border); }
 .stat-table td.num, .stat-table th.num { text-align: right; font-variant-numeric: tabular-nums; }
 .stat-table tbody tr:hover td { background: var(--row-alt); }
@@ -393,6 +402,7 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
           </optgroup>
           <optgroup label="Grouped — row titles × columns">
             <option value="twoway" data-hint="parametric">Two-way ANOVA + post-hoc</option>
+            <option value="cells" data-hint="letters per bar" title="Every row-title × column cell is its own group: one-way ANOVA, post-hoc and letters, drawn as clustered bars. Cells may be empty (e.g. a Control with no sub-groups).">One-way ANOVA across grouped cells</option>
           </optgroup>
           <optgroup label="XY — column A = X, column B = Y">
             <option value="corr" data-hint="Pearson + Spearman">Correlation + linear regression</option>
@@ -446,6 +456,7 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
         <select id="sigLabel" class="field as-seg" aria-label="Significance label">
           <option value="stars" data-short="***">Asterisks (*)</option>
           <option value="pval" data-short="P =">p-value</option>
+          <option value="off" data-short="Off">Hide statistics on the figure</option>
         </select>
       </div>
       <!-- axis titles are edited by clicking them on the figure; these hold the values -->
@@ -455,9 +466,9 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
 
     <div class="rg rg-eq">
       <div class="rg-body">
-        <span class="unit"><label for="plotW">W</label><input id="plotW" type="number" min="220" step="20" value="300" class="num-field" /></span>
+        <span class="unit"><label for="plotW">W</label><input id="plotW" type="number" min="220" step="20" value="" placeholder="300" title="Width in px (blank = automatic, fitted to the figure)" class="num-field" /></span>
         <span class="unit"><label for="dotSize">Dot</label><input id="dotSize" type="number" min="2" max="20" step="1" value="6" class="num-field" /></span>
-        <span class="unit"><label for="plotH">H</label><input id="plotH" type="number" min="220" step="20" value="400" class="num-field" /></span>
+        <span class="unit"><label for="plotH">H</label><input id="plotH" type="number" min="220" step="20" value="" placeholder="400" title="Height in px (blank = automatic, fitted to the figure)" class="num-field" /></span>
         <span class="flat"><button id="resetGraph" class="tb-btn" title="Restore graph to default options, size &amp; view"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>Reset</button></span>
         <span class="flat"><button id="dlPng" class="tb-btn" title="PNG at 5× the on-screen size (≈ 300 dpi for a 2–3 inch figure)"><svg viewBox="0 0 24 24"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14"/></svg>PNG</button></span>
         <span class="flat"><button id="dlSvg" class="tb-btn" title="Download as vector SVG"><svg viewBox="0 0 24 24"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14"/></svg>SVG</button></span>
@@ -471,6 +482,7 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
       <div class="rg-body">
         <button id="themeBtn" class="tb-btn icon" title="Switch between light and dark interface" aria-label="Switch theme"></button>
         <button id="helpBtn" class="tb-btn icon" title="Help: data layout, shortcuts, export" aria-label="Help"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.6"/><path d="M12 17h.01"/></svg></button>
+        <a id="ghLink" class="tb-btn icon" href="https://github.com/JieqiangHe/plsig" target="_blank" rel="noopener" title="Source code, issues and feedback on GitHub" aria-label="GitHub repository"><svg viewBox="0 0 16 16" class="filled"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></a>
       </div>
       <div class="rg-cap">View</div>
     </div>
@@ -520,16 +532,19 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
     <dl>
       <dt>Layout</dt><dd>One column per group. Paired, repeated-measures and Friedman tests match values by row (one subject per row). Correlation uses column A as X and B as Y. Contingency tables hold counts: columns are groups, rows are outcomes (named by the row titles).</dd>
       <dt>Two-way</dt><dd>Columns are the levels of one factor (e.g. Control / Drug); the row title names the level of the other (e.g. Male / Female). Put each replicate on its own row and repeat the row title.</dd>
+      <dt>Clusters</dt><dd>For bars in clusters with letters over each bar (e.g. Control, P1–P3 × M1–M3), choose <i>One-way ANOVA across grouped cells</i>. The row title names the cluster on the x axis and each column is a bar colour; every row-title × column cell is one group, and cells may stay empty (a Control row fills only its own column).</dd>
+      <dt>Exclude</dt><dd>Right-click a column (or a block of columns) and choose <i>Exclude from the analysis</i> to keep the data on the sheet but out of the test and the figure. The same menu includes it again.</dd>
       <dt>Paste</dt><dd>Paste a block from Excel/Sheets into any cell (<kbd>⌘/Ctrl</kbd> <kbd>V</kbd>); the grid expands to fit. To replace the whole sheet, click the paste bar under the sheet (or Paste in the ribbon) and press <kbd>⌘/Ctrl</kbd> <kbd>V</kbd>: tables from Excel, Word, web pages, PDFs and CSV text all work, with or without a header row. You can also drop a .csv / .txt file on the bar.</dd>
       <dt>Select</dt><dd>Click a cell and just type to replace it; double-click or <kbd>F2</kbd> to edit inside it. Drag, or <kbd>Shift</kbd> + click / arrows, to select a block; click a row number or column letter for a whole row or column; <kbd>⌘/Ctrl</kbd> <kbd>A</kbd> selects everything. Click the empty grid to add rows and columns there.</dd>
       <dt>Move</dt><dd>Arrows, <kbd>Tab</kbd> and <kbd>Enter</kbd> move between cells (<kbd>Enter</kbd> on the last row adds one); <kbd>⌘/Ctrl</kbd> + arrow jumps to the edge.</dd>
       <dt>Edit</dt><dd>Copy, cut and paste work on blocks; one copied value pasted onto a block fills it. <kbd>Delete</kbd> clears the block, <kbd>⌘/Ctrl</kbd> <kbd>D</kbd> fills down, <kbd>Esc</kbd> cancels a change. Type a value with a block selected and press <kbd>⌘/Ctrl</kbd> <kbd>Enter</kbd> to put it in every cell. Right-click for insert / delete rows and columns. Results update as you type.</dd>
       <dt>Undo</dt><dd><kbd>⌘/Ctrl</kbd> <kbd>Z</kbd>; add <kbd>Shift</kbd> for redo.</dd>
       <dt>Session</dt><dd>Saved in this browser automatically; Save / Open (.jgz) moves a session between machines.</dd>
-      <dt>Axes</dt><dd>Click an axis title on the figure to rename it; <kbd>Enter</kbd> keeps the change. Reset in the ribbon restores the default titles.</dd>
+      <dt>Axes</dt><dd>Click an axis title on the figure to rename it; <kbd>Enter</kbd> keeps the change, <kbd>Esc</kbd> cancels. Clear the box to drop the title: a faint placeholder stays on screen so you can click it again, and exports leave it out. <i>Off</i> next to *** / P = hides the letters and stars on the figure. Reset in the ribbon restores the default titles.</dd>
       <dt>Export</dt><dd>PNG at 5× the on-screen size (≈ 300 dpi for a 2–3 inch figure); SVG is vector.</dd>
       <dt>Theme</dt><dd>The sun / moon button in the ribbon's View group switches between light and dark.</dd>
       <dt>Privacy</dt><dd>Everything runs in this browser; your data is never uploaded.</dd>
+      <dt>Source</dt><dd>Open source on <a href="https://github.com/JieqiangHe/plsig" target="_blank" rel="noopener">GitHub</a>: report a problem or suggest a feature under Issues.</dd>
     </dl>
   </form></dialog>
 
@@ -1377,7 +1392,7 @@ const DEMO = [
 const DEFAULT_ROWS = 10;
 const STORE_KEY = "plsig:v1", OLD_STORE_KEY = "ministat:v1";   // the app was called ministat before
 const SETTING_IDS = ["testSelect", "posthocSelect", "dunnAdj", "mu0", "chartType", "errType", "themeSelect", "sigLabel", "xLabel", "yLabel", "plotW", "plotH", "dotSize"];
-const GRAPH_DEFAULTS = { chartType: "bar", errType: "sem", themeSelect: "claude", sigLabel: "stars", xLabel: "Group", yLabel: "Value", plotW: "300", plotH: "400", dotSize: "6" };
+const GRAPH_DEFAULTS = { chartType: "bar", errType: "sem", themeSelect: "claude", sigLabel: "stars", xLabel: "Group", yLabel: "Value", plotW: "", plotH: "", dotSize: "6" };
 
 let grid = [];          // array of groups: {name, cells:[string,...]}
 let titles = [];        // row titles (text, left of the data; the row factor / outcome names)
@@ -1513,13 +1528,16 @@ function applySettings(s) {
     el.value = s[id];
   });
   if (typeof s.welchChk === "boolean") $("welchChk").checked = s.welchChk;
+  // 300 × 400 was the fixed default before figures sized themselves: read it as automatic
+  if (String(s.plotW) === "300" && String(s.plotH) === "400") { $("plotW").value = ""; $("plotH").value = ""; }
   syncTestOptions(); syncSegs();
 }
 const sanitizeTitles = (t) => Array.isArray(t) ? t.map(v => String(v ?? "")) : [];
 const hasTitles = () => titles.some(t => t.trim());
 function sanitizeGrid(g) {
-  return g.map((c, i) => ({ name: String(c && c.name != null ? c.name : groupLabel(i)),
-                            cells: (c && Array.isArray(c.cells) ? c.cells : []).map(v => String(v ?? "")) }));
+  return g.map((c, i) => Object.assign({ name: String(c && c.name != null ? c.name : groupLabel(i)),
+                            cells: (c && Array.isArray(c.cells) ? c.cells : []).map(v => String(v ?? "")) },
+                          c && c.off ? { off: true } : {}));   // off: column left out of the analysis
 }
 
 let saveTimer = null;
@@ -1600,7 +1618,7 @@ function renderGrid() {
   while (titles.length < rows) titles.push("");
   let html = `<thead><tr><th style="width:34px"></th><th class="title-col" style="width:96px"><div class="col-letter">&nbsp;</div><div class="title-head" title="Row titles: the levels of the row factor (two-way ANOVA) or the outcome names (contingency tables)">Row title</div></th>`;
   grid.forEach((g, gi) => {
-    html += `<th style="width:118px"><div class="col-letter">${colLetter(gi)}</div><div class="relative">
+    html += `<th style="width:118px"${g.off ? ' class="off" title="Excluded from the analysis (right-click to include it again)"' : ""}><div class="col-letter">${colLetter(gi)}${g.off ? " · excluded" : ""}</div><div class="relative">
         <input class="grp-name" data-g="${gi}" value="${escapeHtml(g.name)}" aria-label="Name of group ${gi + 1}" />
         ${grid.length > 1 ? `<button class="delGrp" data-g="${gi}" title="Delete group" aria-label="Delete group ${escapeHtml(g.name)}">×</button>` : ""}
       </div></th>`;
@@ -1611,7 +1629,7 @@ function renderGrid() {
     html += `<td class="title-col"><input class="row-title" data-r="${r}" value="${escapeHtml(titles[r])}" aria-label="Title of row ${r + 1}" /></td>`;
     grid.forEach((g, gi) => {
       const v = g.cells[r];
-      html += `<td><input class="cell-input${isBad(v) ? " bad" : ""}" data-g="${gi}" data-r="${r}" value="${escapeHtml(v)}" aria-label="${escapeHtml(g.name)}, row ${r + 1}" inputmode="decimal" /></td>`;
+      html += `<td${g.off ? ' class="off"' : ""}><input class="cell-input${isBad(v) ? " bad" : ""}" data-g="${gi}" data-r="${r}" value="${escapeHtml(v)}" aria-label="${escapeHtml(g.name)}, row ${r + 1}" inputmode="decimal" /></td>`;
     });
     html += "</tr>";
   }
@@ -1955,6 +1973,7 @@ table.addEventListener("contextmenu", e => {
     ["rowAbove", `Insert ${rowsWord} above`], ["rowBelow", `Insert ${rowsWord} below`],
     ["colLeft", `Insert ${colsWord} left`], ["colRight", `Insert ${colsWord} right`], "-",
     ["delRows", `Delete ${rowsWord}`], ["delCols", `Delete ${colsWord}`, "", ng < 1 || ng >= grid.length], "-",
+    grid.slice(gs, R.g1 + 1).every(c => c.off) ? ["include", `Include ${colsWord} in the analysis`] : ["exclude", `Exclude ${colsWord} from the analysis`, "", ng < 1], "-",
     ["fill", "Fill down", kb("D")], ["clear", "Clear contents", "Del"],
   ];
   ctxMenu.innerHTML = items.map(it => it === "-" ? `<hr>` :
@@ -1984,6 +2003,11 @@ ctxMenu.addEventListener("click", async e => {
     case "colRight": insertCols(R.g1 + 1, ng); sel.ag = sel.fg = R.g1 + 1; break;
     case "delRows": deleteRows(R.r0, R.r1); sel.fr = sel.ar = Math.min(R.r0, nRows() - 1); sel.fg = sel.ag; break;
     case "delCols": deleteCols(gs, R.g1); sel.ag = sel.fg = Math.min(gs, grid.length - 1); sel.fr = sel.ar; break;
+    case "exclude": case "include": {
+      const off = b.dataset.act === "exclude";
+      mutate(() => grid.slice(gs, R.g1 + 1).forEach(c => { if (off) c.off = true; else delete c.off; }));
+      break;
+    }
     case "fill": fillDown(); break;
     case "clear": clearSel(); break;
   }
@@ -2146,10 +2170,10 @@ function collectGroups() {
       if (t === "") return;
       const n = S.parseNum(t);
       if (isFinite(n)) { values.push(n); rows.push(r); }
-      else bad.push({ t, name: g.name || groupLabel(gi), r });
+      else if (!g.off) bad.push({ t, name: g.name || groupLabel(gi), r });
     });
-    return { name: g.name.trim() || groupLabel(gi), values, rows };
-  });
+    return { name: g.name.trim() || groupLabel(gi), values, rows, off: !!g.off };
+  }).filter(g => !g.off);   // excluded columns stay on the sheet but out of every analysis
   const warns = bad.slice(0, 5).map(b => `“${b.t}” in ${b.name} (row ${b.r + 1}) is not a number — skipped.`);
   if (bad.length > 5) warns.push(`…and ${bad.length - 5} more non-numeric cells.`);
   const decimalComma = bad.some(b => /^[+-]?\d*,\d+$/.test(b.t));
@@ -2182,8 +2206,8 @@ function showWarnings(list, decimalComma) {
    CONTROLLER
    ============================================================ */
 const TWO_GROUP = new Set(["ttest", "mwu", "paired", "wilcoxon", "corr"]);
-const ONE_GROUP = new Set(["desc", "onet", "onew"]);   // these work on a single column
-const OPTION_PANELS = { opt_ttest: ["ttest"], opt_onesample: ["onet", "onew"], opt_anova: ["anova", "rmanova", "twoway"], opt_kruskal: ["kruskal", "friedman"] };
+const ONE_GROUP = new Set(["desc", "onet", "onew", "cells"]);   // these work on a single column
+const OPTION_PANELS = { opt_ttest: ["ttest"], opt_onesample: ["onet", "onew"], opt_anova: ["anova", "rmanova", "twoway", "cells"], opt_kruskal: ["kruskal", "friedman"] };
 function syncTestOptions() {
   const t = $("testSelect").value;
   Object.entries(OPTION_PANELS).forEach(([id, tests]) => $(id).classList.toggle("hidden", !tests.includes(t)));
@@ -2684,6 +2708,44 @@ const ANALYSES = {
     };
   },
 
+  /* ---- grouped cells: every row-title × column cell is one group of a one-way ANOVA;
+     empty cells are allowed (e.g. a Control row with a single column), drawn as clusters ---- */
+  cells(groups, problems) {
+    const levels = [], idx = new Map();
+    let untitled = 0;
+    groups.forEach(g => g.rows.forEach(r => {
+      const t = (titles[r] || "").trim();
+      if (!t) { untitled++; return; }
+      if (!idx.has(t)) { idx.set(t, levels.length); levels.push(t); }
+    }));
+    if (untitled) problems.push(`${untitled} value(s) in rows without a row title were skipped — the row title names the cluster (e.g. Control, P1, P2).`);
+    if (!levels.length) { problems.push("Give each row a row title: it names the cluster on the x axis (e.g. Control, P1, P2), and the columns are the bars inside each cluster (e.g. M1, M2, M3)."); return null; }
+    const cells = levels.map(() => groups.map(() => []));
+    groups.forEach((g, j) => g.values.forEach((v, q) => {
+      const t = (titles[g.rows[q]] || "").trim();
+      if (t) cells[idx.get(t)][j].push(v);
+    }));
+    const names = groups.map(g => g.name), cellGroups = [], at = [];
+    levels.forEach((l, i) => groups.forEach((g, j) => {
+      if (!cells[i][j].length) return;
+      // one column → the cluster name alone; one cluster → the column name alone
+      const nm = groups.filter((_, q) => cells[i][q].length).length === 1 ? l : levels.length === 1 ? g.name : `${l} · ${g.name}`;
+      cellGroups.push({ name: nm, values: cells[i][j] }); at.push([i, j]);
+    }));
+    if (cellGroups.length < 2) { problems.push("Need at least 2 filled cells (row title × column) to compare."); return null; }
+    const res = ANALYSES.anova(cellGroups, problems);
+    if (!res) return null;
+    res.report.test = "One-way ANOVA across grouped cells";
+    res.report.sections.unshift({ title: "Groups", note: "(each row-title × column cell is one group)", head: ["Group", "Row title", "Column", "N"],
+      rows: cellGroups.map((g, k) => [g.name, levels[at[k][0]], names[at[k][1]], String(g.values.length)]) });
+    const per = (arr) => { const m = levels.map(() => names.map(() => null)); arr.forEach((v, k) => { m[at[k][0]][at[k][1]] = v; }); return m; };
+    const pl = res.plot;
+    res.plot = { mode: "grouped", levels, names, cells, pairs: [],
+                 letters: pl.mode === "letters" ? per(pl.letters) : null,
+                 ps: pl.mode === "control" ? per(pl.ps) : null };
+    return res;
+  },
+
   /* ---- contingency: columns = groups, rows = outcomes (counts) ---- */
   chisq(groups, problems) {
     const rows = [...new Set(groups.flatMap(g => g.rows))].sort((p, q) => p - q)
@@ -2803,9 +2865,18 @@ function mulberry32(a) {
 }
 
 /* frame shared by every figure: white paper, boxed axes, Arial */
+/* axes whose title is empty: drawn as a faint placeholder on screen, left out of exports */
+const placeholderAxes = new Set();
 function baseLayout(theme, xTitle, yTitle) {
   const axisFont = { size: 14, family: "Arial, Helvetica, sans-serif" };
-  const axis = (title) => ({ title: { text: title, font: axisFont }, zeroline: false, showline: true, mirror: true,
+  placeholderAxes.clear();
+  const titleOf = (text, id, ph) => {
+    if (String(text).trim()) return { text, font: axisFont };
+    placeholderAxes.add(id);
+    return { text: ph, font: Object.assign({}, axisFont, { size: 12, color: "#c2c0b6" }) };
+  };
+  xTitle = titleOf(xTitle, "xLabel", "X axis title"); yTitle = titleOf(yTitle, "yLabel", "Y axis title");
+  const axis = (title) => ({ title, automargin: true, zeroline: false, showline: true, mirror: true,
                              linecolor: theme.line, linewidth: 1.5, showgrid: false,
                              ticks: "outside", ticklen: 5, tickwidth: 1.5, tickcolor: theme.line });   // ticks on the axes, no gridlines
   return {
@@ -2816,41 +2887,94 @@ function baseLayout(theme, xTitle, yTitle) {
     annotations: [], shapes: [],
   };
 }
+/* legend in its own band at the foot of the figure, under the x-axis title (never over it) */
+function bottomLegend(layout, labels) {
+  const width = plotSize().w;
+  const itemW = 46 + 7 * Math.max(...labels.map(l => String(l).length), 1);
+  const rows = Math.ceil(labels.length / Math.max(1, Math.floor((width - 20) / itemW)));
+  Object.assign(layout, { showlegend: true, legend: { orientation: "h", traceorder: "normal", x: 0.5, xanchor: "center",
+    yref: "container", y: 0, yanchor: "bottom", font: { size: 12 } } });
+  layout.margin.b = 58 + 20 * rows;
+}
 /* a darker tone of a group colour: error bars and mean lines stay matched to their bar yet visible on it */
 const shade = (hex, f = 0.55) => { const n = parseInt(hex.slice(1), 16); return `rgb(${[16, 8, 0].map(b => Math.round(((n >> b) & 255) * f)).join(",")})`; };
+const sigOff = () => $("sigLabel").value === "off";
 const sigText = (p) => $("sigLabel").value === "pval" ? ("<i>P</i> " + pRel(p)) : starsFor(p);
 /* the axis titles default to "Group" / "Value"; XY and contingency plots use better defaults until edited */
 const axisTitle = (id, fallback) => ($(id).value === GRAPH_DEFAULTS[id] ? fallback : $(id).value);
 function render(traces, layout) {
   setPlotBox();
+  closeTitleEditor(false);
+  if (sigOff()) {   // statistics hidden on the figure: drop every mark tagged "sig"
+    layout.annotations = layout.annotations.filter(a => a.name !== "sig");
+    layout.shapes = layout.shapes.filter(a => a.name !== "sig");
+  }
   $("plotHint").hidden = false;
-  Plotly.newPlot("plot", traces, layout, { responsive: true, displayModeBar: false, edits: { axisTitleText: true } }).then(gd => {
-    gd.on("plotly_relayout", onAxisTitleEdit);
-    gd.on("plotly_afterplot", hintAxisTitles);
-    hintAxisTitles();
-  });
+  Plotly.newPlot("plot", traces, layout, { responsive: true, displayModeBar: false });
 }
-/* an axis title typed on the figure becomes the stored X / Y title (saved with the session) */
-function onAxisTitleEdit(ev) {
-  let changed = false;
-  [["xaxis", "xLabel"], ["yaxis", "yLabel"]].forEach(([ax, id]) => {
-    const v = ev[ax + ".title.text"] ?? (typeof ev[ax + ".title"] === "string" ? ev[ax + ".title"] : undefined);
-    if (v === undefined) return;
-    $(id).value = String(v).trim(); changed = true;
-  });
-  if (changed) scheduleSave();
+/* Axis titles are renamed in a small text box laid over the title. (Plotly's own in-place
+   editor lost the text in some browsers, e.g. with an input method, and an emptied title
+   could not be clicked again.) An empty title shows a faint placeholder on screen only. */
+const AXIS_IDS = { xtitle: "xLabel", ytitle: "yLabel" };
+let titleEd = null;
+function closeTitleEditor(commit) {
+  const ed = titleEd;
+  if (!ed) return;
+  titleEd = null;
+  ed.input.remove();
+  if (commit && ed.input.value.trim() !== ed.start) {
+    $(ed.id).value = ed.input.value.trim();
+    scheduleSave(); redraw();
+  }
 }
-function hintAxisTitles() {
-  document.querySelectorAll("#plot .xtitle, #plot .ytitle").forEach(t => {
-    if (t.querySelector("title")) return;
-    const tip = document.createElementNS("http://www.w3.org/2000/svg", "title");
-    tip.textContent = "Click to rename this axis";
-    t.appendChild(tip);
+function openTitleEditor(textEl, id) {
+  closeTitleEditor(true);
+  const host = $("vGraph"), r = textEl.getBoundingClientRect(), hr = host.getBoundingClientRect();
+  const input = document.createElement("input");
+  input.className = "axis-ed"; input.type = "text";
+  input.value = placeholderAxes.has(id) ? "" : (textEl.textContent || "").trim();
+  input.placeholder = id === "xLabel" ? "X axis title" : "Y axis title";
+  input.setAttribute("aria-label", input.placeholder);
+  const w = Math.max(150, Math.min(260, Math.max(r.width, r.height) + 40));
+  input.style.width = w + "px";
+  input.style.left = (r.left + r.width / 2 - hr.left + host.scrollLeft - w / 2) + "px";
+  input.style.top = (r.top + r.height / 2 - hr.top + host.scrollTop - 13) + "px";
+  host.appendChild(input);
+  titleEd = { input, id, start: input.value.trim() };
+  input.addEventListener("keydown", e => {
+    if (e.isComposing || e.keyCode === 229) return;   // Enter that confirms an input-method candidate
+    if (e.key === "Enter") { e.preventDefault(); closeTitleEditor(true); }
+    else if (e.key === "Escape") { e.preventDefault(); closeTitleEditor(false); }
   });
+  input.addEventListener("blur", () => { if (titleEd && titleEd.input === input) closeTitleEditor(true); });
+  input.focus(); input.select();
 }
+// the figure's drag layer swallows mousedown, so focus would stay in the box: commit on any press outside it
+addEventListener("mousedown", e => { if (titleEd && e.target !== titleEd.input) closeTitleEditor(true); }, true);
+$("plot").addEventListener("click", e => {
+  if (!lastPlot) return;
+  for (const [cls, id] of Object.entries(AXIS_IDS)) {
+    const t = document.querySelector("#plot ." + cls);
+    if (!t) continue;
+    const r = t.getBoundingClientRect(), pad = 6;
+    if (e.clientX >= r.left - pad && e.clientX <= r.right + pad && e.clientY >= r.top - pad && e.clientY <= r.bottom + pad) {
+      openTitleEditor(t, id); return;
+    }
+  }
+});
+$("plot").addEventListener("mousemove", e => {
+  const hit = Object.keys(AXIS_IDS).some(cls => {
+    const t = document.querySelector("#plot ." + cls);
+    if (!t) return false;
+    const r = t.getBoundingClientRect();
+    return e.clientX >= r.left - 6 && e.clientX <= r.right + 6 && e.clientY >= r.top - 6 && e.clientY <= r.bottom + 6;
+  });
+  $("plot").classList.toggle("on-title", hit);
+});
 
 function drawPlot(spec) {
   lastPlot = spec;
+  setAutoSize(spec);
   const theme = THEMES[$("themeSelect").value] || THEMES.claude;
   if (spec.mode === "xy") return drawXY(spec, theme);
   if (spec.mode === "counts") return drawCounts(spec, theme);
@@ -2922,11 +3046,11 @@ function drawPlot(spec) {
   if (chart === "bar") yMin = Math.min(0, yMin);             // bars start at 0; other charts hug the data
   const span = (yMax - yMin) || Math.abs(yMax) || 1;
   // adaptive top padding so significance brackets / letters never overflow the frame
-  const sigPad = spec.mode === "two" ? 0.28 : spec.mode === "none" ? 0.06 : 0.16;
+  const sigPad = spec.mode === "none" || sigOff() ? 0.06 : spec.mode === "two" ? 0.28 : 0.16;
   const lower = chart === "bar" && yMin === 0 ? 0 : yMin - span * 0.05;
   layout.yaxis.range = [lower, Math.max(yMax + span * sigPad, chart === "bar" ? 0 : -Infinity)];
 
-  const above = (i, text, size = 13) => layout.annotations.push({ x: i, y: tops[i] + span * 0.04, text, showarrow: false, yanchor: "bottom", font: { size, color: theme.font } });
+  const above = (i, text, size = 13) => layout.annotations.push({ name: "sig", x: i, y: tops[i] + span * 0.04, text, showarrow: false, yanchor: "bottom", font: { size, color: theme.font } });
   if (spec.ref != null) layout.shapes.push({ type: "line", xref: "paper", x0: 0, x1: 1, y0: spec.ref, y1: spec.ref, line: { color: theme.line, width: 1.2, dash: "dash" } });
   if (spec.mode === "letters") spec.letters.forEach((l, i) => above(i, "<b>" + escapeHtml(l) + "</b>", 15));
   else if (spec.mode === "control") spec.ps.forEach((p, i) => { if (i) above(i, sigText(p)); });
@@ -2934,61 +3058,69 @@ function drawPlot(spec) {
   else if (spec.mode === "two") {
     const yBar = yMax + span * 0.12, yLeg = yMax + span * 0.03, line = { color: theme.line, width: 1.4 };
     layout.shapes.push(
-      { type: "line", x0: 0, x1: 0, y0: yLeg, y1: yBar, line },
-      { type: "line", x0: 1, x1: 1, y0: yLeg, y1: yBar, line },
-      { type: "line", x0: 0, x1: 1, y0: yBar, y1: yBar, line },
+      { name: "sig", type: "line", x0: 0, x1: 0, y0: yLeg, y1: yBar, line },
+      { name: "sig", type: "line", x0: 1, x1: 1, y0: yLeg, y1: yBar, line },
+      { name: "sig", type: "line", x0: 0, x1: 1, y0: yBar, y1: yBar, line },
     );
-    layout.annotations.push({ x: 0.5, y: yBar, text: sigText(spec.p), showarrow: false, yanchor: "bottom", font: { size: 14, color: theme.font } });
+    layout.annotations.push({ name: "sig", x: 0.5, y: yBar, text: sigText(spec.p), showarrow: false, yanchor: "bottom", font: { size: 14, color: theme.font } });
   }
   render(traces, layout);
 }
 
 /* grouped: one cluster per row title, one colour per column (legend) */
 function drawGrouped(spec, theme) {
-  const { levels, names, cells, pairs } = spec;
+  const { levels, names, pairs } = spec;
   const chart = $("chartType").value, errType = $("errType").value;
   const meanErr = chart === "bar" || chart === "dot";
   const dotSize = Math.max(2, parseInt($("dotSize").value, 10) || 6);
-  const b = names.length, w = 0.8 / b;
-  const xOf = (i, j) => i + (j - (b - 1) / 2) * w;
+  // a cluster holds only its filled cells, centred; columns with no data anywhere drop out
+  const has = (i, j) => spec.cells[i][j].length > 0;
+  const keep = names.map((_, j) => levels.some((_, i) => has(i, j)));
+  const present = levels.map((_, i) => names.map((_, j) => j).filter(j => has(i, j)));
+  const b = Math.max(...present.map(p => p.length)), w = 0.8 / b;
+  const xOf = (i, j) => { const p = present[i], k = p.indexOf(j); return i + (k - (p.length - 1) / 2) * w; };
   const color = (j) => theme.colors[j % theme.colors.length];
-  const desc = cells.map(r => r.map(c => S.describe(c)));
+  const cells = spec.cells;
+  const desc = cells.map(r => r.map(c => c.length ? S.describe(c) : null));
   const errOf = (d) => { const e = errType === "sd" ? d.sd : errType === "ci" ? d.ciHi - d.mean : d.sem; return Number.isFinite(e) ? e : 0; };
   const layout = baseLayout(theme, axisTitle("xLabel", ""), $("yLabel").value);
   Object.assign(layout.xaxis, { tickvals: levels.map((_, i) => i), ticktext: levels.map(escapeHtml), range: [-0.6, levels.length - 0.4], showgrid: false });
-  Object.assign(layout, { showlegend: true, legend: { orientation: "h", traceorder: "normal", x: 0, y: -0.16, font: { size: 12 } } });
-  layout.margin.b = 78;
+  bottomLegend(layout, names.filter((_, j) => keep[j]));
   const traces = [];
   names.forEach((n, j) => {
-    const xs = levels.map((_, i) => xOf(i, j)), means = levels.map((_, i) => desc[i][j].mean);
-    const err = { type: "data", array: levels.map((_, i) => errOf(desc[i][j])), visible: true, color: shade(color(j)), thickness: 1.5, width: 4 };
+    if (!keep[j]) return;
+    const rows = levels.map((_, i) => i).filter(i => has(i, j));
+    const xs = rows.map(i => xOf(i, j)), means = rows.map(i => desc[i][j].mean);
+    const err = { type: "data", array: rows.map(i => errOf(desc[i][j])), visible: true, color: shade(color(j)), thickness: 1.5, width: 4 };
     if (chart === "bar") traces.push({ type: "bar", name: escapeHtml(n), legendgroup: n, x: xs, y: means, width: w * 0.88, error_y: err,
       marker: { color: color(j), line: { color: theme.markerLine, width: 1.3 } }, hovertemplate: escapeHtml(n) + "<br>mean %{y:.3f}<extra></extra>" });
     else if (chart === "dot") traces.push({ type: "scatter", mode: "markers", name: escapeHtml(n), legendgroup: n, x: xs, y: means, error_y: Object.assign(err, { width: 6 }),
       marker: { symbol: "line-ew-open", size: 22, color: shade(color(j)), line: { color: shade(color(j)), width: 2 } }, showlegend: false, hoverinfo: "skip" });
-    else levels.forEach((_, i) => traces.push(Object.assign({
-      y: cells[i][j], x: cells[i][j].map(() => xOf(i, j)), name: escapeHtml(n), legendgroup: n, showlegend: i === 0,
+    else rows.forEach((i, q) => traces.push(Object.assign({
+      y: cells[i][j], x: cells[i][j].map(() => xOf(i, j)), name: escapeHtml(n), legendgroup: n, showlegend: q === 0,
       fillcolor: color(j), line: { color: theme.markerLine, width: 1.3 }, hoverinfo: "y" },
       chart === "box" ? { type: "box", boxpoints: false, width: w * 0.8 }
                       : { type: "violin", points: false, width: w * 0.95, spanmode: "hard", opacity: 1, box: { visible: true, width: 0.15, fillcolor: "#ffffff" } })));
-    cells.forEach((r, i) => {
+    rows.forEach((i, q) => {
+      const r = cells[i];
       const rnd = mulberry32(7919 * (i + 1) + 31 * j);
       traces.push({ type: "scatter", mode: "markers", x: r[j].map(() => xOf(i, j) + (rnd() - 0.5) * w * 0.5), y: r[j], legendgroup: n,
-        showlegend: chart === "dot" && i === 0, name: escapeHtml(n),
+        showlegend: chart === "dot" && q === 0, name: escapeHtml(n),
         marker: { color: color(j), size: chart === "dot" ? dotSize : dotSize - 1, line: { color: theme.markerLine, width: chart === "dot" ? 0.8 : 1 } },
         hovertemplate: escapeHtml(n) + "<br>%{y:.3f}<extra></extra>" });
     });
   });
   // axis range, then a bracket per significant comparison (stacked within each cluster)
   const all = cells.flat(2);
-  const top = (i, j) => Math.max(...cells[i][j], meanErr ? desc[i][j].mean + errOf(desc[i][j]) : -Infinity);
-  let yMax = Math.max(...all, ...levels.flatMap((_, i) => names.map((_, j) => top(i, j))));
-  let yMin = Math.min(...all, ...(meanErr ? levels.flatMap((_, i) => names.map((_, j) => desc[i][j].mean - errOf(desc[i][j]))) : []));
+  const top = (i, j) => has(i, j) ? Math.max(...cells[i][j], meanErr ? desc[i][j].mean + errOf(desc[i][j]) : -Infinity) : -Infinity;
+  const filled = levels.flatMap((_, i) => present[i].map(j => [i, j]));
+  let yMax = Math.max(...all, ...filled.map(([i, j]) => top(i, j)));
+  let yMin = Math.min(...all, ...(meanErr ? filled.map(([i, j]) => desc[i][j].mean - errOf(desc[i][j])) : []));
   if (chart === "bar") yMin = Math.min(0, yMin);
   const span = (yMax - yMin) || 1, line = { color: theme.line, width: 1.2 };
   // brackets: all for 2 columns or Dunnett, otherwise the significant ones; shortest lowest,
   // and brackets that don't overlap share a level
-  const shown = (spec.method === "dunnett" || b === 2 ? pairs : pairs.filter(pr => pr.p < 0.05))
+  const shown = sigOff() ? [] : (spec.method === "dunnett" || b === 2 ? pairs : pairs.filter(pr => pr.p < 0.05))
     .slice().sort((p, q) => Math.abs(p.i - p.j) - Math.abs(q.i - q.j));
   const used = levels.map(() => []);           // per row title: occupied [lo, hi] column spans per level
   let highest = yMax;
@@ -2999,10 +3131,20 @@ function drawGrouped(spec, theme) {
     (used[i][lv] = used[i][lv] || []).push([lo, hi]);
     const base = Math.max(...names.map((_, j) => top(i, j)));
     const y = base + span * (0.07 + 0.09 * lv), x0 = xOf(i, pr.i), x1 = xOf(i, pr.j);
-    layout.shapes.push({ type: "line", x0, x1, y0: y, y1: y, line },
-                       { type: "line", x0, x1: x0, y0: y - span * 0.025, y1: y, line }, { type: "line", x0: x1, x1, y0: y - span * 0.025, y1: y, line });
-    layout.annotations.push({ x: (x0 + x1) / 2, y, text: sigText(pr.p), showarrow: false, yanchor: "bottom", font: { size: 12, color: theme.font } });
+    layout.shapes.push({ name: "sig", type: "line", x0, x1, y0: y, y1: y, line },
+                       { name: "sig", type: "line", x0, x1: x0, y0: y - span * 0.025, y1: y, line }, { name: "sig", type: "line", x0: x1, x1, y0: y - span * 0.025, y1: y, line });
+    layout.annotations.push({ name: "sig", x: (x0 + x1) / 2, y, text: sigText(pr.p), showarrow: false, yanchor: "bottom", font: { size: 12, color: theme.font } });
     highest = Math.max(highest, y + span * 0.07);
+  });
+  // one-way ANOVA across cells: letters (or Dunnett marks vs. the first cell) above each bar
+  filled.forEach(([i, j]) => {
+    let text = null;
+    if (spec.letters && spec.letters[i][j]) text = "<b>" + escapeHtml(spec.letters[i][j]) + "</b>";
+    else if (spec.ps && spec.ps[i][j] != null) text = sigText(spec.ps[i][j]);
+    if (!text || sigOff()) return;
+    const y = top(i, j) + span * 0.02;
+    layout.annotations.push({ name: "sig", x: xOf(i, j), y, text, showarrow: false, yanchor: "bottom", font: { size: b > 3 ? 11 : 13, color: theme.font } });
+    highest = Math.max(highest, y + span * 0.08);
   });
   layout.yaxis.range = [chart === "bar" && yMin === 0 ? 0 : yMin - span * 0.05, highest + span * 0.04];
   render(traces, layout);
@@ -3025,7 +3167,7 @@ function drawXY(spec, theme) {
     { type: "scatter", mode: "markers", x, y, marker: { color: c, size: dotSize + 2, line: { color: theme.markerLine, width: 1 } },
       hovertemplate: "(%{x:.3f}, %{y:.3f})<extra></extra>" },
   ];
-  layout.annotations.push({ xref: "paper", yref: "paper", x: 0.03, y: 0.97, xanchor: "left", yanchor: "top", showarrow: false, align: "left",
+  layout.annotations.push({ name: "sig", xref: "paper", yref: "paper", x: 0.03, y: 0.97, xanchor: "left", yanchor: "top", showarrow: false, align: "left",
     text: `<i>r</i> = ${fmt(fit.pearson.r, 3)}<br><i>R</i>² = ${fmt(fit.r2, 3)}<br><i>P</i> ${pRel(fit.pearson.p)}`, font: { size: 12, color: theme.font } });
   render(traces, layout);
 }
@@ -3035,8 +3177,8 @@ function drawCounts(spec, theme) {
   const { names, rowNames, table, p } = spec;
   const totals = names.map((_, j) => table.reduce((s, r) => s + r[j], 0));
   const layout = baseLayout(theme, axisTitle("xLabel", ""), axisTitle("yLabel", "Percent of column"));
-  Object.assign(layout, { barmode: "stack", showlegend: true, legend: { orientation: "h", traceorder: "normal", x: 0, y: -0.18, font: { size: 12 } } });
-  layout.margin.b = 80;
+  layout.barmode = "stack";
+  bottomLegend(layout, rowNames);
   Object.assign(layout.xaxis, { tickvals: names.map((_, j) => j), ticktext: names.map(escapeHtml), showgrid: false });
   layout.yaxis.range = [0, 118];
   const traces = rowNames.map((rn, i) => ({
@@ -3044,15 +3186,45 @@ function drawCounts(spec, theme) {
     marker: { color: theme.colors[i % theme.colors.length], line: { color: theme.markerLine, width: 1.2 } },
     customdata: table[i], hovertemplate: rn + ": %{customdata} (%{y:.1f}%)<extra></extra>",
   }));
-  layout.annotations.push({ xref: "paper", x: 0.5, y: 103, yanchor: "bottom", showarrow: false, text: sigText(p), font: { size: 14, color: theme.font } });
+  layout.annotations.push({ name: "sig", xref: "paper", x: 0.5, y: 103, yanchor: "bottom", showarrow: false, text: sigText(p), font: { size: 14, color: theme.font } });
   render(traces, layout);
 }
 
-/* user-set width/height of the plot (blank width = full width) */
+/* Figure size: W / H typed in the ribbon win; a blank field means automatic, a size fitted
+   to what is drawn (more bars → wider, rotated labels or a legend → taller). The automatic
+   value shows as the field's placeholder. */
+let autoSize = { w: 300, h: 400 };
+const clampN = (v, lo, hi) => Math.round(Math.max(lo, Math.min(hi, v)) / 10) * 10;
+function sizeFor(spec) {
+  if (spec.mode === "xy") return { w: 380, h: 340 };
+  if (spec.mode === "counts") return { w: clampN(170 + 70 * spec.names.length, 260, 560), h: 400 };
+  if (spec.mode === "grouped") {
+    const bars = spec.levels.reduce((n, _, i) => n + spec.names.filter((_, j) => spec.cells[i][j].length).length, 0);
+    return { w: clampN(150 + 24 * bars + 34 * spec.levels.length, 280, 760), h: 420 };
+  }
+  const n = spec.groups.length, long = Math.max(...spec.groups.map(g => g.name.length));
+  const w = clampN(150 + 55 * n, 240, 640);
+  return { w, h: long * 7 > (w - 110) / n ? 420 : 380 };   // names that will be rotated need room below
+}
 function plotSize() {
   const w = parseInt($("plotW").value, 10), h = parseInt($("plotH").value, 10);
-  return { w: Number.isFinite(w) && w > 0 ? w : null, h: Number.isFinite(h) && h > 0 ? h : 400 };
+  return { w: Number.isFinite(w) && w > 0 ? w : autoSize.w, h: Number.isFinite(h) && h > 0 ? h : autoSize.h };
 }
+function setAutoSize(spec) {
+  autoSize = sizeFor(spec);
+  $("plotW").placeholder = autoSize.w; $("plotH").placeholder = autoSize.h;
+}
+/* a blank (automatic) field starts from the automatic value when you step or edit it,
+   and goes back to automatic if you leave it unchanged */
+["plotW", "plotH"].forEach(id => {
+  const el = $(id), key = id === "plotW" ? "w" : "h";
+  const seed = () => { if (el.value === "") { el.value = autoSize[key]; el.dataset.seeded = "1"; } };
+  el.addEventListener("mousedown", seed);
+  el.addEventListener("keydown", e => { if (e.key === "ArrowUp" || e.key === "ArrowDown") seed(); });
+  el.addEventListener("focus", () => { seed(); el.select(); });
+  el.addEventListener("input", () => { delete el.dataset.seeded; });
+  el.addEventListener("blur", () => { if (el.dataset.seeded) { el.value = ""; delete el.dataset.seeded; } });
+});
 function setPlotBox() {
   const el = $("plot"), { w, h } = plotSize();
   el.style.width = w ? w + "px" : "100%";
@@ -3092,8 +3264,12 @@ $("resetGraph").onclick = () => {
 function downloadPlot(format, btn) {
   if (!lastPlot) { flash(btn, "Run a test first"); return; }
   const el = $("plot");
-  const w = plotSize().w || el.clientWidth || 700, h = plotSize().h;
-  Plotly.downloadImage("plot", { format, width: w, height: h, scale: format === "png" ? 5 : 1, filename: "graph" });
+  const { w, h } = plotSize();
+  // placeholder titles are a screen-only hint: export without them
+  const layout = JSON.parse(JSON.stringify(el.layout));
+  if (placeholderAxes.has("xLabel")) layout.xaxis.title = { text: "" };
+  if (placeholderAxes.has("yLabel")) layout.yaxis.title = { text: "" };
+  Plotly.downloadImage({ data: el.data, layout }, { format, width: w, height: h, scale: format === "png" ? 5 : 1, filename: "graph" });
 }
 $("dlPng").onclick = () => downloadPlot("png", $("dlPng"));
 $("dlSvg").onclick = () => downloadPlot("svg", $("dlSvg"));
