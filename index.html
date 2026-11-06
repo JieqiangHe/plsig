@@ -441,12 +441,12 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
 
     <div class="rg rg-flat rg-eq">
       <div class="rg-body">
-        <label for="importJH" id="importLabel" class="tb-btn" title="Open a saved .jgz session (data + settings)"><svg viewBox="0 0 24 24"><path d="M12 15V3m-4 8 4 4 4-4"/><path d="M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/></svg>Open</label>
+        <label for="importJH" id="importLabel" class="tb-btn" title="Open a saved .jgz session, an Excel .xlsx file (each worksheet becomes a tab) or a .csv / .txt table"><svg viewBox="0 0 24 24"><path d="M12 15V3m-4 8 4 4 4-4"/><path d="M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/></svg>Open</label>
         <button id="exportBtn" class="tb-btn" title="Save this session (data + settings) as a .jgz file"><svg viewBox="0 0 24 24"><path d="M12 3v12m-4-8 4-4 4 4"/><path d="M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/></svg>Save</button>
         <button id="copyData" class="tb-btn" title="Copy the whole sheet as TSV (paste into Excel / Sheets)"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>Copy</button>
         <button id="pasteBtn" class="tb-btn" title="Paste a table from Excel, Word, a web page, a PDF or a CSV: replaces the sheet"><svg viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="17" rx="2"/><path d="M9 4V3h6v1M9 10h6M9 14h6M9 18h3"/></svg>Paste</button>
       </div>
-      <input id="importJH" type="file" accept=".jgz,.jh" class="hidden" />
+      <input id="importJH" type="file" accept=".jgz,.jh,.xlsx,.csv,.tsv,.txt" class="hidden" />
       <div class="rg-cap">File</div>
     </div>
 
@@ -552,6 +552,7 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
         <select id="pointStyle" hidden><option value="filled" selected>Filled</option><option value="hollow">Hollow</option><option value="none">Hidden</option></select>
         <select id="frame" hidden><option value="box" selected>Box</option><option value="open">Axes</option></select>
         <select id="yScale" hidden><option value="linear" selected>Linear</option><option value="log">Log</option></select>
+        <select id="fillStyle" hidden><option value="colour" selected>Colour</option><option value="pattern">Pattern</option><option value="grey">Grey</option></select>
         <select id="errDir" hidden><option value="both" selected>Both</option><option value="up">Up</option></select>
         <select id="sigMarks" hidden><option value="letters" selected>Letters</option><option value="brackets">Brackets</option></select>
         <select id="sigShow" hidden><option value="auto" selected>Auto</option><option value="sig">Significant</option><option value="all">All</option><option value="first">Vs first</option><option value="pick">Pick</option></select>
@@ -635,7 +636,7 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
       <dt>Select</dt><dd>Click a cell and just type to replace it; double-click or <kbd>F2</kbd> to edit inside it. Drag, or <kbd>Shift</kbd> + click / arrows, to select a block; click a row number or column letter for a whole row or column; <kbd>⌘/Ctrl</kbd> <kbd>A</kbd> selects everything. Click the empty grid to add rows and columns there.</dd>
       <dt>Move</dt><dd>Arrows, <kbd>Tab</kbd> and <kbd>Enter</kbd> move between cells (<kbd>Enter</kbd> on the last row adds one); <kbd>⌘/Ctrl</kbd> + arrow jumps to the edge.</dd>
       <dt>Edit</dt><dd>Copy, cut and paste work on blocks; one copied value pasted onto a block fills it. <kbd>Delete</kbd> clears the block, <kbd>⌘/Ctrl</kbd> <kbd>D</kbd> fills down, <kbd>Esc</kbd> cancels a change. Type a value with a block selected and press <kbd>⌘/Ctrl</kbd> <kbd>Enter</kbd> to put it in every cell. Right-click for insert / delete rows and columns. Drag a column by the dotted handle at the left of its name (or right-click → Move left / right) to reorder it; the figure follows. Results update as you type.</dd>
-      <dt>Undo</dt><dd><kbd>⌘/Ctrl</kbd> <kbd>Z</kbd>; add <kbd>Shift</kbd> for redo.</dd>
+      <dt>Undo</dt><dd><kbd>⌘/Ctrl</kbd> <kbd>Z</kbd>; add <kbd>Shift</kbd> for redo. Undo covers the data and the figure settings (chart, colours, size, style, test).</dd>
       <dt>Session</dt><dd>Saved in this browser automatically; Save / Open (.jgz) moves a session between machines.</dd>
       <dt>Figure text</dt><dd>Click any text on the figure to edit it: an axis title, a group name under the x axis, or a legend entry. Group names and legend entries rename the column or row title on the sheet (<kbd>⌘/Ctrl</kbd> <kbd>Z</kbd> undoes it). <kbd>Enter</kbd> keeps the change, <kbd>Esc</kbd> cancels. A cleared axis title stays as a faint placeholder on screen so you can click it again; exports leave it out. <i>Off</i> next to *** / P = hides the letters and stars on the figure.</dd>
       <dt>Y axis</dt><dd>Style → Y axis: linear or log scale, a fixed range (blank = automatic), a dashed reference line at a value, and a shaded band between two values.</dd>
@@ -644,6 +645,9 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
       <dt>Methods</dt><dd>Under the results, a ready-to-copy paragraph for a paper's methods section describes the test that ran, its post-hoc test, how the data are shown and the sample size.</dd>
       <dt>Curves</dt><dd><i>Dose–response curve (4PL)</i>: column A = dose, the other columns = replicate responses; a four-parameter logistic is fitted on log10(dose) and reports EC50 / IC50 with its 95% CI. <i>Kaplan–Meier survival</i>: column A = time, each other column a group with 1 = event and 0 = censored (blank = not in that group); curves are compared with the log-rank test.</dd>
       <dt>Outliers</dt><dd>Grubbs' test (α = 0.05) runs on every column; suspected outliers are highlighted on the sheet and listed in the results, but nothing is removed. Right-click a cell → Exclude value to leave it out (it stays on the sheet, struck through); the same menu includes it again.</dd>
+      <dt>Files</dt><dd>Open reads a .jgz session, an Excel .xlsx file (each worksheet becomes a tab; formulas give their last computed value) or a .csv / .txt table; you can also drop any of these on the paste bar.</dd>
+      <dt>Share</dt><dd>Share (right of the sheet tabs) copies a link that holds every tab, data and settings included. Whoever opens it gets the same sheets and figures; nothing is uploaded, the data travel inside the link. Very large sessions are better sent as a Save file.</dd>
+      <dt>Offline</dt><dd>After one visit online, the page works without a network (it keeps itself and its two scripts in the browser).</dd>
       <dt>Export</dt><dd>Export opens the options: this figure or every sheet as one panel figure lettered A, B, C…, PNG or SVG, the on-screen size or a journal column width (8.5 / 11.4 / 17.4 cm), and 300 or 600 dpi (written into the PNG, so Word and Illustrator open it at that size). Copy puts the figure on the clipboard for PowerPoint, Word or a chat.</dd>
       <dt>Theme</dt><dd>The sun / moon button in the ribbon's View group switches between light and dark; 中 / EN switches the interface between Chinese and English (the figure itself stays in English, for papers).</dd>
       <dt>Privacy</dt><dd>Everything runs in this browser; your data is never uploaded.</dd>
@@ -659,7 +663,7 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
       <dt>选择</dt><dd>点一个单元格直接输入即可替换；双击或按 <kbd>F2</kbd> 在格内编辑。拖动，或 <kbd>Shift</kbd> + 点击 / 方向键选择区域；点行号或列字母选中整行整列；<kbd>⌘/Ctrl</kbd> <kbd>A</kbd> 全选。点击空白网格会在那里添加行和列。</dd>
       <dt>移动</dt><dd>方向键、<kbd>Tab</kbd> 和 <kbd>Enter</kbd> 在单元格间移动（在最后一行按 <kbd>Enter</kbd> 会新增一行）；<kbd>⌘/Ctrl</kbd> + 方向键跳到边缘。</dd>
       <dt>编辑</dt><dd>复制、剪切和粘贴都支持区域；复制一个值粘到一个区域会填满它。<kbd>Delete</kbd> 清空区域，<kbd>⌘/Ctrl</kbd> <kbd>D</kbd> 向下填充，<kbd>Esc</kbd> 取消修改。选中区域后输入一个值再按 <kbd>⌘/Ctrl</kbd> <kbd>Enter</kbd>，会填入每个单元格。右键可插入 / 删除行和列。拖动列名左侧的点状把手（或右键 → 左移 / 右移）调整列顺序，图跟着变。结果随输入自动更新。</dd>
-      <dt>撤销</dt><dd><kbd>⌘/Ctrl</kbd> <kbd>Z</kbd>；加 <kbd>Shift</kbd> 为重做。</dd>
+      <dt>撤销</dt><dd><kbd>⌘/Ctrl</kbd> <kbd>Z</kbd>；加 <kbd>Shift</kbd> 为重做。撤销同时覆盖数据和图形设置（图表类型、配色、尺寸、样式、检验）。</dd>
       <dt>会话</dt><dd>自动保存在本浏览器中；保存 / 打开（.jgz）可以在不同电脑间转移。</dd>
       <dt>图上文字</dt><dd>点击图上的任意文字即可修改：坐标轴标题、x 轴下的组名或图例。修改组名和图例会同时改表格里的列名或行标题（<kbd>⌘/Ctrl</kbd> <kbd>Z</kbd> 可撤销）。<kbd>Enter</kbd> 确认，<kbd>Esc</kbd> 取消。清空的坐标轴标题在屏幕上留一个浅色占位，方便再次点击；导出时不会出现。*** / P = 旁边的<i>关</i>可隐藏图上的字母和星号。</dd>
       <dt>Y 轴</dt><dd>样式 → Y 轴：线性或对数刻度、固定范围（留空为自动）、某个值处的虚线参考线，以及两个值之间的阴影带。</dd>
@@ -668,6 +672,9 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
       <dt>方法</dt><dd>结果下方有一段可直接复制的论文方法部分文字，描述所做的检验、事后检验、数据表示方式和样本量。</dd>
       <dt>曲线</dt><dd><i>剂量–反应曲线（4PL）</i>：A 列为剂量，其余列为重复的反应值；以 log10(剂量) 拟合四参数 logistic 模型，给出 EC50 / IC50 及其 95% 置信区间。<i>Kaplan–Meier 生存分析</i>：A 列为时间，其余每列是一组，1 = 事件、0 = 删失（留空 = 不属于该组）；用 log-rank 检验比较生存曲线。</dd>
       <dt>离群值</dt><dd>每列都会做 Grubbs 检验（α = 0.05），可疑离群值在表格中高亮并列在结果里，但不会被删除。右键单元格 → 排除该值即可排除（以删除线保留在表格中），同一菜单可重新纳入。</dd>
+      <dt>文件</dt><dd>打开可读取 .jgz 会话、Excel .xlsx 文件（每个工作表成为一个标签；公式取最后一次计算的值）或 .csv / .txt 表格；也可以把这些文件拖到粘贴栏上。</dd>
+      <dt>分享</dt><dd>表格标签右侧的"分享"会复制一个包含所有标签（数据和设置）的链接。对方打开后看到相同的表格和图；数据不上传，而是包含在链接里。会话很大时建议用保存的文件发送。</dd>
+      <dt>离线</dt><dd>联网访问一次之后，即使没有网络也能使用（页面和两个脚本会保存在浏览器中）。</dd>
       <dt>导出</dt><dd>导出可选：当前图，或把所有表格拼成标好 A、B、C… 的组图；PNG 或 SVG；屏幕尺寸或期刊栏宽（8.5 / 11.4 / 17.4 cm）；300 或 600 dpi（写入 PNG，Word 和 Illustrator 打开即为该尺寸）。复制会把图放到剪贴板，可粘贴到 PowerPoint、Word 或聊天中。</dd>
       <dt>主题与语言</dt><dd>功能区视图组里的太阳 / 月亮按钮切换浅色和深色；"中 / EN"按钮切换界面语言。图本身始终是英文排版，方便投稿。</dd>
       <dt>隐私</dt><dd>所有计算都在本浏览器中完成，数据不会上传。</dd>
@@ -1653,10 +1660,10 @@ const DEMO = [
 const DEFAULT_ROWS = 10;
 const STORE_KEY = "plsig:v1", OLD_STORE_KEY = "ministat:v1";   // the app was called ministat before
 const SETTING_IDS = ["testSelect", "posthocSelect", "dunnAdj", "mu0", "chartType", "errType", "themeSelect", "sigLabel", "xLabel", "yLabel", "plotW", "plotH", "dotSize", "fontSize", "barWidth", "pointStyle", "frame", "yScale", "yMin", "yMax", "refY", "bandLo", "bandHi",
-                     "errDir", "sigMarks", "sigShow", "sigPick", "journal", "transform", "avgReps"];
+                     "errDir", "sigMarks", "sigShow", "sigPick", "journal", "transform", "avgReps", "fillStyle"];
 const GRAPH_DEFAULTS = { chartType: "bar", errType: "sem", themeSelect: "claude", sigLabel: "stars", xLabel: "Group", yLabel: "Value", plotW: "", plotH: "", dotSize: "6", fontSize: "13", barWidth: "0.6", pointStyle: "filled", frame: "box",
                          yScale: "linear", yMin: "", yMax: "", refY: "", bandLo: "", bandHi: "",
-                         errDir: "both", sigMarks: "letters", sigShow: "auto", sigPick: "", journal: "" };
+                         errDir: "both", sigMarks: "letters", sigShow: "auto", sigPick: "", journal: "", fillStyle: "colour" };
 
 let grid = [];          // array of groups: {name, cells:[string,...]}
 let titles = [];        // row titles (text, left of the data; the row factor / outcome names)
@@ -1848,7 +1855,7 @@ function styleHtml() {
                        : `<p class="ex-note">Pick works with brackets: choose Brackets above (one-way tests) or a two-way design.</p>`;
   }
   const left = `<h4>Figure style</h4>` + Object.entries(STYLE_STEPS).map(([id, c]) => step(id, c)).join("") +
-         Object.entries(STYLE_SEGS).map(([id, n]) => seg(id, n)).join("") + seg("errDir", "Error bars") +
+         Object.entries(STYLE_SEGS).map(([id, n]) => seg(id, n)).join("") + seg("errDir", "Error bars") + seg("fillStyle", "Fill") +
          `<h4>Journal</h4>` + seg("journal", "Preset") +
          `<p class="ex-note">${$("journal").value ? "7 pt text and thin lines at the journal's column width; Export uses that width." : "Sets 7 pt text and thin lines for the journal's column width."}</p>` +
          `<h4>My default</h4><div class="st-mine"><button type="button" data-mine="save">Save as my default</button>` +
@@ -1909,7 +1916,7 @@ menuPop.addEventListener("input", e => {
   styleNumTimer = setTimeout(() => { scheduleSave(); redraw(); }, 250);
 });
 /* "my default": the figure options a user wants every time, kept in this browser */
-const MY_STYLE_IDS = ["chartType", "errType", "themeSelect", "sigLabel", "dotSize", "fontSize", "barWidth", "pointStyle", "frame", "errDir", "sigMarks", "journal"];
+const MY_STYLE_IDS = ["chartType", "errType", "themeSelect", "sigLabel", "dotSize", "fontSize", "barWidth", "pointStyle", "frame", "errDir", "sigMarks", "journal", "fillStyle"];
 let myStyle = {};
 try { myStyle = JSON.parse(localStorage.getItem("plsig:mystyle") || "{}") || {}; } catch (_) { myStyle = {}; }
 const hasMyStyle = () => Object.keys(myStyle).length > 0;
@@ -1964,6 +1971,7 @@ function sanitizeGrid(g) {
 
 let saveTimer = null;
 function scheduleSave() {
+  trackSettings();
   clearTimeout(saveTimer);
   saveTimer = setTimeout(() => {
     try { localStorage.setItem(STORE_KEY, JSON.stringify({ grid, titles, settings: collectSettings(),
@@ -1975,7 +1983,18 @@ function loadSaved() {
 }
 
 const undoStack = [], redoStack = [];
-const snapshot = () => JSON.stringify({ grid, titles });
+/* an undo step holds the data and the sheet's settings (test, figure options …), so ⌘/Ctrl+Z
+   also takes back a change of chart, colour, size or style */
+const snapshot = () => JSON.stringify({ grid, titles, settings: collectSettings() });
+let prevSettingsJSON = null, lastSettingsPush = 0;
+function trackSettings() {   // called on every save: a settings change becomes an undo step
+  const cur = JSON.stringify(collectSettings());
+  if (prevSettingsJSON === null || cur === prevSettingsJSON) { prevSettingsJSON = cur; return; }
+  const now = Date.now();
+  if (now - lastSettingsPush > 700) pushHistory(JSON.stringify({ grid, titles, settings: JSON.parse(prevSettingsJSON) }));   // rapid steps (− / + …) merge
+  lastSettingsPush = now; prevSettingsJSON = cur;
+}
+const settingsSettled = () => { prevSettingsJSON = JSON.stringify(collectSettings()); };
 let editSnapshot = null;   // grid state when a grid field gained focus → one undo step per edit
 /* record any pending in-cell edit as its own undo step */
 function commitEdit() {
@@ -1994,7 +2013,10 @@ function restore(from, to) {
   commitEdit();
   if (!from.length) return;
   to.push(snapshot());
-  ({ grid, titles } = JSON.parse(from.pop()));
+  const st = JSON.parse(from.pop());
+  ({ grid, titles } = st);
+  if (st.settings) { closeMenuPop(); applySettings(st.settings); syncSegs(); renderTabs(); }
+  settingsSettled();
   renderGrid(); scheduleSave(); scheduleRun(); updateHistoryButtons();
 }
 const undo = () => restore(undoStack, redoStack);
@@ -2554,6 +2576,7 @@ function showSheet(i, { stash = true } = {}) {
   undoStack.push(...(sh.undo || [])); redoStack.push(...(sh.redo || []));
   delete sh.undo; delete sh.redo;
   sel = null;
+  settingsSettled();
   renderGrid(); renderTabs(); updateHistoryButtons(); syncSegs(); scheduleSave();
   if (collectGroups().groups.some(g => g.values.length)) run(true); else { showWarnings([]); clearResults(); }
 }
@@ -2617,7 +2640,8 @@ function renderTabs() {
     (sheets.length > 1 ? `<span class="x" data-x="${i}" role="button" aria-label="Close ${escapeHtml(sh.name)}">×</span>` : "") + `</div>`
   ).join("") + `<button type="button" class="add" title="New sheet" aria-label="New sheet">+</button>` +
     `<span class="tabs-fill"></span><button type="button" class="tb-btn menu-btn tab-tool${transformOn() ? " on" : ""}" id="transformBtn" aria-haspopup="dialog" title="Transform the data before the analysis: % of the first column, log, average replicates">` +
-    `<svg viewBox="0 0 24 24"><path d="M4 18c4 0 4-12 8-12s4 12 8 12"/></svg><span class="lbl">${transformLabel()}</span><svg class="chev" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4"/></svg></button>`;
+    `<svg viewBox="0 0 24 24"><path d="M4 18c4 0 4-12 8-12s4 12 8 12"/></svg><span class="lbl">${transformLabel()}</span><svg class="chev" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4"/></svg></button>` +
+    `<button type="button" class="tb-btn tab-tool" id="shareBtn" title="Copy a link that opens these sheets (data and settings) in any browser"><svg viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg><span class="lbl">Share</span></button>`;
   tabsEl.querySelector(".tab.on")?.scrollIntoView({ block: "nearest", inline: "nearest" });
 }
 const transformOn = () => $("transform").value !== "none" || $("avgReps").value === "on";
@@ -2655,6 +2679,15 @@ menuPop.addEventListener("click", e => {
 });
 tabsEl.addEventListener("click", e => {
   if (e.target.closest("#transformBtn")) { menuFor === transformAnchor ? closeMenuPop() : openTransformPop(); return; }
+  if (e.target.closest("#shareBtn")) {
+    const btn = $("shareBtn");
+    shareLink().then(async url => {
+      if (url.length > 60000) { flash(btn, "Too big for a link: use Save"); return; }
+      try { await navigator.clipboard.writeText(url); flash(btn, "✓ Link copied"); }
+      catch (_) { prompt("Copy this link:", url); }
+    });
+    return;
+  }
   if (e.target.closest("input")) return;
   if (e.target.closest(".add")) { addSheet({}); return; }
   const x = e.target.closest("[data-x]");
@@ -2791,7 +2824,8 @@ $("pasteCatch").addEventListener("input", e => {   // a paste the browser insert
 $("pasteZone").addEventListener("drop", async e => {
   e.preventDefault();
   const f = e.dataTransfer.files[0];
-  if (f) { const text = await f.text(); importClipboard({ getData: (t) => t === "text/plain" ? text : "" }); }
+  if (f && /\.(xlsx|jgz|jh)$/i.test(f.name)) { try { pasteMsg(await openFile(f), "done"); } catch (err) { alert("Could not open this file: " + err.message); } }
+  else if (f) { const text = await f.text(); importClipboard({ getData: (t) => t === "text/plain" ? text : "" }); }
   else importClipboard(e.dataTransfer);
 });
 
@@ -3001,6 +3035,10 @@ const ZH = {
   "Exclude value from the analysis": "从分析中排除该值", "Exclude values from the analysis": "从分析中排除这些值", "Include values again": "重新纳入这些值",
   "Dose–response curve": "剂量–反应曲线", "Survival": "生存分析", "Correlation ": "相关", "4PL fit, IC50, A = dose": "4PL 拟合，IC50，A 列为剂量", "Kaplan–Meier + log-rank, A = days": "Kaplan–Meier + log-rank，A 列为天数",
   "Row": "行", "Column": "列", "Value": "数值", "Critical G": "临界 G",
+  "Share": "分享", "✓ Link copied": "✓ 链接已复制", "Too big for a link: use Save": "数据太大，无法生成链接：请用保存",
+  "Copy a link that opens these sheets (data and settings) in any browser": "复制一个链接，在任何浏览器中打开这些表格（含数据和设置）",
+  "Fill": "填充", "Colour": "彩色", "Pattern": "图案", "Grey": "灰度",
+  "Open a saved .jgz session, an Excel .xlsx file (each worksheet becomes a tab) or a .csv / .txt table": "打开 .jgz 会话、Excel .xlsx 文件（每个工作表成为一个标签）或 .csv / .txt 表格",
   "Switch the interface to Chinese": "界面切换为中文", "Switch the interface to English": "Switch the interface to English",
 };
 const ZH_PATTERNS = [
@@ -4200,6 +4238,27 @@ function applyStyle(traces, layout) {
     traces.forEach(t => { if (t.error_y) t.error_y.thickness = lw; if (t.marker && t.marker.line && t.type === "bar") t.marker.line.width = lw; });
     layout.shapes.forEach(sh => { if (sh.line && sh.name === "sig") sh.line.width = lw; });
   }
+  // bar fills that survive black-and-white printing: a hatch per group, optionally on greys
+  const fill = $("fillStyle").value;
+  if (fill !== "colour") {
+    const SHAPES = ["", "/", "\\", "x", ".", "-", "|", "+"], GREYS = ["#ffffff", "#d0d0d0", "#9a9a9a", "#6b6b6b", "#ececec", "#b5b5b5", "#828282", "#4d4d4d"];
+    const ink = layout.xaxis.linecolor || "#141413";
+    let k = 0;
+    traces.forEach(t => {
+      if (t.type !== "bar") return;
+      const n = Array.isArray(t.x) ? t.x.length : 1, per = Array.isArray(t.marker.color);
+      const idx = per ? t.x.map((_, i) => i) : [k++];
+      const shape = per ? idx.map(i => SHAPES[i % SHAPES.length]) : SHAPES[idx[0] % SHAPES.length];
+      t.marker = Object.assign({}, t.marker, { pattern: { shape, fgcolor: ink, fillmode: "overlay", size: 7, solidity: 0.22 } });
+      if (fill === "grey") t.marker.color = per ? idx.map(i => GREYS[i % GREYS.length]) : GREYS[idx[0] % GREYS.length];
+    });
+    if (fill === "grey") traces.forEach(t => {   // points and error bars in ink, so nothing depends on colour
+      if (t.meta === "pts" && t.marker) t.marker = Object.assign({}, t.marker, { color: "#ffffff", line: { color: ink, width: 1.2 } });
+      else if (t.type === "scatter" && t.marker && t.marker.symbol === "line-ew-open") t.marker = Object.assign({}, t.marker, { color: ink, line: { color: ink, width: 2 } });   // mean lines
+      if (t.error_y) t.error_y = Object.assign({}, t.error_y, { color: ink });
+      if (t.type === "box" || t.type === "violin") t.fillcolor = "#e0e0e0";
+    });
+  }
   // error bars drawn upwards only
   if ($("errDir").value === "up") traces.forEach(t => {
     if (!t.error_y || !t.error_y.array) return;
@@ -4877,34 +4936,163 @@ async function readJH(file) {
 
 $("exportBtn").onclick = () => exportJH().then(() => flash($("exportBtn"), "✓ Saved")).catch(err => alert("Export failed: " + err.message));
 
+/* sheets from a file or a link open as new tabs; a blank current tab is replaced */
+function addIncomingSheets(incoming, base, { show = 0, replaceAll = false } = {}) {
+  stashSheet();
+  if (replaceAll) sheets.splice(0, sheets.length, { name: "", grid: [], titles: [] });
+  const blank = replaceAll || !sheets[curSheet].grid.some(g => g.cells.some(c => String(c).trim()));
+  const at = blank ? curSheet : sheets.length;
+  if (blank) sheets.splice(curSheet, 1);
+  const used = new Set(sheets.map(s => s.name));
+  sheets.splice(at, 0, ...incoming.map((sh, k) => {
+    let name = String(sh.name || base || `Sheet ${k + 1}`), n = 2;
+    while (used.has(name)) name = `${sh.name || base} (${n++})`;
+    used.add(name);
+    return { name, grid: sh.grid, titles: sh.titles, settings: sh.settings };
+  }));
+  if (replaceAll) curSheet = 0;
+  showSheet(at + Math.max(0, Math.min(incoming.length - 1, show | 0)), { stash: false });
+}
+/* a table (rows of cells) opened from a file becomes a tab, read the way a pasted table is */
+function openMatrices(list, base) {
+  const blankNow = () => !grid.some(g => g.cells.some(c => String(c).trim()));
+  let opened = 0;
+  list.forEach(({ name, matrix }) => {
+    if (!matrix.some(r => r.some(c => String(c).trim()))) return;
+    if (!(opened === 0 && blankNow())) addSheet({ name: name || base });
+    importMatrix(matrix);
+    sheets[curSheet].name = name || base;
+    opened++;
+  });
+  renderTabs(); scheduleSave(); run(true);
+  return opened;
+}
+async function openFile(file) {
+  const ext = (file.name.match(/\.([^.]+)$/) || [])[1]?.toLowerCase() || "";
+  const base = file.name.replace(/\.[^.]+$/, "");
+  if (ext === "xlsx") {
+    const list = await readXlsx(await file.arrayBuffer());
+    const n = openMatrices(list, base);
+    if (!n) throw new Error("the workbook has no filled cells");
+    return n > 1 ? `✓ ${n} sheets` : "✓ Loaded";
+  }
+  if (["csv", "tsv", "txt"].includes(ext)) {
+    if (!openMatrices([{ name: base, matrix: S.parseDelimited(await file.text()) }], base)) throw new Error("the file holds no table");
+    return "✓ Loaded";
+  }
+  const data = await readJH(file);
+  if (!data || !Array.isArray(data.grid)) throw new Error("not a valid .jgz analysis file");
+  // older files hold one sheet
+  const incoming = Array.isArray(data.sheets) && data.sheets.length ? data.sheets
+                 : [{ name: base, grid: data.grid, titles: data.titles, settings: data.settings }];
+  addIncomingSheets(incoming, base);
+  return incoming.length > 1 ? `✓ ${incoming.length} sheets` : "✓ Loaded";
+}
 $("importJH").onchange = async (e) => {
   const file = e.target.files[0];
   if (!file) return;
-  try {
-    const data = await readJH(file);
-    if (!data || !Array.isArray(data.grid)) throw new Error("not a valid .jgz analysis file");
-    // the file's sheets open as new tabs (a blank current sheet is replaced); older files hold one sheet
-    const base = file.name.replace(/\.[^.]+$/, "");
-    const incoming = Array.isArray(data.sheets) && data.sheets.length ? data.sheets
-                   : [{ name: base, grid: data.grid, titles: data.titles, settings: data.settings }];
-    stashSheet();
-    const blank = !sheets[curSheet].grid.some(g => g.cells.some(c => String(c).trim()));
-    const at = blank ? curSheet : sheets.length;
-    if (blank) sheets.splice(curSheet, 1);
-    const used = new Set(sheets.map(s => s.name));
-    sheets.splice(at, 0, ...incoming.map((sh, k) => {
-      let name = String(sh.name || base || `Sheet ${k + 1}`), n = 2;
-      while (used.has(name)) name = `${sh.name || base} (${n++})`;
-      used.add(name);
-      return { name, grid: sh.grid, titles: sh.titles, settings: sh.settings };
-    }));
-    showSheet(at, { stash: false });
-    flash($("importLabel"), incoming.length > 1 ? `✓ ${incoming.length} sheets` : "✓ Loaded");
-  } catch (err) {
-    alert("Could not import this file: " + err.message);
-  }
+  try { flash($("importLabel"), await openFile(file)); }
+  catch (err) { alert("Could not open this file: " + err.message); }
   e.target.value = ""; // reset so the same file can be re-imported
 };
+
+/* ---- Excel .xlsx, read here without a library: the file is a zip of XML parts. The browser
+   unzips (DecompressionStream "deflate-raw"); DOMParser reads the workbook, the shared strings
+   and each worksheet. Values come as stored: numbers as numbers (dates as Excel serials),
+   formulas as their last computed value. ---- */
+async function unzipEntries(buf) {
+  const dv = new DataView(buf), u8 = new Uint8Array(buf);
+  let eocd = -1;
+  for (let i = buf.byteLength - 22; i >= Math.max(0, buf.byteLength - 70000); i--) if (dv.getUint32(i, true) === 0x06054b50) { eocd = i; break; }
+  if (eocd < 0) throw new Error("not an .xlsx (zip) file");
+  const count = dv.getUint16(eocd + 10, true);
+  let p = dv.getUint32(eocd + 16, true);
+  const dec = new TextDecoder(), files = {};
+  for (let k = 0; k < count; k++) {
+    if (dv.getUint32(p, true) !== 0x02014b50) throw new Error("damaged zip directory");
+    const method = dv.getUint16(p + 10, true), csize = dv.getUint32(p + 20, true);
+    const nlen = dv.getUint16(p + 28, true), elen = dv.getUint16(p + 30, true), clen = dv.getUint16(p + 32, true), off = dv.getUint32(p + 42, true);
+    const name = dec.decode(u8.subarray(p + 46, p + 46 + nlen));
+    files[name] = { method, csize, off };
+    p += 46 + nlen + elen + clen;
+  }
+  const read = async (name) => {
+    const f = files[name];
+    if (!f) return null;
+    const start = f.off + 30 + dv.getUint16(f.off + 26, true) + dv.getUint16(f.off + 28, true);
+    const data = u8.subarray(start, start + f.csize);
+    if (f.method === 0) return dec.decode(data);
+    if (f.method !== 8 || typeof DecompressionStream === "undefined") throw new Error("this browser cannot unzip the file");
+    const stream = new Blob([data]).stream().pipeThrough(new DecompressionStream("deflate-raw"));
+    return await new Response(stream).text();
+  };
+  return { names: Object.keys(files), read };
+}
+async function readXlsx(buf) {
+  const z = await unzipEntries(buf), xml = (t) => new DOMParser().parseFromString(t, "application/xml");
+  const tags = (node, name) => [...node.getElementsByTagNameNS("*", name)];
+  const wb = await z.read("xl/workbook.xml");
+  if (!wb) throw new Error("no workbook inside");
+  const rels = xml(await z.read("xl/_rels/workbook.xml.rels") || "<r/>");
+  const target = {};
+  tags(rels, "Relationship").forEach(r => { target[r.getAttribute("Id")] = r.getAttribute("Target"); });
+  const sstText = await z.read("xl/sharedStrings.xml");
+  const sst = sstText ? tags(xml(sstText), "si").map(si => tags(si, "t").map(t => t.textContent).join("")) : [];
+  const colIdx = (ref) => { let n = 0; for (const ch of ref.replace(/\d+$/, "")) n = n * 26 + ch.charCodeAt(0) - 64; return n - 1; };
+  const out = [];
+  for (const sh of tags(xml(wb), "sheet")) {
+    const rid = sh.getAttribute("r:id") || [...sh.attributes].find(a => a.localName === "id")?.value;
+    let path = target[rid] || "";
+    path = path.startsWith("/") ? path.slice(1) : "xl/" + path.replace(/^\.\//, "");
+    const text = await z.read(path);
+    if (!text) continue;
+    const matrix = [];
+    tags(xml(text), "c").forEach(c => {
+      const ref = c.getAttribute("r") || "", r = parseInt(ref.replace(/^[A-Z]+/, ""), 10) - 1, col = colIdx(ref);
+      if (!(r >= 0) || !(col >= 0)) return;
+      const t = c.getAttribute("t"), v = tags(c, "v")[0]?.textContent ?? "";
+      let val = v;
+      if (t === "s") val = sst[+v] ?? "";
+      else if (t === "inlineStr") val = tags(c, "t").map(x => x.textContent).join("");
+      else if (t === "b") val = v === "1" ? "TRUE" : "FALSE";
+      else if (t !== "str" && t !== "e" && v !== "" && Number.isFinite(+v)) val = String(+(+v).toPrecision(15));   // 9.800000000000001 → 9.8, as Excel shows it
+      (matrix[r] = matrix[r] || [])[col] = val;
+    });
+    const width = Math.max(0, ...matrix.filter(Boolean).map(r => r.length));
+    out.push({ name: sh.getAttribute("name"), matrix: Array.from({ length: matrix.length }, (_, i) => Array.from({ length: width }, (_, j) => (matrix[i] || [])[j] ?? "")) });
+  }
+  return out;
+}
+
+/* ---- share link: every tab, gzipped and base64url-encoded after "#s=" in the page address.
+   Opening such a link adds its tabs; nothing leaves the browser until the link is sent. ---- */
+async function shareLink() {
+  const payload = JSON.stringify({ app: "plsig", v: 5, sheets: sheets.map((_, i) => sheetData(i)), cur: curSheet });
+  let bytes = new TextEncoder().encode(payload), z = "j";
+  if (typeof CompressionStream !== "undefined") {
+    bytes = new Uint8Array(await new Response(new Blob([bytes]).stream().pipeThrough(new CompressionStream("gzip"))).arrayBuffer()); z = "z";
+  }
+  let bin = ""; bytes.forEach(b => { bin += String.fromCharCode(b); });
+  const b64 = btoa(bin).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+  return location.href.split("#")[0] + "#s=" + z + b64;
+}
+let freshVisit = false;   // no saved session: a shared link replaces the demo sheet instead of adding to it
+async function readShareHash() {
+  const m = location.hash.match(/^#s=([jz])([A-Za-z0-9_-]+)$/);
+  if (!m) return false;
+  try {
+    const bin = atob(m[2].replace(/-/g, "+").replace(/_/g, "/"));
+    let bytes = Uint8Array.from(bin, c => c.charCodeAt(0));
+    if (m[1] === "z") bytes = new Uint8Array(await new Response(new Blob([bytes]).stream().pipeThrough(new DecompressionStream("gzip"))).arrayBuffer());
+    const data = JSON.parse(new TextDecoder().decode(bytes));
+    if (!Array.isArray(data.sheets) || !data.sheets.length) throw new Error("no sheets");
+    addIncomingSheets(data.sheets.map(sh => ({ name: sh.name, grid: sanitizeGrid(sh.grid || []), titles: sanitizeTitles(sh.titles), settings: sh.settings })), "Shared",
+                      { show: data.cur, replaceAll: freshVisit });
+  } catch (err) { alert("This share link could not be opened: " + err.message); }
+  history.replaceState(null, "", location.href.split("#")[0]);
+  return true;
+}
+addEventListener("hashchange", () => { readShareHash(); });
 
 function flash(btn, msg) {
   if (btn._flashTimer) clearTimeout(btn._flashTimer); else btn._flashOrig = btn.innerHTML;
@@ -4955,6 +5143,7 @@ $("pasteBtn").onclick = armPaste;
     syncTestOptions();
     seedFromDemo();
     run();
+    freshVisit = true;
     let toured = false;
     try { toured = !!localStorage.getItem("plsig:toured"); } catch (_) { toured = true; }
     if (!toured) setTimeout(() => showTour(0), 900);
@@ -4962,11 +5151,15 @@ $("pasteBtn").onclick = armPaste;
   renderTabs();
   updateHistoryButtons();
   syncSegs();
+  settingsSettled();
   // interface language: the saved choice, else the browser's
   let lang = null;
   try { lang = localStorage.getItem("plsig:lang"); } catch (_) { /* none */ }
   if (!lang) lang = /^zh/i.test(navigator.language || "") ? "zh" : "en";
   if (lang === "zh") setLang("zh", { save: false });
+  readShareHash().then(() => { freshVisit = false; });   // a shared link opens its sheets as new tabs
+  // offline: a service worker keeps the page and its two scripts for use without a network
+  if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) navigator.serviceWorker.register("sw.js").catch(() => {});
 })();
 </script>
 </body>
