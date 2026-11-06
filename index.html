@@ -120,9 +120,10 @@ body { display: grid; grid-template-rows: auto minmax(0, 1fr); grid-template-col
 
 /* ribbon: labeled groups of small controls, two rows high */
 #ribbon { display: flex; align-items: stretch; overflow-x: auto; scrollbar-width: none; background: var(--bg); border-bottom: 1px solid var(--card-border); }
-.rg { flex: none; display: flex; flex-direction: column; padding: 4px 8px 2px; position: relative; }
+/* the groups share the ribbon's spare width (user's request, Nov 2026): no gap before View */
+.rg { flex: 1 0 auto; display: flex; flex-direction: column; padding: 4px 8px 2px; position: relative; }
 .rg + .rg::before { content: ""; position: absolute; left: 0; top: 9px; bottom: 9px; width: 1px; background: var(--card-border); }
-.rg-body { flex: 1; display: grid; grid-auto-flow: column; grid-template-rows: 24px 24px; gap: 3px 5px; align-items: center; justify-content: start; justify-items: stretch; }
+.rg-body { flex: 1; display: grid; grid-auto-flow: column; grid-template-rows: 24px 24px; gap: 3px 5px; align-items: center; justify-content: stretch; justify-items: stretch; }
 .rg-rows { grid-auto-flow: row; grid-template-columns: 1fr; }   /* two stacked rows of equal buttons */
 /* everything in the ribbon is 24px high */
 #ribbon .tb-btn, #ribbon .field, #ribbon .unit { height: 24px; }
@@ -157,14 +158,14 @@ body { display: grid; grid-template-rows: auto minmax(0, 1fr); grid-template-col
 .unit.wide label { white-space: nowrap; }
 .unit.txt .num-field { width: 52px; text-align: left; font-variant-numeric: normal; }
 .rg .row { display: flex; align-items: center; gap: 6px; }
-.rg-end { margin-left: auto; }
+.rg-end { flex: none; }
 .rg .tb-btn.icon { justify-content: center; padding: 0 6px; }
 .tb-btn svg.filled { fill: currentColor; stroke: none; }
 #langBtn { font-size: 12px; font-weight: 600; color: var(--fg-muted); }
 #langBtn:hover { color: var(--fg-strong); }
 a.tb-btn { text-decoration: none; }
 /* Analysis: test + Run on top, the test's option underneath; results also re-run by themselves on every edit */
-.rg-analysis { grid-template-columns: 242px 52px; }
+.rg-analysis { grid-template-columns: minmax(242px, 1fr) 52px; }
 .rg-analysis > .menu-btn { grid-area: 1 / 1; }
 .rg-analysis #runBtn { grid-area: 1 / 2; }
 .rg-analysis .opts { grid-area: 2 / 1 / 3 / 3; }
@@ -650,6 +651,7 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
       <dt>Offline</dt><dd>After one visit online, the page works without a network (it keeps itself and its two scripts in the browser).</dd>
       <dt>Export</dt><dd>Export opens the options: this figure or every sheet as one panel figure lettered A, B, C…, PNG or SVG, the on-screen size or a journal column width (8.5 / 11.4 / 17.4 cm), and 300 or 600 dpi (written into the PNG, so Word and Illustrator open it at that size). Copy puts the figure on the clipboard for PowerPoint, Word or a chat.</dd>
       <dt>Theme</dt><dd>The sun / moon button in the ribbon's View group switches between light and dark; 中 / EN switches the interface between Chinese and English (the figure itself stays in English, for papers).</dd>
+      <dt>Colours</dt><dd>Besides Claude and Classic Prism, the colour menu offers the journal-style palettes NPG, AAAS, NEJM, Lancet, JAMA, JCO and D3 from <a href="https://github.com/nanxstats/ggsci" target="_blank" rel="noopener">ggsci</a> by Nan Xiao (GPL, like plsig).</dd>
       <dt>Privacy</dt><dd>Everything runs in this browser; your data is never uploaded.</dd>
       <dt>Source</dt><dd>Open source on <a href="https://github.com/JieqiangHe/plsig" target="_blank" rel="noopener">GitHub</a>: report a problem or suggest a feature under Issues.</dd>
     </dl>
@@ -677,6 +679,7 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
       <dt>离线</dt><dd>联网访问一次之后，即使没有网络也能使用（页面和两个脚本会保存在浏览器中）。</dd>
       <dt>导出</dt><dd>导出可选：当前图，或把所有表格拼成标好 A、B、C… 的组图；PNG 或 SVG；屏幕尺寸或期刊栏宽（8.5 / 11.4 / 17.4 cm）；300 或 600 dpi（写入 PNG，Word 和 Illustrator 打开即为该尺寸）。复制会把图放到剪贴板，可粘贴到 PowerPoint、Word 或聊天中。</dd>
       <dt>主题与语言</dt><dd>功能区视图组里的太阳 / 月亮按钮切换浅色和深色；"中 / EN"按钮切换界面语言。图本身始终是英文排版，方便投稿。</dd>
+      <dt>配色</dt><dd>除 Claude 和 Classic Prism 外，配色菜单还提供来自 <a href="https://github.com/nanxstats/ggsci" target="_blank" rel="noopener">ggsci</a>（Nan Xiao 开发，与 plsig 同为 GPL 协议）的期刊风格配色：NPG、AAAS、NEJM、Lancet、JAMA、JCO 和 D3。</dd>
       <dt>隐私</dt><dd>所有计算都在本浏览器中完成，数据不会上传。</dd>
       <dt>源代码</dt><dd>在 <a href="https://github.com/JieqiangHe/plsig" target="_blank" rel="noopener">GitHub</a> 上开源：可在 Issues 中反馈问题或建议功能。</dd>
     </dl>
@@ -1648,6 +1651,15 @@ const THEMES = {
   // Claude: Anthropic's brand orange / blue / green / warm grey, then deeper and muted tones of the same family
   claude:  { name: "Claude", colors: ["#d97757","#6a9bcc","#788c5d","#b0aea5","#c9a15b","#8b6f9f","#a8553a","#4f6b80"], line:"#141413", markerLine:"#141413", paper:PAPER, font:"#141413" },
   prism:   { name: "Classic Prism", colors: ["#0173b2","#de8f05","#029e73","#d55e00","#cc78bc","#56b4e9","#949494","#fbafe4"], line:"#1f2937", markerLine:"#1f2937", paper:PAPER, font:"#1f2937" },
+  // Journal-style palettes from ggsci 5.2.0 by Nan Xiao (https://github.com/nanxstats/ggsci, GPL >= 3, like
+  // plsig): npg "nrc", aaas, nejm, lancet "lanonc", jama, jco, d3 "category10"; colours exactly as in ggsci.
+  npg:     { name: "NPG", src: "ggsci", colors: ["#E64B35","#4DBBD5","#00A087","#3C5488","#F39B7F","#8491B4","#91D1C2","#DC0000","#7E6148","#B09C85"], line:"#141413", markerLine:"#141413", paper:PAPER, font:"#141413" },
+  aaas:    { name: "AAAS", src: "ggsci", colors: ["#3B4992","#EE0000","#008B45","#631879","#008280","#BB0021","#5F559B","#A20056","#808180","#1B1919"], line:"#141413", markerLine:"#141413", paper:PAPER, font:"#141413" },
+  nejm:    { name: "NEJM", src: "ggsci", colors: ["#BC3C29","#0072B5","#E18727","#20854E","#7876B1","#6F99AD","#FFDC91","#EE4C97"], line:"#141413", markerLine:"#141413", paper:PAPER, font:"#141413" },
+  lancet:  { name: "Lancet", src: "ggsci", colors: ["#00468B","#ED0000","#42B540","#0099B4","#925E9F","#FDAF91","#AD002A","#ADB6B6","#1B1919"], line:"#141413", markerLine:"#141413", paper:PAPER, font:"#141413" },
+  jama:    { name: "JAMA", src: "ggsci", colors: ["#374E55","#DF8F44","#00A1D5","#B24745","#79AF97","#6A6599","#80796B"], line:"#141413", markerLine:"#141413", paper:PAPER, font:"#141413" },
+  jco:     { name: "JCO", src: "ggsci", colors: ["#0073C2","#EFC000","#868686","#CD534C","#7AA6DC","#003C67","#8F7700","#3B3B3B","#A73030","#4A6990"], line:"#141413", markerLine:"#141413", paper:PAPER, font:"#141413" },
+  d3:      { name: "D3", src: "ggsci", colors: ["#1F77B4","#FF7F0E","#2CA02C","#D62728","#9467BD","#8C564B","#E377C2","#7F7F7F","#BCBD22","#17BECF"], line:"#141413", markerLine:"#141413", paper:PAPER, font:"#141413" },
 };
 
 /* ============================================================
@@ -1708,7 +1720,11 @@ function swatch(key, n, cls = "chip") {
   const c = ((THEMES[key] || THEMES.claude).colors).slice(0, n), w = 100 / c.length;
   return `<i class="${cls}" style="background:linear-gradient(90deg,${c.map((x, i) => `${x} ${i * w}% ${(i + 1) * w}%`).join(",")})"></i>`;
 }
-Object.entries(THEMES).forEach(([key, t]) => $("themeSelect").add(new Option(t.name || key, key, key === "claude", key === "claude")));
+Object.entries(THEMES).forEach(([key, t]) => {
+  const o = new Option(t.name || key, key, key === "claude", key === "claude");
+  if (t.src) o.dataset.hint = t.src;   // palettes taken from ggsci say so in the menu
+  $("themeSelect").add(o);
+});
 document.querySelectorAll("select.as-seg").forEach(sel => {
   const seg = document.createElement("span");
   seg.className = "seg"; seg.setAttribute("role", "group"); seg.setAttribute("aria-label", sel.getAttribute("aria-label") || "");
