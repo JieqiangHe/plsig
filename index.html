@@ -2722,6 +2722,10 @@ const ZH = {
   "Download the figure (or every sheet as one panel figure) as PNG or SVG, at a journal width and DPI": "以期刊宽度和 DPI 下载 PNG 或 SVG（也可把所有表格拼成组图）",
   "Restore graph to default options, size & view": "恢复图形默认选项、尺寸与视图", "Example data sets laid out for each kind of test; each opens in a new tab": "按各类检验排好的示例数据；每个在新标签页打开",
   "Copy all result tables as TSV": "把所有结果表格复制为 TSV", "New sheet": "新建表格", "Sheets": "表格",
+  "95% CI (simultaneous)": "95% CI（同时）", "95% CI of discrepancy": "差异 95% CI", "95% CI of mean difference": "均值差 95% CI",
+  "Cohen's dz (mean diff / SD of diffs)": "Cohen's dz（均值差 / 差值标准差）", "Discrepancy (mean − hypothetical)": "差异（均值 − 假设值）", "Discrepancy": "差异",
+  "Std. error of mean difference": "均值差标准误", "Tests": "检验", "Wilcoxon matched-pairs signed-rank test": "Wilcoxon 配对符号秩检验",
+  "One-sample Wilcoxon signed-rank test": "单样本 Wilcoxon 符号秩检验", "Student's unpaired t-test": "Student 非配对 t 检验", "Del": "Del",
   "Switch the interface to Chinese": "界面切换为中文", "Switch the interface to English": "Switch the interface to English",
 };
 const ZH_PATTERNS = [
@@ -2755,6 +2759,8 @@ const ZH_PATTERNS = [
   [/^✓ (\d+) panels$/, "✓ $1 个子图"], [/^✓ (\d+) sheets$/, "✓ $1 个表格"],
   [/^(.+) — double-click to rename, right-click for more$/, "$1 — 双击重命名，右键更多操作"],
   [/^Close (.+)$/, "关闭 $1"],
+  [/^Rank-biserial r \(\+ ⇒ (.+) larger\)$/, "秩二列相关 r（+ ⇒ $1 较大）"], [/^Sum of ranks \((.+)\)$/, "秩和（$1）"],
+  [/^Risk in (.+) \/ (.+)$/, "$1 / $2 的风险"], [/^Std\. error of difference$/, "差值标准误"],
 ];
 function zhOf(en) {
   if (Object.prototype.hasOwnProperty.call(ZH, en)) return ZH[en];
