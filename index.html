@@ -181,6 +181,11 @@ a.tb-btn { text-decoration: none; }
 #menuPop button span { flex: 1; }
 #menuPop button small { font-size: 11px; color: var(--fg-faint); }
 #menuPop button.on { font-weight: 600; color: var(--accent); }
+#menuPop .st-row { display: flex; align-items: center; gap: 12px; padding: 2px 4px 2px 8px; }
+#menuPop .st-row > span { width: 44px; flex: none; font-size: 12px; color: var(--fg-muted); }
+#menuPop .st-row .stepper, #menuPop .st-row .seg { flex: 1; margin: 0; }
+#menuPop .st-row .seg button { flex: 1; width: auto; height: 22px; padding: 0 8px; justify-content: center; gap: 0; }
+#menuPop .st-row .seg button.on { background: var(--seg-on); color: var(--fg-strong); }
 #menuPop .stepper { display: flex; align-items: center; gap: 4px; margin: 2px 0 4px; }
 #menuPop .stepper button { width: 30px; flex: none; justify-content: center; font-size: 15px; background: var(--btn-hover); }
 #menuPop .stepper output { flex: 1; text-align: center; font-size: 12.5px; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--fg-strong); }
@@ -486,6 +491,12 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
       <div class="rg-body">
         <input id="plotW" type="number" min="220" step="20" value="" placeholder="300" title="Width in px (blank = automatic, fitted to the figure)" class="num-field size-src" hidden />
         <input id="dotSize" type="number" min="2" max="20" step="1" value="6" class="num-field size-src" hidden />
+        <!-- figure style: these hidden fields hold the values, the Style button edits them -->
+        <input id="fontSize" type="number" value="13" hidden />
+        <select id="barWidth" hidden><option value="0.45">Narrow</option><option value="0.6" selected>Normal</option><option value="0.8">Wide</option></select>
+        <select id="pointStyle" hidden><option value="filled" selected>Filled</option><option value="hollow">Hollow</option><option value="none">Hidden</option></select>
+        <select id="frame" hidden><option value="box" selected>Box</option><option value="open">Axes</option></select>
+        <span class="flat"><button id="styleBtn" class="tb-btn menu-btn" aria-haspopup="dialog" title="Figure style: font, dots, bar width, points, frame"><svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg><span class="lbl">Style</span><svg class="chev" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4"/></svg></button></span>
         <input id="plotH" type="number" min="220" step="20" value="" placeholder="400" title="Height in px (blank = automatic, fitted to the figure)" class="num-field size-src" hidden />
         <span class="flat"><button id="resetGraph" class="tb-btn" title="Restore graph to default options, size &amp; view"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>Reset</button></span>
         <span class="flat"><button id="dlPng" class="tb-btn" title="PNG at 5× the on-screen size (≈ 300 dpi for a 2–3 inch figure)"><svg viewBox="0 0 24 24"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14"/></svg>PNG</button></span>
@@ -562,6 +573,7 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
       <dt>Undo</dt><dd><kbd>⌘/Ctrl</kbd> <kbd>Z</kbd>; add <kbd>Shift</kbd> for redo.</dd>
       <dt>Session</dt><dd>Saved in this browser automatically; Save / Open (.jgz) moves a session between machines.</dd>
       <dt>Axes</dt><dd>Click an axis title on the figure to rename it; <kbd>Enter</kbd> keeps the change, <kbd>Esc</kbd> cancels. Clear the box to drop the title: a faint placeholder stays on screen so you can click it again, and exports leave it out. <i>Off</i> next to *** / P = hides the letters and stars on the figure. Reset in the ribbon restores the default titles.</dd>
+      <dt>Style</dt><dd>Style in the ribbon sets the figure's font size, dot size, bar width, hollow or hidden points, and a box or open (left and bottom axes) frame.</dd>
       <dt>Export</dt><dd>PNG at 5× the on-screen size (≈ 300 dpi for a 2–3 inch figure); SVG is vector.</dd>
       <dt>Theme</dt><dd>The sun / moon button in the ribbon's View group switches between light and dark.</dd>
       <dt>Privacy</dt><dd>Everything runs in this browser; your data is never uploaded.</dd>
@@ -1412,8 +1424,8 @@ const DEMO = [
 ];
 const DEFAULT_ROWS = 10;
 const STORE_KEY = "plsig:v1", OLD_STORE_KEY = "ministat:v1";   // the app was called ministat before
-const SETTING_IDS = ["testSelect", "posthocSelect", "dunnAdj", "mu0", "chartType", "errType", "themeSelect", "sigLabel", "xLabel", "yLabel", "plotW", "plotH", "dotSize"];
-const GRAPH_DEFAULTS = { chartType: "bar", errType: "sem", themeSelect: "claude", sigLabel: "stars", xLabel: "Group", yLabel: "Value", plotW: "", plotH: "", dotSize: "6" };
+const SETTING_IDS = ["testSelect", "posthocSelect", "dunnAdj", "mu0", "chartType", "errType", "themeSelect", "sigLabel", "xLabel", "yLabel", "plotW", "plotH", "dotSize", "fontSize", "barWidth", "pointStyle", "frame"];
+const GRAPH_DEFAULTS = { chartType: "bar", errType: "sem", themeSelect: "claude", sigLabel: "stars", xLabel: "Group", yLabel: "Value", plotW: "", plotH: "", dotSize: "6", fontSize: "13", barWidth: "0.6", pointStyle: "filled", frame: "box" };
 
 let grid = [];          // array of groups: {name, cells:[string,...]}
 let titles = [];        // row titles (text, left of the data; the row factor / outcome names)
@@ -1536,7 +1548,6 @@ menuPop.addEventListener("keydown", e => {
 const SIZE_BTNS = {
   plotW: { k: "W", name: "Width (px)", step: 20, min: 200, max: 1600, auto: true, presets: [240, 280, 320, 360, 400, 480, 560, 640, 720] },
   plotH: { k: "H", name: "Height (px)", step: 20, min: 200, max: 1200, auto: true, presets: [260, 300, 340, 380, 420, 480, 560] },
-  dotSize: { k: "Dot", name: "Dot size", step: 1, min: 2, max: 20, presets: [3, 4, 5, 6, 7, 8, 10, 12] },
 };
 Object.entries(SIZE_BTNS).forEach(([id, cfg]) => {
   const inp = $(id), b = document.createElement("button");
@@ -1587,6 +1598,45 @@ menuPop.addEventListener("click", e => {
   setSize(menuFor, v);
   menuPop.querySelector("output").textContent = v;
   menuPop.querySelectorAll("button[data-v]").forEach(b => b.classList.toggle("on", b.dataset.v === String(v)));
+});
+/* Style popover: steppers for font and dot size, segments for bar width, points and frame;
+   each writes its hidden field and redraws the figure */
+const STYLE_STEPS = { fontSize: { name: "Font", step: 1, min: 8, max: 24 }, dotSize: { name: "Dots", step: 1, min: 2, max: 20 } };
+const STYLE_SEGS = { barWidth: "Bars", pointStyle: "Points", frame: "Frame" };
+const styleAnchor = { _btn: $("styleBtn") };
+function styleHtml() {
+  const step = (id, c) => `<div class="st-row"><span>${c.name}</span><div class="stepper"><button type="button" data-sid="${id}" data-sstep="-1" aria-label="Smaller">−</button><output>${$(id).value}</output><button type="button" data-sid="${id}" data-sstep="1" aria-label="Larger">+</button></div></div>`;
+  const seg = (id, name) => `<div class="st-row"><span>${name}</span><div class="seg">${[...$(id).options].map(o =>
+    `<button type="button" data-sid="${id}" data-sv="${o.value}"${o.value === $(id).value ? ' class="on"' : ""}>${o.text}</button>`).join("")}</div></div>`;
+  return `<h4>Figure style</h4>` + Object.entries(STYLE_STEPS).map(([id, c]) => step(id, c)).join("") +
+         Object.entries(STYLE_SEGS).map(([id, n]) => seg(id, n)).join("");
+}
+$("styleBtn").onclick = () => {
+  if (menuFor === styleAnchor) { closeMenuPop(); return; }
+  closeMenuPop();
+  menuFor = styleAnchor;
+  menuPop.innerHTML = styleHtml();
+  menuPop.hidden = false;
+  const r = $("styleBtn").getBoundingClientRect();
+  menuPop.style.minWidth = "240px"; menuPop.style.maxHeight = "";
+  menuPop.style.top = r.bottom + 4 + "px";
+  menuPop.style.left = Math.max(6, Math.min(r.left, innerWidth - menuPop.offsetWidth - 6)) + "px";
+  $("styleBtn").classList.add("open"); $("styleBtn").setAttribute("aria-expanded", "true");
+  menuPop.querySelector("button").focus({ preventScroll: true });
+};
+menuPop.addEventListener("click", e => {
+  const b = e.target.closest("button[data-sid]");
+  if (!b || menuFor !== styleAnchor) return;
+  const id = b.dataset.sid, el = $(id);
+  if (b.dataset.sstep) {
+    const c = STYLE_STEPS[id];
+    el.value = Math.max(c.min, Math.min(c.max, (parseInt(el.value, 10) || +GRAPH_DEFAULTS[id]) + c.step * +b.dataset.sstep));
+    b.parentElement.querySelector("output").textContent = el.value;
+  } else {
+    el.value = b.dataset.sv;
+    b.parentElement.querySelectorAll("button").forEach(x => x.classList.toggle("on", x === b));
+  }
+  scheduleSave(); redraw();
 });
 addEventListener("mousedown", e => { if (menuFor && !menuPop.contains(e.target) && !menuFor._btn.contains(e.target)) closeMenuPop(); }, true);
 addEventListener("resize", () => closeMenuPop());
@@ -2440,7 +2490,7 @@ function syncTestOptions() {
   run(true);
 }));
 // graph options: restyle the existing figure without recomputing statistics
-["chartType", "errType", "themeSelect", "sigLabel"].forEach(id => $(id).addEventListener("change", () => { scheduleSave(); redraw(); }));
+["chartType", "errType", "themeSelect", "sigLabel", "barWidth", "pointStyle", "frame"].forEach(id => $(id).addEventListener("change", () => { scheduleSave(); redraw(); }));
 ["xLabel", "yLabel", "dotSize"].forEach(id => $(id).addEventListener("input", () => { scheduleSave(); redraw(); }));
 const redraw = () => { if (lastPlot) drawPlot(lastPlot); };
 
@@ -3098,7 +3148,7 @@ function baseLayout(theme, xTitle, yTitle) {
     return { text: ph, font: Object.assign({}, axisFont, { size: 12, color: "#c2c0b6" }) };
   };
   xTitle = titleOf(xTitle, "xLabel", "X axis title"); yTitle = titleOf(yTitle, "yLabel", "Y axis title");
-  const axis = (title) => ({ title, automargin: true, zeroline: false, showline: true, mirror: true,
+  const axis = (title) => ({ title, automargin: true, zeroline: false, showline: true, mirror: $("frame").value !== "open",
                              linecolor: theme.line, linewidth: 1.5, showgrid: false,
                              ticks: "outside", ticklen: 5, tickwidth: 1.5, tickcolor: theme.line });   // ticks on the axes, no gridlines
   return {
@@ -3108,6 +3158,26 @@ function baseLayout(theme, xTitle, yTitle) {
     xaxis: axis(xTitle), yaxis: axis(yTitle),
     annotations: [], shapes: [],
   };
+}
+const barW = () => parseFloat($("barWidth").value) || 0.6;
+/* figure style from the Style popover, applied to a finished figure: every font scales with
+   the chosen size (13 = default), and data points become hollow or are hidden */
+function applyStyle(traces, layout) {
+  const k = (parseInt($("fontSize").value, 10) || 13) / 13;
+  if (k !== 1) {
+    const sc = (f) => { if (f && f.size) f.size = Math.round(f.size * k * 10) / 10; };
+    sc(layout.font); sc(layout.legend && layout.legend.font);
+    ["xaxis", "yaxis"].forEach(a => { sc(layout[a].title.font); layout[a].tickfont = { size: Math.round(13 * k * 10) / 10 }; });
+    layout.annotations.forEach(a => sc(a.font));
+  }
+  const ps = $("pointStyle").value, chart = $("chartType").value;
+  traces.forEach((t, i) => {
+    if (t.meta !== "pts") return;
+    if (ps === "hollow") {
+      const c = t.marker.color;
+      t.marker = Object.assign({}, t.marker, { color: "rgba(255,255,255,0)", line: { color: typeof c === "string" && c.startsWith("#") ? shade(c, 0.6) : c, width: 1.5 } });
+    } else if (ps === "none" && chart !== "dot" && !(lastPlot && lastPlot.mode === "xy")) t.visible = false;
+  });
 }
 /* legend in its own band at the foot of the figure, under the x-axis title (never over it) */
 function bottomLegend(layout, labels) {
@@ -3127,6 +3197,7 @@ const axisTitle = (id, fallback) => ($(id).value === GRAPH_DEFAULTS[id] ? fallba
 function render(traces, layout) {
   setPlotBox();
   closeTitleEditor(false);
+  applyStyle(traces, layout);
   if (sigOff()) {   // statistics hidden on the figure: drop every mark tagged "sig"
     layout.annotations = layout.annotations.filter(a => a.name !== "sig");
     layout.shapes = layout.shapes.filter(a => a.name !== "sig");
@@ -3232,16 +3303,16 @@ function drawPlot(spec) {
 
   if (chart === "bar") {
     traces.push({
-      type: "bar", x: xIdx, y: descs.map(d => d.mean), width: 0.6,
+      type: "bar", x: xIdx, y: descs.map(d => d.mean), width: barW(),
       marker: { color: xIdx.map(color), line: { color: theme.markerLine, width: 1.5 } },
       customdata: names.map(escapeHtml), hovertemplate: "%{customdata}<br>mean %{y:.3f}<extra></extra>",
     });
     xIdx.forEach(i => traces.push(errTrace(i, false)));
   } else if (chart === "box" || chart === "violin") {
     groups.forEach((g, i) => traces.push(chart === "box"
-      ? { type: "box", y: g.values, x: g.values.map(() => i), boxpoints: false, width: 0.5,
+      ? { type: "box", y: g.values, x: g.values.map(() => i), boxpoints: false, width: barW() * 0.83,
           line: { color: theme.markerLine, width: 1.5 }, fillcolor: color(i), hoverinfo: "y" }
-      : { type: "violin", y: g.values, x: g.values.map(() => i), points: false, width: 0.7, spanmode: "hard",
+      : { type: "violin", y: g.values, x: g.values.map(() => i), points: false, width: Math.min(0.95, barW() * 1.17), spanmode: "hard",
           line: { color: theme.markerLine, width: 1.3 }, fillcolor: color(i), opacity: 1,
           box: { visible: true, width: 0.18, fillcolor: "#ffffff", line: { color: theme.markerLine, width: 1.2 } },
           meanline: { visible: false }, hoverinfo: "y" }));
@@ -3256,7 +3327,7 @@ function drawPlot(spec) {
   groups.forEach((g, i) => {
     const rnd = mulberry32(1009 * (i + 1)), spread = chart === "dot" ? 0.42 : 0.28;
     traces.push({
-      type: "scatter", mode: "markers",
+      type: "scatter", mode: "markers", meta: "pts",
       x: g.values.map(() => spec.paired ? i : i + (rnd() - 0.5) * spread), y: g.values,
       // points share the group's colour; a dark edge keeps them visible on a bar of the same colour
       marker: { color: color(i), size: chart === "dot" ? dotSize + 1 : dotSize, line: { color: theme.markerLine, width: chart === "dot" ? 0.8 : 1 } },
@@ -3314,7 +3385,7 @@ function drawGrouped(spec, theme) {
     const rows = levels.map((_, i) => i).filter(i => has(i, j));
     const xs = rows.map(i => xOf(i, j)), means = rows.map(i => desc[i][j].mean);
     const err = { type: "data", array: rows.map(i => errOf(desc[i][j])), visible: true, color: shade(color(j)), thickness: 1.5, width: 4 };
-    if (chart === "bar") traces.push({ type: "bar", name: escapeHtml(n), legendgroup: n, x: xs, y: means, width: w * 0.88, error_y: err,
+    if (chart === "bar") traces.push({ type: "bar", name: escapeHtml(n), legendgroup: n, x: xs, y: means, width: Math.min(0.98, barW() / 0.6 * 0.88) * w, error_y: err,
       marker: { color: color(j), line: { color: theme.markerLine, width: 1.3 } }, hovertemplate: escapeHtml(n) + "<br>mean %{y:.3f}<extra></extra>" });
     else if (chart === "dot") traces.push({ type: "scatter", mode: "markers", name: escapeHtml(n), legendgroup: n, x: xs, y: means, error_y: Object.assign(err, { width: 6 }),
       marker: { symbol: "line-ew-open", size: 22, color: shade(color(j)), line: { color: shade(color(j)), width: 2 } }, showlegend: false, hoverinfo: "skip" });
@@ -3326,7 +3397,7 @@ function drawGrouped(spec, theme) {
     rows.forEach((i, q) => {
       const r = cells[i];
       const rnd = mulberry32(7919 * (i + 1) + 31 * j);
-      traces.push({ type: "scatter", mode: "markers", x: r[j].map(() => xOf(i, j) + (rnd() - 0.5) * w * 0.5), y: r[j], legendgroup: n,
+      traces.push({ type: "scatter", mode: "markers", meta: "pts", x: r[j].map(() => xOf(i, j) + (rnd() - 0.5) * w * 0.5), y: r[j], legendgroup: n,
         showlegend: chart === "dot" && q === 0, name: escapeHtml(n),
         marker: { color: color(j), size: chart === "dot" ? dotSize : dotSize - 1, line: { color: theme.markerLine, width: chart === "dot" ? 0.8 : 1 } },
         hovertemplate: escapeHtml(n) + "<br>%{y:.3f}<extra></extra>" });
@@ -3386,7 +3457,7 @@ function drawXY(spec, theme) {
     { type: "scatter", mode: "lines", x: xs, y: yhat.map((v, i) => v + fit.band(xs[i])), line: { width: 0 }, hoverinfo: "skip" },
     { type: "scatter", mode: "lines", x: xs, y: yhat.map((v, i) => v - fit.band(xs[i])), line: { width: 0 }, fill: "tonexty", fillcolor: "rgba(0,0,0,0.08)", hoverinfo: "skip" },
     { type: "scatter", mode: "lines", x: xs, y: yhat, line: { color: theme.line, width: 1.8 }, hoverinfo: "skip" },
-    { type: "scatter", mode: "markers", x, y, marker: { color: c, size: dotSize + 2, line: { color: theme.markerLine, width: 1 } },
+    { type: "scatter", mode: "markers", meta: "pts", x, y, marker: { color: c, size: dotSize + 2, line: { color: theme.markerLine, width: 1 } },
       hovertemplate: "(%{x:.3f}, %{y:.3f})<extra></extra>" },
   ];
   layout.annotations.push({ name: "sig", xref: "paper", yref: "paper", x: 0.03, y: 0.97, xanchor: "left", yanchor: "top", showarrow: false, align: "left",
