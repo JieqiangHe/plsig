@@ -143,7 +143,8 @@ body { display: grid; grid-template-rows: auto minmax(0, 1fr); grid-template-col
 .pair { display: flex; gap: 2px; min-width: 0; }
 .pair .tb-btn { flex: 1; justify-content: center !important; }
 .rg-cap { margin-top: 2px; font-size: 9.5px; line-height: 11px; letter-spacing: .07em; text-transform: uppercase; color: var(--fg-faint); text-align: center; white-space: nowrap; }
-.rg-flat .tb-btn, .rg .flat .tb-btn { border-color: transparent; background: transparent; box-shadow: none; padding: 0 6px; }
+/* every ribbon control reads as a button: a soft fill like the segments, darker on hover (user's request, Nov 2026) */
+.rg-flat .tb-btn, .rg .flat .tb-btn { border-color: transparent; background: var(--seg-bg); box-shadow: none; padding: 0 7px; }
 .rg-flat .tb-btn:hover:not(:disabled), .rg .flat .tb-btn:hover { background: var(--btn-hover); }
 .rg-flat .tb-btn svg, .rg .flat .tb-btn svg { color: var(--fg-muted); }
 .rg-flat .tb-btn:hover:not(:disabled) svg { color: var(--fg-strong); }
@@ -166,7 +167,7 @@ a.tb-btn { text-decoration: none; }
 .rg-analysis #runBtn { grid-area: 1 / 2; }
 .rg-analysis .opts { grid-area: 2 / 1 / 3 / 3; }
 /* menu buttons (test, post-hoc): flat, the value in bold, a chevron at the right; the list opens in #menuPop */
-#ribbon .menu-btn { justify-content: flex-start; gap: 6px; padding: 0 7px; border-color: transparent; background: transparent; box-shadow: none; }
+#ribbon .menu-btn { justify-content: flex-start; gap: 6px; padding: 0 7px; border-color: transparent; background: var(--seg-bg); box-shadow: none; }
 #ribbon .menu-btn:hover, #ribbon .menu-btn.open { background: var(--btn-hover); }
 #ribbon .menu-btn svg { color: var(--fg-muted); }
 .menu-btn .lbl { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; text-align: left; }
@@ -180,6 +181,11 @@ a.tb-btn { text-decoration: none; }
 #menuPop button span { flex: 1; }
 #menuPop button small { font-size: 11px; color: var(--fg-faint); }
 #menuPop button.on { font-weight: 600; color: var(--accent); }
+#menuPop .stepper { display: flex; align-items: center; gap: 4px; margin: 2px 0 4px; }
+#menuPop .stepper button { width: 30px; flex: none; justify-content: center; font-size: 15px; background: var(--btn-hover); }
+#menuPop .stepper output { flex: 1; text-align: center; font-size: 12.5px; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--fg-strong); }
+#ribbon .size-btn .val { font-variant-numeric: tabular-nums; }
+#ribbon .size-btn.auto .val { font-weight: 400; color: var(--fg-muted); }
 #menuPop button:hover, #menuPop button:focus-visible { outline: none; background: var(--accent); color: #fff; }
 #menuPop button:hover small, #menuPop button:focus-visible small { color: rgba(255,255,255,.8); }
 /* on / off button (Welch's correction) */
@@ -466,9 +472,9 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
 
     <div class="rg rg-eq">
       <div class="rg-body">
-        <span class="unit"><label for="plotW">W</label><input id="plotW" type="number" min="220" step="20" value="" placeholder="300" title="Width in px (blank = automatic, fitted to the figure)" class="num-field" /></span>
-        <span class="unit"><label for="dotSize">Dot</label><input id="dotSize" type="number" min="2" max="20" step="1" value="6" class="num-field" /></span>
-        <span class="unit"><label for="plotH">H</label><input id="plotH" type="number" min="220" step="20" value="" placeholder="400" title="Height in px (blank = automatic, fitted to the figure)" class="num-field" /></span>
+        <input id="plotW" type="number" min="220" step="20" value="" placeholder="300" title="Width in px (blank = automatic, fitted to the figure)" class="num-field size-src" hidden />
+        <input id="dotSize" type="number" min="2" max="20" step="1" value="6" class="num-field size-src" hidden />
+        <input id="plotH" type="number" min="220" step="20" value="" placeholder="400" title="Height in px (blank = automatic, fitted to the figure)" class="num-field size-src" hidden />
         <span class="flat"><button id="resetGraph" class="tb-btn" title="Restore graph to default options, size &amp; view"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>Reset</button></span>
         <span class="flat"><button id="dlPng" class="tb-btn" title="PNG at 5× the on-screen size (≈ 300 dpi for a 2–3 inch figure)"><svg viewBox="0 0 24 24"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14"/></svg>PNG</button></span>
         <span class="flat"><button id="dlSvg" class="tb-btn" title="Download as vector SVG"><svg viewBox="0 0 24 24"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14"/></svg>SVG</button></span>
@@ -1408,6 +1414,7 @@ function collectSettings() {
 /* segmented buttons for short <select>s (class "as-seg"); the select stays the
    source of truth (hidden), so saving / loading / reset work unchanged */
 function syncSegs() {
+  syncSizeBtns();
   document.querySelectorAll("select.as-seg").forEach(sel => {
     sel.nextElementSibling.querySelectorAll("button").forEach(b => b.classList.toggle("on", b.dataset.v === sel.value));
   });
@@ -1496,6 +1503,7 @@ menuPop.addEventListener("click", e => {
   const sel = menuFor;
   closeMenuPop(true);
   if (sel.value === b.dataset.v) return;
+  if (sel.tagName === "INPUT") { setSize(sel, b.dataset.v); return; }
   sel.value = b.dataset.v; syncSegs();
   sel.dispatchEvent(new Event("change"));
 });
@@ -1507,6 +1515,63 @@ menuPop.addEventListener("keydown", e => {
   else if (e.key === "Home") go(0);
   else if (e.key === "End") go(items.length - 1);
   else if (e.key === "Escape" || e.key === "Tab") { e.preventDefault(); e.stopPropagation(); closeMenuPop(true); }
+});
+/* size buttons (W, H, Dot): a flat button shows the value and opens a stepper (− / +) with presets;
+   the hidden number input holds the value (blank W / H = automatic) */
+const SIZE_BTNS = {
+  plotW: { k: "W", name: "Width (px)", step: 20, min: 200, max: 1600, auto: true, presets: [240, 280, 320, 360, 400, 480, 560, 640, 720] },
+  plotH: { k: "H", name: "Height (px)", step: 20, min: 200, max: 1200, auto: true, presets: [260, 300, 340, 380, 420, 480, 560] },
+  dotSize: { k: "Dot", name: "Dot size", step: 1, min: 2, max: 20, presets: [3, 4, 5, 6, 7, 8, 10, 12] },
+};
+Object.entries(SIZE_BTNS).forEach(([id, cfg]) => {
+  const inp = $(id), b = document.createElement("button");
+  b.type = "button"; b.className = "tb-btn menu-btn size-btn";
+  b.setAttribute("aria-haspopup", "dialog"); b.setAttribute("aria-label", cfg.name);
+  b.innerHTML = `<span class="lbl"><span class="k">${cfg.k}</span><span class="val"></span></span><svg class="chev" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4"/></svg>`;
+  b.onclick = () => (menuFor === inp ? closeMenuPop() : openSizePop(inp));
+  inp._btn = b; inp.after(b);
+});
+const sizeValue = (inp) => inp.value === "" && SIZE_BTNS[inp.id].auto ? +inp.placeholder : (parseInt(inp.value, 10) || +inp.placeholder || 0);
+function syncSizeBtns() {
+  Object.keys(SIZE_BTNS).forEach(id => {
+    const inp = $(id), b = inp._btn;
+    if (!b) return;
+    const auto = inp.value === "" && SIZE_BTNS[id].auto;
+    b.querySelector(".val").textContent = sizeValue(inp);
+    b.classList.toggle("auto", auto);
+    b.title = SIZE_BTNS[id].name + (auto ? ": automatic, fitted to the figure" : "");
+  });
+}
+function setSize(inp, v) {
+  inp.value = v;
+  inp.dispatchEvent(new Event("input"));
+  syncSizeBtns();
+}
+function openSizePop(inp) {
+  closeMenuPop();
+  menuFor = inp;
+  const cfg = SIZE_BTNS[inp.id], cur = inp.value === "" ? "" : String(parseInt(inp.value, 10));
+  const opt = (v, text, hint) => `<button type="button" role="option" data-v="${v}"${cur === String(v) ? ' class="on"' : ""}><span>${text}</span>${hint ? `<small>${hint}</small>` : ""}</button>`;
+  menuPop.innerHTML = `<h4>${cfg.name}</h4>
+    <div class="stepper"><button type="button" data-step="-1" aria-label="Smaller">−</button><output>${sizeValue(inp)}</output><button type="button" data-step="1" aria-label="Larger">+</button></div>` +
+    (cfg.auto ? opt("", "Auto", inp.placeholder + " · fits the figure") : "") + cfg.presets.map(v => opt(v, String(v))).join("");
+  menuPop.hidden = false;
+  const r = inp._btn.getBoundingClientRect();
+  menuPop.style.minWidth = "150px";
+  menuPop.style.maxHeight = innerHeight - r.bottom - 12 + "px";
+  menuPop.style.top = r.bottom + 4 + "px";
+  menuPop.style.left = Math.max(6, Math.min(r.left, innerWidth - menuPop.offsetWidth - 6)) + "px";
+  inp._btn.classList.add("open");
+  (menuPop.querySelector("button.on") || menuPop.querySelector("[data-step]")).focus({ preventScroll: true });
+}
+menuPop.addEventListener("click", e => {
+  const st = e.target.closest("button[data-step]");
+  if (!st || !menuFor || menuFor.tagName !== "INPUT") return;
+  const cfg = SIZE_BTNS[menuFor.id];
+  const v = Math.max(cfg.min, Math.min(cfg.max, sizeValue(menuFor) + cfg.step * +st.dataset.step));
+  setSize(menuFor, v);
+  menuPop.querySelector("output").textContent = v;
+  menuPop.querySelectorAll("button[data-v]").forEach(b => b.classList.toggle("on", b.dataset.v === String(v)));
 });
 addEventListener("mousedown", e => { if (menuFor && !menuPop.contains(e.target) && !menuFor._btn.contains(e.target)) closeMenuPop(); }, true);
 addEventListener("resize", () => closeMenuPop());
@@ -3213,18 +3278,8 @@ function plotSize() {
 function setAutoSize(spec) {
   autoSize = sizeFor(spec);
   $("plotW").placeholder = autoSize.w; $("plotH").placeholder = autoSize.h;
+  syncSizeBtns();
 }
-/* a blank (automatic) field starts from the automatic value when you step or edit it,
-   and goes back to automatic if you leave it unchanged */
-["plotW", "plotH"].forEach(id => {
-  const el = $(id), key = id === "plotW" ? "w" : "h";
-  const seed = () => { if (el.value === "") { el.value = autoSize[key]; el.dataset.seeded = "1"; } };
-  el.addEventListener("mousedown", seed);
-  el.addEventListener("keydown", e => { if (e.key === "ArrowUp" || e.key === "ArrowDown") seed(); });
-  el.addEventListener("focus", () => { seed(); el.select(); });
-  el.addEventListener("input", () => { delete el.dataset.seeded; });
-  el.addEventListener("blur", () => { if (el.dataset.seeded) { el.value = ""; delete el.dataset.seeded; } });
-});
 function setPlotBox() {
   const el = $("plot"), { w, h } = plotSize();
   el.style.width = w ? w + "px" : "100%";
