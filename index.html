@@ -263,10 +263,18 @@ table.data-grid thead .title-col { z-index: 3; }
 .cell-input:focus { outline: none; background: var(--cell-focus-bg); box-shadow: inset 0 0 0 2px var(--focus-border); }
 .cell-input.bad { background: var(--bad-bg); color: var(--bad-fg); box-shadow: inset 0 0 0 1px var(--bad-border); }
 /* group-name shares the exact column width of its cells; right padding clears the × button */
-.grp-name { display: block; width: 100%; box-sizing: border-box; height: 29px; padding: 0 22px 0 9px; font-size: 12px; font-weight: 600; text-align: center; border: 0; border-radius: 0; background: transparent; color: var(--fg-strong); }
+.grp-name { display: block; width: 100%; box-sizing: border-box; height: 29px; padding: 0 22px; font-size: 12px; font-weight: 600; text-align: center; border: 0; border-radius: 0; background: transparent; color: var(--fg-strong); }
 .grp-name:focus { outline: none; background: var(--cell-focus-bg); box-shadow: inset 0 0 0 2px var(--focus-border); }
 .delGrp { position: absolute; top: 50%; right: 4px; transform: translateY(-50%); width: 16px; height: 16px; border-radius: 4px; font-size: 13px; line-height: 15px; color: var(--fg-faint); opacity: 0; transition: opacity .12s; }
 th:hover .delGrp, th:focus-within .delGrp { opacity: 1; }
+/* drag handle: move a column (and its bar) left or right */
+.dragGrp { position: absolute; top: 50%; left: 4px; transform: translateY(-50%); display: grid; place-items: center; width: 14px; height: 18px; border-radius: 4px; color: var(--fg-faint); opacity: 0; cursor: grab; transition: opacity .12s; }
+.dragGrp svg { width: 7px; height: 12px; fill: currentColor; }
+th:hover .dragGrp { opacity: 1; }
+.dragGrp:hover { background: var(--btn-hover); color: var(--fg-strong); }
+th.drag-src { opacity: .5; }
+th.drop-before { box-shadow: inset 3px 0 0 var(--accent); }
+th.drop-after { box-shadow: inset -3px 0 0 var(--accent); }
 /* a column excluded from the analysis: kept on the sheet, greyed and struck through */
 th.off .grp-name { opacity: .45; text-decoration: line-through; }
 th.off .col-letter { color: var(--fg-faint); }
@@ -573,7 +581,7 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
       <dt>Paste</dt><dd>Paste a block from Excel/Sheets into any cell (<kbd>⌘/Ctrl</kbd> <kbd>V</kbd>); the grid expands to fit. To replace the whole sheet, click the paste bar under the sheet (or Paste in the ribbon) and press <kbd>⌘/Ctrl</kbd> <kbd>V</kbd>: tables from Excel, Word, web pages, PDFs and CSV text all work, with or without a header row. You can also drop a .csv / .txt file on the bar.</dd>
       <dt>Select</dt><dd>Click a cell and just type to replace it; double-click or <kbd>F2</kbd> to edit inside it. Drag, or <kbd>Shift</kbd> + click / arrows, to select a block; click a row number or column letter for a whole row or column; <kbd>⌘/Ctrl</kbd> <kbd>A</kbd> selects everything. Click the empty grid to add rows and columns there.</dd>
       <dt>Move</dt><dd>Arrows, <kbd>Tab</kbd> and <kbd>Enter</kbd> move between cells (<kbd>Enter</kbd> on the last row adds one); <kbd>⌘/Ctrl</kbd> + arrow jumps to the edge.</dd>
-      <dt>Edit</dt><dd>Copy, cut and paste work on blocks; one copied value pasted onto a block fills it. <kbd>Delete</kbd> clears the block, <kbd>⌘/Ctrl</kbd> <kbd>D</kbd> fills down, <kbd>Esc</kbd> cancels a change. Type a value with a block selected and press <kbd>⌘/Ctrl</kbd> <kbd>Enter</kbd> to put it in every cell. Right-click for insert / delete rows and columns. Results update as you type.</dd>
+      <dt>Edit</dt><dd>Copy, cut and paste work on blocks; one copied value pasted onto a block fills it. <kbd>Delete</kbd> clears the block, <kbd>⌘/Ctrl</kbd> <kbd>D</kbd> fills down, <kbd>Esc</kbd> cancels a change. Type a value with a block selected and press <kbd>⌘/Ctrl</kbd> <kbd>Enter</kbd> to put it in every cell. Right-click for insert / delete rows and columns. Drag a column by the dotted handle at the left of its name (or right-click → Move left / right) to reorder it; the figure follows. Results update as you type.</dd>
       <dt>Undo</dt><dd><kbd>⌘/Ctrl</kbd> <kbd>Z</kbd>; add <kbd>Shift</kbd> for redo.</dd>
       <dt>Session</dt><dd>Saved in this browser automatically; Save / Open (.jgz) moves a session between machines.</dd>
       <dt>Axes</dt><dd>Click an axis title on the figure to rename it; <kbd>Enter</kbd> keeps the change, <kbd>Esc</kbd> cancels. Clear the box to drop the title: a faint placeholder stays on screen so you can click it again, and exports leave it out. <i>Off</i> next to *** / P = hides the letters and stars on the figure. Reset in the ribbon restores the default titles.</dd>
@@ -1754,6 +1762,7 @@ function renderGrid() {
   let html = `<thead><tr><th style="width:34px"></th><th class="title-col" style="width:96px"><div class="col-letter">&nbsp;</div><div class="title-head" title="Row titles: the levels of the row factor (two-way ANOVA) or the outcome names (contingency tables)">Row title</div></th>`;
   grid.forEach((g, gi) => {
     html += `<th style="width:118px"${g.off ? ' class="off" title="Excluded from the analysis (right-click to include it again)"' : ""}><div class="col-letter">${colLetter(gi)}${g.off ? " · excluded" : ""}</div><div class="relative">
+        <span class="dragGrp" draggable="true" data-g="${gi}" title="Drag to move this column (the bars follow)" aria-hidden="true"><svg viewBox="0 0 8 14"><circle cx="2" cy="2" r="1.2"/><circle cx="6" cy="2" r="1.2"/><circle cx="2" cy="7" r="1.2"/><circle cx="6" cy="7" r="1.2"/><circle cx="2" cy="12" r="1.2"/><circle cx="6" cy="12" r="1.2"/></svg></span>
         <input class="grp-name" data-g="${gi}" value="${escapeHtml(g.name)}" aria-label="Name of group ${gi + 1}" />
         ${grid.length > 1 ? `<button class="delGrp" data-g="${gi}" title="Delete group" aria-label="Delete group ${escapeHtml(g.name)}">×</button>` : ""}
       </div></th>`;
@@ -2108,6 +2117,7 @@ table.addEventListener("contextmenu", e => {
     ["rowAbove", `Insert ${rowsWord} above`], ["rowBelow", `Insert ${rowsWord} below`],
     ["colLeft", `Insert ${colsWord} left`], ["colRight", `Insert ${colsWord} right`], "-",
     ["delRows", `Delete ${rowsWord}`], ["delCols", `Delete ${colsWord}`, "", ng < 1 || ng >= grid.length], "-",
+    ["colMoveL", `Move ${colsWord} left`, "", ng < 1 || gs === 0], ["colMoveR", `Move ${colsWord} right`, "", ng < 1 || R.g1 >= grid.length - 1], "-",
     grid.slice(gs, R.g1 + 1).every(c => c.off) ? ["include", `Include ${colsWord} in the analysis`] : ["exclude", `Exclude ${colsWord} from the analysis`, "", ng < 1], "-",
     ["fill", "Fill down", kb("D")], ["clear", "Clear contents", "Del"],
   ];
@@ -2143,6 +2153,15 @@ ctxMenu.addEventListener("click", async e => {
       mutate(() => grid.slice(gs, R.g1 + 1).forEach(c => { if (off) c.off = true; else delete c.off; }));
       break;
     }
+    case "colMoveL": case "colMoveR": {
+      const d = b.dataset.act === "colMoveL" ? -1 : 1;
+      mutate(() => {   // move the whole block one place
+        const block = grid.splice(gs, ng);
+        grid.splice(gs + d, 0, ...block);
+      });
+      sel.ag += d; sel.fg += d;
+      break;
+    }
     case "fill": fillDown(); break;
     case "clear": clearSel(); break;
   }
@@ -2152,6 +2171,51 @@ addEventListener("mousedown", e => { if (!ctxMenu.hidden && !ctxMenu.contains(e.
 addEventListener("keydown", e => { if (e.key === "Escape" && !ctxMenu.hidden) { closeMenu(); e.stopPropagation(); } }, true);
 addEventListener("blur", closeMenu);
 $("sheetWrap").addEventListener("scroll", closeMenu);
+
+/* drag a column by its handle onto another header to move it; the figure's order follows */
+let dragCol = -1;
+table.addEventListener("dragstart", e => {
+  const h = e.target.closest && e.target.closest(".dragGrp");
+  if (!h) return;
+  dragCol = +h.dataset.g;
+  e.dataTransfer.effectAllowed = "move";
+  e.dataTransfer.setData("text/plain", grid[dragCol].name);
+  const th = h.closest("th");
+  try { e.dataTransfer.setDragImage(th, 20, 14); } catch (_) { /* default image */ }
+  requestAnimationFrame(() => th.classList.add("drag-src"));
+});
+const clearDropMarks = () => table.querySelectorAll("th.drop-before, th.drop-after, th.drag-src").forEach(t => t.classList.remove("drop-before", "drop-after", "drag-src"));
+function dropSlot(e) {   // the gap the column would land in: before column `at`
+  const th = e.target.closest && e.target.closest("thead th, td");
+  if (!th) return null;
+  const g = (th.tagName === "TH" ? th.cellIndex : th.cellIndex) - 2;
+  if (g < 0 || g >= grid.length) return null;
+  const r = th.getBoundingClientRect(), after = e.clientX > r.left + r.width / 2;
+  return { g, after, at: g + (after ? 1 : 0) };
+}
+table.addEventListener("dragover", e => {
+  if (dragCol < 0) return;
+  const d = dropSlot(e);
+  if (!d) return;
+  e.preventDefault(); e.dataTransfer.dropEffect = "move";
+  table.querySelectorAll("th.drop-before, th.drop-after").forEach(t => t.classList.remove("drop-before", "drop-after"));
+  const th = table.tHead.rows[0].cells[d.g + 2];
+  if (d.at !== dragCol && d.at !== dragCol + 1) th.classList.add(d.after ? "drop-after" : "drop-before");
+});
+table.addEventListener("drop", e => {
+  if (dragCol < 0) return;
+  e.preventDefault();
+  const d = dropSlot(e), from = dragCol;
+  dragCol = -1; clearDropMarks();
+  if (!d || d.at === from || d.at === from + 1) return;
+  moveColumn(from, d.at > from ? d.at - 1 : d.at);
+});
+table.addEventListener("dragend", () => { dragCol = -1; clearDropMarks(); });
+function moveColumn(from, to) {
+  if (to < 0 || to >= grid.length || to === from) return;
+  mutate(() => { const [c] = grid.splice(from, 1); grid.splice(to, 0, c); });
+  if (sel) { sel.ag = sel.fg = to; paintSel(); }
+}
 
 /* ============================================================
    SHEET TABS
