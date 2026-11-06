@@ -340,6 +340,17 @@ th.hd-on .col-letter { color: var(--accent); font-weight: 600; box-shadow: inset
 #tourBox footer button:hover { color: var(--fg-strong); }
 #tourBox footer button.primary { background: var(--run-bg); color: var(--run-fg); font-weight: 600; }
 #helpDlg header #tourBtn { width: auto; height: 26px; margin-right: 6px; padding: 0 10px; border-radius: 6px; font-size: 12px; line-height: 1; color: var(--fg); background: var(--seg-bg); }
+/* format bar over a clicked bar or text */
+#fmtBar { position: fixed; z-index: 65; display: flex; align-items: center; gap: 3px; padding: 4px 6px; border: 1px solid var(--card-border); border-radius: 8px; background: var(--surface); box-shadow: 0 6px 20px rgba(0,0,0,.18); }
+#fmtBar button { height: 24px; min-width: 24px; padding: 0 6px; border-radius: 5px; font-size: 12px; color: var(--fg); background: var(--seg-bg); }
+#fmtBar button:hover { background: var(--btn-hover); }
+#fmtBar button.on { background: var(--accent); color: #fff; }
+#fmtBar .sw { width: 18px; min-width: 18px; height: 18px; padding: 0; border-radius: 4px; background: var(--c); box-shadow: inset 0 0 0 1px rgba(0,0,0,.18); }
+#fmtBar .sw.on { outline: 2px solid var(--accent); outline-offset: 1px; background: var(--c); }
+#fmtBar .sw.more { position: relative; display: inline-block; overflow: hidden; background: conic-gradient(red, yellow, lime, cyan, blue, magenta, red); cursor: pointer; }
+#fmtBar .sw.more input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+#fmtBar .sep { width: 1px; height: 18px; margin: 0 3px; background: var(--card-border); }
+#fmtBar .lbl { max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11.5px; color: var(--fg-muted); margin-right: 4px; }
 #ctxMenu { position: fixed; z-index: 50; min-width: 210px; padding: 4px; border: 1px solid var(--card-border); border-radius: 8px; background: var(--surface); box-shadow: 0 8px 28px rgba(0,0,0,.18), 0 1px 3px rgba(0,0,0,.1); }
 #ctxMenu button { display: flex; align-items: center; width: 100%; height: 26px; padding: 0 8px; border-radius: 5px; font-size: 12px; color: var(--fg); text-align: left; }
 #ctxMenu button span { flex: 1; }
@@ -354,7 +365,9 @@ th.hd-on .col-letter { color: var(--accent); font-weight: 600; box-shadow: inset
 /* output: figure (white paper) + results */
 #vOut { min-height: 0; overflow: auto; background: var(--side); }
 #vGraph { display: flex; flex-direction: column; align-items: center; padding: 20px 16px 10px; border-bottom: 1px solid var(--card-border); }
-#plotHint { margin-top: 7px; font-size: 11px; color: var(--fg-faint); opacity: .75; user-select: none; }
+#plotHint { margin-top: 7px; max-width: 520px; font-size: 11px; line-height: 1.5; text-align: center; color: var(--fg-faint); user-select: none; }
+#plotHint a { color: var(--accent); text-decoration: none; }
+#plotHint a:hover { text-decoration: underline; }
 #plot { flex: none; background: #fff; box-shadow: var(--plot-shadow); }
 #vResults { padding: 14px 18px 24px; background: var(--surface); }
 .res-head { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
@@ -566,6 +579,7 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
         <select id="pointStyle" hidden><option value="filled" selected>Filled</option><option value="hollow">Hollow</option><option value="none">Hidden</option></select>
         <select id="frame" hidden><option value="box" selected>Box</option><option value="open">Axes</option></select>
         <select id="yScale" hidden><option value="linear" selected>Linear</option><option value="log">Log</option></select>
+        <input id="figFmt" hidden /><!-- formatting set by clicking the figure: JSON { bar: {name: colour}, text: {key: {b, i, c, s}} } -->
         <select id="fillStyle" hidden><option value="colour" selected>Colour</option><option value="pattern">Pattern</option><option value="grey">Grey</option></select>
         <select id="errDir" hidden><option value="both" selected>Both</option><option value="up">Up</option></select>
         <select id="sigMarks" hidden><option value="letters" selected>Letters</option><option value="brackets">Brackets</option></select>
@@ -579,7 +593,7 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
         <input id="plotH" type="number" min="220" step="20" value="" placeholder="400" title="Height in px (blank = automatic, fitted to the figure)" class="num-field size-src" hidden />
         <span class="flat"><button id="resetGraph" class="tb-btn" title="Restore graph to default options, size &amp; view"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>Reset</button></span>
         <span class="flat"><button id="exportBtnFig" class="tb-btn menu-btn" aria-haspopup="dialog" title="Download the figure (or every sheet as one panel figure) as PNG or SVG, at a journal width and DPI"><svg viewBox="0 0 24 24"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14"/></svg><span class="lbl">Export</span><svg class="chev" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4"/></svg></button></span>
-        <span class="flat"><button id="copyFig" class="tb-btn" title="Copy the figure as an image, to paste into PowerPoint, Word or a chat"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>Copy</button></span>
+        <span class="flat"><button id="copyFig" class="tb-btn" title="Copy the figure: PNG for PowerPoint, Word or a chat; SVG for svguest, Illustrator or Figma"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>Copy</button></span>
       </div>
       <div class="rg-cap">Size &amp; export</div>
     </div>
@@ -623,7 +637,7 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
 
     <!-- ============ OUTPUT: graph + results ============ -->
     <section id="vOut">
-      <div id="vGraph"><div id="plot" style="height: 400px;"></div><p id="plotHint" hidden>Click any text on the figure to edit it</p></div>
+      <div id="vGraph"><div id="plot" style="height: 400px;"></div><p id="plotHint" hidden><span>Click text or a bar to edit and format it; right-click for analyses and copying.</span> <span>For finer editing, copy as SVG and paste into</span> <a href="https://www.svguest.online" target="_blank" rel="noopener" title="svguest: an in-browser SVG editor">svguest</a></p></div>
       <div id="vResults">
         <div class="res-head">
           <h2><button type="button" id="resToggle" aria-expanded="true" title="Fold or unfold the result tables (the conclusion stays)"><svg class="chev" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4"/></svg>Results</button></h2>
@@ -652,6 +666,7 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
       <dt>Edit</dt><dd>Copy, cut and paste work on blocks; one copied value pasted onto a block fills it. <kbd>Delete</kbd> clears the block, <kbd>⌘/Ctrl</kbd> <kbd>D</kbd> fills down, <kbd>Esc</kbd> cancels a change. Type a value with a block selected and press <kbd>⌘/Ctrl</kbd> <kbd>Enter</kbd> to put it in every cell. Right-click for insert / delete rows and columns. Drag a column by the dotted handle at the left of its name (or right-click → Move left / right) to reorder it; the figure follows. Results update as you type.</dd>
       <dt>Undo</dt><dd><kbd>⌘/Ctrl</kbd> <kbd>Z</kbd>; add <kbd>Shift</kbd> for redo. Undo covers the data and the figure settings (chart, colours, size, style, test).</dd>
       <dt>Session</dt><dd>Saved in this browser automatically; Save / Open (.jgz) moves a session between machines.</dd>
+      <dt>Format</dt><dd>Click a bar to pick its colour, or any text (titles, group names, legend, letters / stars, y-axis numbers) for bold, italic, colour and size. Shift-click bars to select several; right-click the figure to compare the selected bars in a new tab (t-test, Mann–Whitney, ANOVA, Kruskal–Wallis), show or hide them, or copy the figure as SVG or PNG. For finer editing, paste the SVG into <a href="https://www.svguest.online" target="_blank" rel="noopener">svguest</a>.</dd>
       <dt>Figure text</dt><dd>Click any text on the figure to edit it: an axis title, a group name under the x axis, or a legend entry. Group names and legend entries rename the column or row title on the sheet (<kbd>⌘/Ctrl</kbd> <kbd>Z</kbd> undoes it). <kbd>Enter</kbd> keeps the change, <kbd>Esc</kbd> cancels. A cleared axis title stays as a faint placeholder on screen so you can click it again; exports leave it out. <i>Off</i> next to *** / P = hides the letters and stars on the figure.</dd>
       <dt>Y axis</dt><dd>Style → Y axis: linear or log scale, a fixed range (blank = automatic), a dashed reference line at a value, and a shaded band between two values.</dd>
       <dt>Style</dt><dd>Style in the ribbon sets the figure's font size, dot size, bar width, hollow or hidden points, and a box or open (left and bottom axes) frame.</dd>
@@ -682,6 +697,7 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
       <dt>撤销</dt><dd><kbd>⌘/Ctrl</kbd> <kbd>Z</kbd>；加 <kbd>Shift</kbd> 为重做。撤销同时覆盖数据和图形设置（图表类型、配色、尺寸、样式、检验）。</dd>
       <dt>会话</dt><dd>自动保存在本浏览器中；保存 / 打开（.jgz）可以在不同电脑间转移。</dd>
       <dt>图上文字</dt><dd>点击图上的任意文字即可修改：坐标轴标题、x 轴下的组名或图例。修改组名和图例会同时改表格里的列名或行标题（<kbd>⌘/Ctrl</kbd> <kbd>Z</kbd> 可撤销）。<kbd>Enter</kbd> 确认，<kbd>Esc</kbd> 取消。清空的坐标轴标题在屏幕上留一个浅色占位，方便再次点击；导出时不会出现。*** / P = 旁边的<i>关</i>可隐藏图上的字母和星号。</dd>
+      <dt>格式</dt><dd>点击柱子可选颜色；点击任意文字（标题、组名、图例、字母 / 星号、y 轴数字）可设置加粗、斜体、颜色和字号。Shift 点击可选中多根柱子；在图上右键可在新标签页比较所选柱子（t 检验、Mann–Whitney、方差分析、Kruskal–Wallis）、只显示或隐藏它们，或把图复制为 SVG / PNG。更精细的编辑，可把 SVG 粘贴到 <a href="https://www.svguest.online" target="_blank" rel="noopener">svguest</a>。</dd>
       <dt>Y 轴</dt><dd>样式 → Y 轴：线性或对数刻度、固定范围（留空为自动）、某个值处的虚线参考线，以及两个值之间的阴影带。</dd>
       <dt>样式</dt><dd>功能区的样式可设置字号、点大小、柱宽、空心或隐藏数据点，以及完整方框或只留左边和底边坐标轴的边框。</dd>
       <dt>我的样式</dt><dd>样式 → 存为我的默认，会在本浏览器保存图表类型、误差线、配色、显著性标记和样式：之后重置、新访问和示例都会使用它。"忘掉它"恢复内置默认。</dd>
@@ -1687,10 +1703,10 @@ const DEMO = [
 const DEFAULT_ROWS = 10;
 const STORE_KEY = "plsig:v1", OLD_STORE_KEY = "ministat:v1";   // the app was called ministat before
 const SETTING_IDS = ["testSelect", "posthocSelect", "dunnAdj", "mu0", "chartType", "errType", "themeSelect", "sigLabel", "xLabel", "yLabel", "plotW", "plotH", "dotSize", "fontSize", "barWidth", "pointStyle", "frame", "yScale", "yMin", "yMax", "refY", "bandLo", "bandHi",
-                     "errDir", "sigMarks", "sigShow", "sigPick", "journal", "transform", "avgReps", "fillStyle"];
+                     "errDir", "sigMarks", "sigShow", "sigPick", "journal", "transform", "avgReps", "fillStyle", "figFmt"];
 const GRAPH_DEFAULTS = { chartType: "bar", errType: "sem", themeSelect: "claude", sigLabel: "stars", xLabel: "Group", yLabel: "Value", plotW: "", plotH: "", dotSize: "6", fontSize: "13", barWidth: "0.6", pointStyle: "filled", frame: "box",
                          yScale: "linear", yMin: "", yMax: "", refY: "", bandLo: "", bandHi: "",
-                         errDir: "both", sigMarks: "letters", sigShow: "auto", sigPick: "", journal: "", fillStyle: "colour" };
+                         errDir: "both", sigMarks: "letters", sigShow: "auto", sigPick: "", journal: "", fillStyle: "colour", figFmt: "" };
 
 let grid = [];          // array of groups: {name, cells:[string,...]}
 let titles = [];        // row titles (text, left of the data; the row factor / outcome names)
@@ -3071,6 +3087,17 @@ const ZH = {
   "Fill": "填充", "Colour": "彩色", "Pattern": "图案", "Grey": "灰度",
   "Open a saved .jgz session, an Excel .xlsx file (each worksheet becomes a tab) or a .csv / .txt table": "打开 .jgz 会话、Excel .xlsx 文件（每个工作表成为一个标签）或 .csv / .txt 表格",
   "Fold or unfold the result tables (the conclusion stays)": "折叠或展开结果表格（结论保留）", "Click to fold or unfold this table": "点击折叠或展开此表格", "Click to fold or unfold": "点击折叠或展开",
+  "Click text or a bar to edit and format it; right-click for analyses and copying.": "点击文字或柱子可编辑和设置格式；右键可做分析和复制。",
+  "For finer editing, copy as SVG and paste into": "更精细的编辑：复制为 SVG 后粘贴到", "svguest: an in-browser SVG editor": "svguest：浏览器里的 SVG 编辑器",
+  "Bold": "加粗", "Italic": "斜体", "Any colour": "任意颜色", "Back to the default look": "恢复默认样式", "Format": "格式",
+  "Copy the figure": "复制图", "As PNG": "复制为 PNG", "As SVG": "复制为 SVG", "slides, Word, chat": "幻灯片、Word、聊天", "svguest, Illustrator, Figma": "svguest、Illustrator、Figma",
+  "✓ SVG copied": "✓ 已复制 SVG", "✓ PNG copied": "✓ 已复制 PNG",
+  "Copy the figure: PNG for PowerPoint, Word or a chat; SVG for svguest, Illustrator or Figma": "复制图：PNG 用于 PowerPoint、Word 或聊天；SVG 用于 svguest、Illustrator 或 Figma",
+  "Compare in a new tab: unpaired t-test": "在新标签页比较：非配对 t 检验", "Compare in a new tab: Mann–Whitney": "在新标签页比较：Mann–Whitney",
+  "Compare in a new tab: paired t-test": "在新标签页比较：配对 t 检验", "Compare in a new tab: one-way ANOVA": "在新标签页比较：单因素方差分析",
+  "Compare in a new tab: Kruskal–Wallis": "在新标签页比较：Kruskal–Wallis", "Show only these bars": "只显示这些柱子", "Show only this bar": "只显示这根柱子",
+  "Hide these bars": "隐藏这些柱子", "Hide this bar": "隐藏这根柱子", "Copy figure as SVG (svguest, Illustrator)": "复制为 SVG（svguest、Illustrator）",
+  "Copy figure as PNG (slides, Word)": "复制为 PNG（幻灯片、Word）", "Clear selection": "取消选择", "Click a bar to select it; Shift-click for more": "点击柱子选中；Shift 点击可多选",
   "Switch the interface to Chinese": "界面切换为中文", "Switch the interface to English": "Switch the interface to English",
 };
 const ZH_PATTERNS = [
@@ -3104,6 +3131,7 @@ const ZH_PATTERNS = [
   [/^✓ (\d+) panels$/, "✓ $1 个子图"], [/^✓ (\d+) sheets$/, "✓ $1 个表格"],
   [/^(.+) — double-click to rename, right-click for more$/, "$1 — 双击重命名，右键更多操作"],
   [/^Close (.+)$/, "关闭 $1"],
+  [/^(\d+) bars?: (.+)$/, "$1 根柱子：$2"],
   [/^Are the survival curves different\?$/, "生存曲线是否不同？"],
   [/^Hazard ratio \((.+), log-rank\)$/, "风险比（$1，log-rank）"],
   [/^Transform: (.+)$/, (m, v) => "数据变换：" + v.replace("% of 1st", "第一列 %").replace("avg", "取平均")],
@@ -4225,6 +4253,8 @@ function baseLayout(theme, xTitle, yTitle) {
     return { text: ph, font: Object.assign({}, axisFont, { size: 12, color: "#c2c0b6" }) };
   };
   xTitle = titleOf(xTitle, "xLabel", "X axis title"); yTitle = titleOf(yTitle, "yLabel", "Y axis title");
+  if (!placeholderAxes.has("xLabel")) xTitle.font = fontFmt(xTitle.font, "xtitle");
+  if (!placeholderAxes.has("yLabel")) yTitle.font = fontFmt(yTitle.font, "ytitle");
   const axis = (title) => ({ title, automargin: true, zeroline: false, showline: true, mirror: $("frame").value !== "open",
                              linecolor: theme.line, linewidth: 1.5, showgrid: false,
                              ticks: "outside", ticklen: 5, tickwidth: 1.5, tickcolor: theme.line });   // ticks on the axes, no gridlines
@@ -4237,6 +4267,35 @@ function baseLayout(theme, xTitle, yTitle) {
   };
 }
 const barW = () => parseFloat($("barWidth").value) || 0.6;
+/* Formatting set by clicking the figure (per sheet, in undo, saves and share links):
+   bar colours by series name, and per text element bold / italic / colour / size change.
+   Keys: "xtitle", "ytitle", "xt:<tick label>", "lg:<legend entry>", "yticks", "sig". */
+const figFmt = () => { try { const f = JSON.parse($("figFmt").value || "{}"); return f && typeof f === "object" ? f : {}; } catch (_) { return {}; } };
+function setFigFmt(fn) {
+  const f = figFmt(); f.bar = f.bar || {}; f.text = f.text || {};
+  fn(f);
+  Object.keys(f.text).forEach(k => { const t = f.text[k]; if (!t.b && !t.i && !t.c && !t.s) delete f.text[k]; });
+  $("figFmt").value = Object.keys(f.bar).length || Object.keys(f.text).length ? JSON.stringify(f) : "";
+  scheduleSave(); redraw();
+}
+const fmtOf = (key) => (figFmt().text || {})[key] || null;
+const seriesColor = (name, i, theme) => (figFmt().bar || {})[name] || theme.colors[i % theme.colors.length];
+/* wrap Plotly's pseudo-HTML label in the element's formatting */
+function styled(html, key) {
+  const f = fmtOf(key);
+  if (!f) return html;
+  let t = html;
+  if (f.b) t = `<b>${t}</b>`;
+  if (f.i) t = `<i>${t}</i>`;
+  const css = [f.c ? `color:${f.c}` : "", f.s ? `font-size:${Math.max(6, 13 + f.s)}px` : ""].filter(Boolean).join(";");
+  return css ? `<span style="${css}">${t}</span>` : t;
+}
+/* the same formatting as a Plotly font object (axis titles, y tick labels, significance marks) */
+function fontFmt(font, key) {
+  const f = fmtOf(key);
+  if (!f) return font;
+  return Object.assign({}, font, f.b ? { weight: "bold" } : {}, f.i ? { style: "italic" } : {}, f.c ? { color: f.c } : {}, f.s ? { size: Math.max(6, (font && font.size || 13) + f.s) } : {});
+}
 /* the picked comparisons, kept as a JSON list in a hidden input (an input cannot hold line breaks) */
 const pickedKeys = () => { try { const v = JSON.parse($("sigPick").value || "[]"); return Array.isArray(v) ? v.map(String) : []; } catch (_) { return []; } };
 /* which comparisons the figure marks: Auto (each mode's default), Significant, All, Vs first, or Pick */
@@ -4372,12 +4431,16 @@ function render(traces, layout) {
   setPlotBox();
   closeTitleEditor(false);
   applyStyle(traces, layout);
+  layout.annotations.forEach(a => { if (a.name === "sig") a.font = fontFmt(a.font, "sig"); });
+  if (fmtOf("yticks")) layout.yaxis.tickfont = fontFmt(layout.yaxis.tickfont || { size: layout.font.size }, "yticks");
+  drawSelection(layout);
   if (sigOff()) {   // statistics hidden on the figure: drop every mark tagged "sig"
     layout.annotations = layout.annotations.filter(a => a.name !== "sig");
     layout.shapes = layout.shapes.filter(a => a.name !== "sig");
   }
   $("plotHint").hidden = false;
   renderDone = Plotly.newPlot("plot", traces, layout, { responsive: true, displayModeBar: false });
+  renderDone.then(hookPlotEvents);
 }
 /* Axis titles are renamed in a small text box laid over the title. (Plotly's own in-place
    editor lost the text in some browsers, e.g. with an input method, and an emptied title
@@ -4424,15 +4487,23 @@ function columnOf(g) {
   if (g && Number.isInteger(g.gi) && grid[g.gi]) return g.gi;
   return grid.findIndex((c, i) => !c.off && (c.name.trim() || groupLabel(i)) === (g && g.name));
 }
-const renameColumn = (gi, v) => { if (gi >= 0) mutate(() => { grid[gi].name = v; }); };
-const renameLevel = (old, v) => mutate(() => { titles = titles.map(t => (t || "").trim() === old ? v : t); });
+/* a renamed label keeps its formatting (format keys follow the name), in the same undo step */
+function moveFmtKeys(from, to) {
+  const f = figFmt();
+  if (!f.bar && !f.text) return;
+  if (f.bar && f.bar[from] != null) { f.bar[to] = f.bar[from]; delete f.bar[from]; }
+  ["xt:", "lg:"].forEach(p => { if (f.text && f.text[p + from]) { f.text[p + to] = f.text[p + from]; delete f.text[p + from]; } });
+  $("figFmt").value = JSON.stringify(f);
+}
+const renameColumn = (gi, v) => { if (gi >= 0) { const old = grid[gi].name.trim() || groupLabel(gi); mutate(() => { grid[gi].name = v; moveFmtKeys(old, v); }); settingsSettled(); } };
+const renameLevel = (old, v) => { mutate(() => { titles = titles.map(t => (t || "").trim() === old ? v : t); moveFmtKeys(old, v); }); settingsSettled(); };
 /* everything on the current figure that can be edited, with what an edit does */
 function textTargets() {
   const out = [], spec = lastPlot;
   if (!spec) return out;
   Object.entries(AXIS_IDS).forEach(([cls, id]) => {
     const el = document.querySelector("#plot ." + cls);
-    if (el) out.push({ el, value: placeholderAxes.has(id) ? "" : (el.textContent || "").trim(),
+    if (el) out.push({ el, fkey: cls === "xtitle" ? "xtitle" : "ytitle", value: placeholderAxes.has(id) ? "" : (el.textContent || "").trim(),
                        placeholder: id === "xLabel" ? "X axis title" : "Y axis title",
                        commit: (v) => { $(id).value = v; scheduleSave(); redraw(); } });
   });
@@ -4440,17 +4511,22 @@ function textTargets() {
   const legend = [...document.querySelectorAll("#plot .legendtext")];
   const col = (name) => grid.findIndex((c, i) => !c.off && (c.name.trim() || groupLabel(i)) === name);
   if (spec.groups && spec.mode !== "xy") {
-    ticks.forEach((el, i) => { const g = spec.groups[i]; if (g) out.push({ el, value: g.name, placeholder: "Group name", allowEmpty: false, commit: (v) => renameColumn(columnOf(g), v) }); });
+    ticks.forEach((el, i) => { const g = spec.groups[i]; if (g) out.push({ el, fkey: "xt:" + g.name, value: g.name, placeholder: "Group name", allowEmpty: false, commit: (v) => renameColumn(columnOf(g), v) }); });
   } else if (spec.mode === "grouped") {
-    ticks.forEach((el, i) => { const l = spec.levels[i]; if (l != null) out.push({ el, value: l, placeholder: "Row title", allowEmpty: false, commit: (v) => renameLevel(l, v) }); });
+    ticks.forEach((el, i) => { const l = spec.levels[i]; if (l != null) out.push({ el, fkey: "xt:" + l, value: l, placeholder: "Row title", allowEmpty: false, commit: (v) => renameLevel(l, v) }); });
     const shown = spec.names.filter((_, j) => spec.levels.some((_, i) => spec.cells[i][j].length));
-    legend.forEach((el, k) => { const n = shown[k]; if (n != null) out.push({ el, value: n, placeholder: "Column name", allowEmpty: false, commit: (v) => renameColumn(col(n), v) }); });
+    legend.forEach((el, k) => { const n = shown[k]; if (n != null) out.push({ el, fkey: "lg:" + n, value: n, placeholder: "Column name", allowEmpty: false, commit: (v) => renameColumn(col(n), v) }); });
   } else if (spec.mode === "surv") {
-    legend.forEach((el, k) => { const n = spec.curves[k] && spec.curves[k].name; if (n != null) out.push({ el, value: n, placeholder: "Group name", allowEmpty: false, commit: (v) => renameColumn(col(n), v) }); });
+    legend.forEach((el, k) => { const n = spec.curves[k] && spec.curves[k].name; if (n != null) out.push({ el, fkey: "lg:" + n, value: n, placeholder: "Group name", allowEmpty: false, commit: (v) => renameColumn(col(n), v) }); });
   } else if (spec.mode === "counts") {
-    ticks.forEach((el, i) => { const n = spec.names[i]; if (n != null) out.push({ el, value: n, placeholder: "Column name", allowEmpty: false, commit: (v) => renameColumn(col(n), v) }); });
-    legend.forEach((el, k) => { const r = spec.rows && spec.rows[k]; if (r != null) out.push({ el, value: spec.rowNames[k], placeholder: "Row title", allowEmpty: false, commit: (v) => mutate(() => { titles[r] = v; }) }); });
+    ticks.forEach((el, i) => { const n = spec.names[i]; if (n != null) out.push({ el, fkey: "xt:" + n, value: n, placeholder: "Column name", allowEmpty: false, commit: (v) => renameColumn(col(n), v) }); });
+    legend.forEach((el, k) => { const r = spec.rows && spec.rows[k]; if (r != null) out.push({ el, fkey: "lg:" + spec.rowNames[k], value: spec.rowNames[k], placeholder: "Row title", allowEmpty: false, commit: (v) => mutate(() => { titles[r] = v; }) }); });
   }
+  // format only (no text to type): the y tick labels as a whole, and the significance marks
+  document.querySelectorAll("#plot .ytick text").forEach(el => out.push({ el, fkey: "yticks", formatOnly: true }));
+  const anns = document.querySelectorAll("#plot .annotation");
+  const layoutAnns = ($("plot").layout && $("plot").layout.annotations) || [];
+  anns.forEach((el, k) => { if (layoutAnns[k] && layoutAnns[k].name === "sig") out.push({ el, fkey: "sig", formatOnly: true }); });
   return out;
 }
 const hitText = (e) => textTargets().find(t => {
@@ -4458,12 +4534,220 @@ const hitText = (e) => textTargets().find(t => {
   return r.width && e.clientX >= r.left - pad && e.clientX <= r.right + pad && e.clientY >= r.top - pad && e.clientY <= r.bottom + pad;
 });
 // the figure's drag layer swallows mousedown, so focus would stay in the box: commit on any press outside it
-addEventListener("mousedown", e => { if (titleEd && e.target !== titleEd.input) closeTitleEditor(true); }, true);
+addEventListener("mousedown", e => {
+  if (e.target.closest && e.target.closest("#fmtBar")) return;   // formatting keeps the text box open
+  if (titleEd && e.target !== titleEd.input) closeTitleEditor(true);
+  if (!$("fmtBar").hidden && !(e.target.closest && e.target.closest("#plot, #fmtBar, .axis-ed"))) hideFmtBar();
+}, true);
 $("plot").addEventListener("click", e => {
   const t = hitText(e);
-  if (t) { e.stopPropagation(); openTextEditor(t.el, t); }
+  if (!t) return;
+  e.stopPropagation();
+  clearSelection(false);
+  if (!t.formatOnly) openTextEditor(t.el, t); else closeTitleEditor(true);
+  showFmtBar({ kind: "text", key: t.fkey, rect: t.el.getBoundingClientRect() });
 }, true);   // capture: a legend click would otherwise hide that series
 $("plot").addEventListener("mousemove", e => { $("plot").classList.toggle("on-title", !!hitText(e)); });
+
+/* ============================================================
+   CLICKING THE FIGURE: select bars, format bars and text, right-click for analyses
+   ============================================================ */
+let barPos = [];          // bars on the current figure: { x, half, key, label, series, level?, col? }
+let figSel = new Set();   // keys of the selected bars
+let lastPointAt = 0;
+function drawSelection(layout) {
+  if (!figSel.size || !layout.yaxis.range) return;
+  const [y0, y1] = layout.yaxis.range;
+  barPos.filter(b => figSel.has(b.key)).forEach(b => layout.shapes.push({ name: "selbox", type: "rect", x0: b.x - b.half - 0.06, x1: b.x + b.half + 0.06,
+    y0: y0 + (y1 - y0) * 0.005, y1: y0 + (y1 - y0) * 0.995, line: { color: "#1a73e8", width: 1.5, dash: "dot" }, fillcolor: "rgba(26,115,232,0.06)", layer: "below" }));
+}
+function clearSelection(draw = true) { if (figSel.size) { figSel.clear(); if (draw) redraw(); } }
+function barAt(x) {   // the bar nearest a data x (Plotly gives the clicked point's x)
+  let best = null, d = Infinity;
+  barPos.forEach(b => { const e = Math.abs(b.x - x); if (e < d && e <= b.half + 0.25) { d = e; best = b; } });
+  return best;
+}
+function hookPlotEvents(gd) {
+  gd.removeAllListeners && gd.removeAllListeners("plotly_click");
+  gd.on("plotly_click", ev => {
+    const pt = ev.points && ev.points[0];
+    if (!pt || typeof pt.x !== "number" || (ev.event && ev.event.button === 2)) return;   // a right-click keeps the selection for the menu
+    const b = barAt(pt.x);
+    if (!b) return;
+    lastPointAt = Date.now();
+    const add = ev.event && (ev.event.shiftKey || ev.event.metaKey || ev.event.ctrlKey);
+    closeTitleEditor(true);
+    if (add) { if (figSel.has(b.key)) figSel.delete(b.key); else figSel.add(b.key); }
+    else { figSel = new Set([b.key]); }
+    redraw();
+    renderDone.then(() => showFmtBar({ kind: "bar", key: b.series, rect: barRect(b) }));
+  });
+  gd.removeAllListeners && gd.removeAllListeners("plotly_hover");
+  gd.on("plotly_hover", ev => { const pt = ev.points && ev.points[0]; lastHover = pt && typeof pt.x === "number" ? { b: barAt(pt.x), at: Date.now() } : null; });
+}
+let lastHover = null;
+function barRect(b) {   // the bar's place on screen, for the format bar
+  const gd = $("plot"), xa = gd._fullLayout && gd._fullLayout.xaxis, r = gd.getBoundingClientRect();
+  if (!xa) return r;
+  const x = r.left + xa._offset + xa.l2p(b.x), top = r.top + gd._fullLayout.yaxis._offset;
+  return { left: x - 20, right: x + 20, top, bottom: top + 10, width: 40, height: 10 };
+}
+// a click on the figure that hits neither a bar nor text clears the selection
+$("plot").addEventListener("click", () => { setTimeout(() => { if (Date.now() - lastPointAt > 120) { if (figSel.size) clearSelection(); hideFmtBar(); } }, 30); });
+
+/* ---- format bar: bold / italic / colour / size for text, colour for bars ---- */
+const fmtBar = document.createElement("div");
+fmtBar.id = "fmtBar"; fmtBar.hidden = true; fmtBar.setAttribute("role", "toolbar"); fmtBar.setAttribute("aria-label", "Format");
+document.body.appendChild(fmtBar);
+let fmtFor = null;
+const FMT_COLOURS = ["#141413", "#595959", "#8c8c8c", "#ffffff", "#d62728", "#e64b35", "#ff7f0e", "#efc000", "#2ca02c", "#00a087", "#1f77b4", "#3c5488", "#9467bd", "#e377c2"];
+function showFmtBar(target) {
+  fmtFor = target;
+  const theme = THEMES[$("themeSelect").value] || THEMES.claude;
+  const sw = [...new Set([...(target.kind === "bar" ? theme.colors : []), ...FMT_COLOURS])].slice(0, 18);
+  const f = target.kind === "text" ? (fmtOf(target.key) || {}) : {};
+  const cur = target.kind === "bar" ? (figFmt().bar || {})[target.key] : f.c;
+  fmtBar.innerHTML = (target.kind === "text"
+      ? `<button type="button" data-f="b" class="${f.b ? "on" : ""}" title="Bold"><b>B</b></button><button type="button" data-f="i" class="${f.i ? "on" : ""}" title="Italic"><i>I</i></button>` +
+        `<button type="button" data-f="s-" title="Smaller">A−</button><button type="button" data-f="s+" title="Larger">A+</button><span class="sep"></span>`
+      : `<span class="lbl">${escapeHtml(target.key)}</span>`) +
+    sw.map(c => `<button type="button" class="sw${cur && cur.toLowerCase() === c.toLowerCase() ? " on" : ""}" data-c="${c}" title="${c}" style="--c:${c}"></button>`).join("") +
+    `<label class="sw more" title="Any colour"><input type="color" data-pick value="${cur || "#1a73e8"}"></label><span class="sep"></span>` +
+    `<button type="button" data-f="reset" title="Back to the default look">Reset</button>`;
+  fmtBar.hidden = false;
+  const r = target.rect, w = fmtBar.offsetWidth, h = fmtBar.offsetHeight;
+  let top = r.top - h - 8; if (top < 8) top = r.bottom + 8;
+  fmtBar.style.top = top + "px";
+  fmtBar.style.left = Math.max(8, Math.min(r.left + r.width / 2 - w / 2, innerWidth - w - 8)) + "px";
+}
+function hideFmtBar() { fmtBar.hidden = true; fmtFor = null; }
+function applyFmt(change) {
+  const t = fmtFor;
+  if (!t) return;
+  const typing = titleEd ? { value: titleEd.input.value, start: titleEd.start } : null;
+  setFigFmt(f => {
+    if (t.kind === "bar") { if (change.reset) delete f.bar[t.key]; else if (change.c) f.bar[t.key] = change.c; return; }
+    const x = f.text[t.key] = Object.assign({}, f.text[t.key]);
+    if (change.reset) { delete f.text[t.key]; return; }
+    if (change.b) x.b = !x.b;
+    if (change.i) x.i = !x.i;
+    if (change.c) x.c = change.c;
+    if (change.s) x.s = Math.max(-6, Math.min(20, (x.s || 0) + change.s));
+  });
+  // keep the bar open on the same element after the redraw
+  renderDone.then(() => {
+    if (!fmtFor) return;
+    if (t.kind === "bar") { const b = barPos.find(b => b.series === t.key); if (b) showFmtBar({ kind: "bar", key: t.key, rect: barRect(b) }); }
+    else {
+      const tg = textTargets().find(x => x.fkey === t.key);
+      if (tg && typing && !tg.formatOnly) { openTextEditor(tg.el, Object.assign({}, tg, { value: typing.value })); titleEd.start = typing.start; }
+      showFmtBar(Object.assign({}, t, tg ? { rect: tg.el.getBoundingClientRect() } : {}));
+    }
+  });
+}
+fmtBar.addEventListener("mousedown", e => { if (!e.target.closest("input")) e.preventDefault(); });   // keep the text box focused
+fmtBar.addEventListener("click", e => {
+  const b = e.target.closest("button");
+  if (!b) return;
+  if (b.dataset.c) applyFmt({ c: b.dataset.c });
+  else if (b.dataset.f === "b") applyFmt({ b: true });
+  else if (b.dataset.f === "i") applyFmt({ i: true });
+  else if (b.dataset.f === "s-") applyFmt({ s: -1 });
+  else if (b.dataset.f === "s+") applyFmt({ s: 1 });
+  else if (b.dataset.f === "reset") applyFmt({ reset: true });
+});
+fmtBar.addEventListener("change", e => { if (e.target.matches("input[data-pick]")) applyFmt({ c: e.target.value }); });
+
+/* ---- right-click on the figure: analyses for the selected bars, and copying ---- */
+$("plot").addEventListener("contextmenu", e => {
+  if (!lastPlot) return;
+  e.preventDefault();
+  closeTitleEditor(true); hideFmtBar();
+  // right-clicking a bar outside the selection selects just that bar
+  const hb = lastHover && Date.now() - lastHover.at < 4000 ? lastHover.b : null;
+  if (hb && !figSel.has(hb.key)) { figSel = new Set([hb.key]); redraw(); }
+  const sel = barPos.filter(b => figSel.has(b.key)), n = sel.length;
+  const items = [];
+  if (n) {
+    items.push(["", `${n} bar${n > 1 ? "s" : ""}: ${sel.map(b => b.label).join(", ")}`, true]);
+    if (n === 2) {
+      items.push(["t:ttest", "Compare in a new tab: unpaired t-test"], ["t:mwu", "Compare in a new tab: Mann–Whitney"]);
+      if (lastPlot.groups) items.push(["t:paired", "Compare in a new tab: paired t-test"]);
+    }
+    if (n >= 3) items.push(["t:anova", "Compare in a new tab: one-way ANOVA"], ["t:kruskal", "Compare in a new tab: Kruskal–Wallis"]);
+    if (lastPlot.groups) items.push("-", ["only", n > 1 ? "Show only these bars" : "Show only this bar"], ["hide", n > 1 ? "Hide these bars" : "Hide this bar"]);
+    items.push("-");
+  }
+  items.push(["copySvg", "Copy figure as SVG (svguest, Illustrator)"], ["copyPng", "Copy figure as PNG (slides, Word)"]);
+  if (n) items.push(["clear", "Clear selection"]);
+  else items.push(["", "Click a bar to select it; Shift-click for more", true]);
+  ctxMenu.innerHTML = items.map(it => it === "-" ? "<hr>" : `<button type="button" data-fig="${it[0]}"${it[2] ? " disabled" : ""}><span>${escapeHtml(it[1])}</span></button>`).join("");
+  ctxMenu.hidden = false;
+  ctxMenu.style.left = Math.min(e.clientX, innerWidth - ctxMenu.offsetWidth - 6) + "px";
+  ctxMenu.style.top = Math.min(e.clientY, innerHeight - ctxMenu.offsetHeight - 6) + "px";
+});
+ctxMenu.addEventListener("click", e => {
+  const b = e.target.closest("button[data-fig]");
+  if (!b) return;
+  closeMenu();
+  const act = b.dataset.fig, sel = barPos.filter(x => figSel.has(x.key));
+  if (act.startsWith("t:")) compareInNewTab(sel, act.slice(2));
+  else if (act === "only" || act === "hide") {
+    const names = new Set(sel.map(x => x.series));
+    mutate(() => grid.forEach((c, i) => {
+      const nm = c.name.trim() || groupLabel(i), hit = names.has(nm);
+      if ((act === "only" && !hit) || (act === "hide" && hit)) c.off = true;
+    }));
+    figSel.clear();
+  }
+  else if (act === "copySvg") copyFigure("svg");
+  else if (act === "copyPng") copyFigure("png");
+  else if (act === "clear") clearSelection();
+});
+/* the selected bars' raw data (from the sheet, before any transform) in a new tab with the chosen test */
+function compareInNewTab(sel, test) {
+  const cols = [];
+  sel.forEach(b => {
+    if (b.level != null) {   // a cell of a grouped figure: rows with that row title, in that column
+      const gi = grid.findIndex((c, i) => (c.name.trim() || groupLabel(i)) === b.col);
+      if (gi < 0) return;
+      cols.push({ name: b.label, cells: grid[gi].cells.filter((v, r) => (titles[r] || "").trim() === b.level && String(v).trim() && !(grid[gi].xr || []).includes(r)) });
+    } else {
+      const gi = grid.findIndex((c, i) => !c.off && (c.name.trim() || groupLabel(i)) === b.series);
+      if (gi < 0) return;
+      cols.push({ name: grid[gi].name, cells: grid[gi].cells.map((v, r) => (grid[gi].xr || []).includes(r) ? "" : v) });
+    }
+  });
+  if (cols.length < 2) return;
+  const n = Math.max(...cols.map(c => c.cells.length));
+  cols.forEach(c => { while (c.cells.length < n) c.cells.push(""); });
+  const keepTitles = sel.every(b => b.level == null) && test === "paired";
+  const settings = Object.assign(collectSettings(), { testSelect: test, posthocSelect: "tukey", sigPick: "", figFmt: $("figFmt").value });
+  figSel.clear();
+  addSheet({ name: sel.map(b => b.label).join(" vs ").slice(0, 40), grid: cols, titles: keepTitles ? titles.slice(0, n) : [], settings });
+}
+
+/* ---- copy the figure: PNG for slides / documents, SVG (as text, which svguest, Illustrator,
+   Figma and Inkscape paste) for vector editing ---- */
+async function copyFigure(kind, btn = $("copyFig")) {
+  const f = currentFigure();
+  if (!f) { flash(btn, "Run a test first"); return; }
+  try {
+    if (kind === "svg") {
+      let svg = await svgOf(f, f.w, f.h);
+      if (!/xmlns="http:\/\/www\.w3\.org\/2000\/svg"/.test(svg.slice(0, 300))) svg = svg.replace(/^<svg/, '<svg xmlns="http://www.w3.org/2000/svg"');
+      const items = { "text/plain": new Blob([svg], { type: "text/plain" }), "text/html": new Blob([svg], { type: "text/html" }) };
+      try { await navigator.clipboard.write([new ClipboardItem(Object.assign({ "image/svg+xml": new Blob([svg], { type: "image/svg+xml" }) }, items))]); }
+      catch (_) { try { await navigator.clipboard.write([new ClipboardItem(items)]); } catch (__) { await navigator.clipboard.writeText(svg); } }
+      flash(btn, "✓ SVG copied");
+    } else {
+      if (!navigator.clipboard || typeof ClipboardItem === "undefined") throw new Error("no clipboard");
+      const png = panelPng(panelLayout([f], 1), false, Math.round(f.w / 96 * 300), 300);
+      await navigator.clipboard.write([new ClipboardItem({ "image/png": png })]);   // a promise keeps Safari's user gesture
+      flash(btn, "✓ PNG copied");
+    }
+  } catch (_) { flash(btn, "Copy blocked"); }
+}
 
 function drawPlot(spec) {
   lastPlot = spec;
@@ -4482,14 +4766,15 @@ function drawPlot(spec) {
   const descs = groups.map(g => S.describe(g.values));
   const xIdx = groups.map((_, i) => i);
   const names = groups.map(g => g.name);
-  const color = (i) => theme.colors[i % theme.colors.length];
+  const color = (i) => seriesColor(names[i], i, theme);
   // error-bar half-width; NaN (e.g. n = 1) → no bar, never poisons the axis range
   const errOf = (d) => {
     const e = errType === "sd" ? d.sd : errType === "ci" ? d.ciHi - d.mean : d.sem;
     return Number.isFinite(e) ? e : 0;
   };
   const layout = baseLayout(theme, $("xLabel").value, axisTitle("yLabel", yDefault()));
-  Object.assign(layout.xaxis, { tickvals: xIdx, ticktext: names.map(escapeHtml), range: [-0.7, groups.length - 0.3], showgrid: false });
+  Object.assign(layout.xaxis, { tickvals: xIdx, ticktext: names.map(n => styled(escapeHtml(n), "xt:" + n)), range: [-0.7, groups.length - 0.3], showgrid: false });
+  barPos = groups.map((g, i) => ({ x: i, half: chart === "bar" ? barW() / 2 : 0.3, key: g.name, label: g.name, series: g.name }));
   const traces = [];
 
   // top / bottom of each group's drawn elements (bar or mean ± error, whiskers, raw points)
@@ -4581,12 +4866,14 @@ function drawGrouped(spec, theme) {
   const present = levels.map((_, i) => names.map((_, j) => j).filter(j => has(i, j)));
   const b = Math.max(...present.map(p => p.length)), w = 0.8 / b;
   const xOf = (i, j) => { const p = present[i], k = p.indexOf(j); return i + (k - (p.length - 1) / 2) * w; };
-  const color = (j) => theme.colors[j % theme.colors.length];
+  const color = (j) => seriesColor(names[j], j, theme);
   const cells = spec.cells;
   const desc = cells.map(r => r.map(c => c.length ? S.describe(c) : null));
   const errOf = (d) => { const e = errType === "sd" ? d.sd : errType === "ci" ? d.ciHi - d.mean : d.sem; return Number.isFinite(e) ? e : 0; };
   const layout = baseLayout(theme, axisTitle("xLabel", ""), axisTitle("yLabel", yDefault()));
-  Object.assign(layout.xaxis, { tickvals: levels.map((_, i) => i), ticktext: levels.map(escapeHtml), range: [-0.6, levels.length - 0.4], showgrid: false });
+  Object.assign(layout.xaxis, { tickvals: levels.map((_, i) => i), ticktext: levels.map(l => styled(escapeHtml(l), "xt:" + l)), range: [-0.6, levels.length - 0.4], showgrid: false });
+  barPos = [];
+  levels.forEach((l, i) => present[i].forEach(j => barPos.push({ x: xOf(i, j), half: w * 0.45, key: `${l} · ${names[j]}`, label: `${l} · ${names[j]}`, series: names[j], level: l, col: names[j] })));
   bottomLegend(layout, names.filter((_, j) => keep[j]));
   const traces = [];
   names.forEach((n, j) => {
@@ -4594,12 +4881,12 @@ function drawGrouped(spec, theme) {
     const rows = levels.map((_, i) => i).filter(i => has(i, j));
     const xs = rows.map(i => xOf(i, j)), means = rows.map(i => desc[i][j].mean);
     const err = { type: "data", array: rows.map(i => errOf(desc[i][j])), visible: true, color: shade(color(j)), thickness: 1.5, width: 4 };
-    if (chart === "bar") traces.push({ type: "bar", name: escapeHtml(n), legendgroup: n, x: xs, y: means, width: Math.min(0.98, barW() / 0.6 * 0.88) * w, error_y: err,
+    if (chart === "bar") traces.push({ type: "bar", name: styled(escapeHtml(n), "lg:" + n), legendgroup: n, x: xs, y: means, width: Math.min(0.98, barW() / 0.6 * 0.88) * w, error_y: err,
       marker: { color: color(j), line: { color: theme.markerLine, width: 1.3 } }, hovertemplate: escapeHtml(n) + "<br>mean %{y:.3f}<extra></extra>" });
-    else if (chart === "dot") traces.push({ type: "scatter", mode: "markers", name: escapeHtml(n), legendgroup: n, x: xs, y: means, error_y: Object.assign(err, { width: 6 }),
+    else if (chart === "dot") traces.push({ type: "scatter", mode: "markers", name: styled(escapeHtml(n), "lg:" + n), legendgroup: n, x: xs, y: means, error_y: Object.assign(err, { width: 6 }),
       marker: { symbol: "line-ew-open", size: 22, color: shade(color(j)), line: { color: shade(color(j)), width: 2 } }, showlegend: false, hoverinfo: "skip" });
     else rows.forEach((i, q) => traces.push(Object.assign({
-      y: cells[i][j], x: cells[i][j].map(() => xOf(i, j)), name: escapeHtml(n), legendgroup: n, showlegend: q === 0,
+      y: cells[i][j], x: cells[i][j].map(() => xOf(i, j)), name: styled(escapeHtml(n), "lg:" + n), legendgroup: n, showlegend: q === 0,
       fillcolor: color(j), line: { color: theme.markerLine, width: 1.3 }, hoverinfo: "y" },
       chart === "box" ? { type: "box", boxpoints: false, width: w * 0.8 }
                       : { type: "violin", points: false, width: w * 0.95, spanmode: "hard", opacity: 1, box: { visible: true, width: 0.15, fillcolor: "#ffffff" } })));
@@ -4655,6 +4942,7 @@ function drawGrouped(spec, theme) {
 /* XY: points, least-squares line and its 95% confidence band */
 /* dose–response: every replicate point on a log dose axis, with the fitted 4PL curve */
 function drawDose(spec, theme) {
+  barPos = [];
   const { dose, y, fit } = spec;
   const dotSize = Math.max(2, parseInt($("dotSize").value, 10) || 6);
   const layout = baseLayout(theme, axisTitle("xLabel", spec.xName), axisTitle("yLabel", spec.yName));
@@ -4675,13 +4963,14 @@ function drawDose(spec, theme) {
 }
 /* Kaplan–Meier: step curves in percent, a tick at each censored time, legend under the plot */
 function drawSurv(spec, theme) {
+  barPos = [];
   const layout = baseLayout(theme, axisTitle("xLabel", spec.xName || "Time"), axisTitle("yLabel", "Percent survival"));
   const traces = [];
   spec.curves.forEach((cv, j) => {
-    const col = theme.colors[j % theme.colors.length];
+    const col = seriesColor(cv.name, j, theme);
     const xs = cv.km.steps.map(s => s.t), ys = cv.km.steps.map(s => 100 * s.s);
     if (cv.tmax > xs[xs.length - 1]) { xs.push(cv.tmax); ys.push(ys[ys.length - 1]); }
-    traces.push({ type: "scatter", mode: "lines", name: escapeHtml(cv.name), legendgroup: cv.name, x: xs, y: ys, line: { shape: "hv", color: col, width: 2 },
+    traces.push({ type: "scatter", mode: "lines", name: styled(escapeHtml(cv.name), "lg:" + cv.name), legendgroup: cv.name, x: xs, y: ys, line: { shape: "hv", color: col, width: 2 },
                   hovertemplate: escapeHtml(cv.name) + "<br>t = %{x}<br>%{y:.1f}%<extra></extra>" });
     if (cv.km.censored.length) traces.push({ type: "scatter", mode: "markers", meta: "pts", legendgroup: cv.name, showlegend: false, x: cv.km.censored.map(c => c.t), y: cv.km.censored.map(c => 100 * c.s),
       marker: { symbol: "line-ns-open", size: 9, color: col, line: { color: col, width: 1.6 } }, hoverinfo: "skip" });
@@ -4694,6 +4983,7 @@ function drawSurv(spec, theme) {
   render(traces, layout);
 }
 function drawXY(spec, theme) {
+  barPos = [];
   const { x, y, fit } = spec;
   const dotSize = Math.max(2, parseInt($("dotSize").value, 10) || 6);
   const layout = baseLayout(theme, axisTitle("xLabel", spec.xName), axisTitle("yLabel", spec.yName));
@@ -4721,11 +5011,12 @@ function drawCounts(spec, theme) {
   const layout = baseLayout(theme, axisTitle("xLabel", ""), axisTitle("yLabel", "Percent of column"));
   layout.barmode = "stack";
   bottomLegend(layout, rowNames);
-  Object.assign(layout.xaxis, { tickvals: names.map((_, j) => j), ticktext: names.map(escapeHtml), showgrid: false });
+  Object.assign(layout.xaxis, { tickvals: names.map((_, j) => j), ticktext: names.map(n => styled(escapeHtml(n), "xt:" + n)), showgrid: false });
+  barPos = [];
   layout.yaxis.range = [0, 118];
   const traces = rowNames.map((rn, i) => ({
-    type: "bar", name: rn, x: names.map((_, j) => j), y: table[i].map((v, j) => 100 * v / totals[j]), width: 0.6,
-    marker: { color: theme.colors[i % theme.colors.length], line: { color: theme.markerLine, width: 1.2 } },
+    type: "bar", name: styled(rn, "lg:" + rn), x: names.map((_, j) => j), y: table[i].map((v, j) => 100 * v / totals[j]), width: 0.6,
+    marker: { color: seriesColor(rn, i, theme), line: { color: theme.markerLine, width: 1.2 } },
     customdata: table[i], hovertemplate: rn + ": %{customdata} (%{y:.1f}%)<extra></extra>",
   }));
   layout.annotations.push({ name: "sig", xref: "paper", x: 0.5, y: 103, yanchor: "bottom", showarrow: false, text: sigText(p), font: { size: 14, color: theme.font } });
@@ -4849,6 +5140,7 @@ function currentFigure() {
   const layout = JSON.parse(JSON.stringify(el.layout));
   if (placeholderAxes.has("xLabel")) layout.xaxis.title = { text: "" };
   if (placeholderAxes.has("yLabel")) layout.yaxis.title = { text: "" };
+  layout.shapes = (layout.shapes || []).filter(sh => sh.name !== "selbox");   // the selection outline is screen-only
   const { w, h } = plotSize();
   return { data: JSON.parse(JSON.stringify(el.data)), layout, w, h, name: sheets[curSheet].name };
 }
@@ -4942,16 +5234,27 @@ function saveBlob(blob, filename) {
   setTimeout(() => URL.revokeObjectURL(url), 1500);
 }
 /* copy the figure as a PNG (300 dpi at the on-screen size) to paste into slides or documents */
-$("copyFig").onclick = async () => {
-  const f = currentFigure();
-  if (!f) { flash($("copyFig"), "Run a test first"); return; }
-  try {
-    if (!navigator.clipboard || typeof ClipboardItem === "undefined") throw new Error("no clipboard");
-    const png = panelPng(panelLayout([f], 1), false, Math.round(f.w / 96 * 300), 300);
-    await navigator.clipboard.write([new ClipboardItem({ "image/png": png })]);   // a promise keeps Safari's user gesture
-    flash($("copyFig"), "✓ Copied");
-  } catch (_) { flash($("copyFig"), "Copy blocked"); }
+/* Copy in the ribbon: a small menu, PNG (slides, Word) or SVG (svguest, Illustrator, Figma) */
+const copyAnchor = { _btn: $("copyFig") };
+$("copyFig").onclick = () => {
+  if (menuFor === copyAnchor) { closeMenuPop(); return; }
+  closeMenuPop();
+  menuFor = copyAnchor;
+  menuPop.innerHTML = `<h4>Copy the figure</h4><button type="button" data-cp="png"><span>As PNG</span><small>slides, Word, chat</small></button><button type="button" data-cp="svg"><span>As SVG</span><small>svguest, Illustrator, Figma</small></button>`;
+  menuPop.hidden = false;
+  const r = $("copyFig").getBoundingClientRect();
+  menuPop.style.minWidth = "240px"; menuPop.style.maxHeight = "";
+  menuPop.style.top = r.bottom + 4 + "px";
+  menuPop.style.left = Math.max(6, Math.min(r.left, innerWidth - menuPop.offsetWidth - 6)) + "px";
+  $("copyFig").classList.add("open");
+  menuPop.querySelector("button").focus({ preventScroll: true });
 };
+menuPop.addEventListener("click", e => {
+  const b = e.target.closest("button[data-cp]");
+  if (!b || menuFor !== copyAnchor) return;
+  closeMenuPop();
+  copyFigure(b.dataset.cp);
+});
 
 /* ============================================================
    SESSION EXPORT / IMPORT  (.jgz = gzip-compressed JSON)
