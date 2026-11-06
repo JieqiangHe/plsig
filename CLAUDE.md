@@ -17,7 +17,7 @@ The project was called ministat until Nov 2026, when the repository was renamed.
 - Figure style (user's choice, Nov 2026): outside tick marks on both axes, one per value tick and one per sample; no gridlines inside the plot; data points take their group's colour, and error bars / mean lines take a darker tone of it. The default colour theme is `claude`: Anthropic's brand orange `#d97757`, blue `#6a9bcc`, green `#788c5d` and warm grey `#b0aea5`, then tones of the same family. The only other theme is Classic Prism (the user dropped Pastel and Vibrant, Nov 2026); a saved session that used one of those opens in Claude. To add a theme, add one entry (with a `name`) to `THEMES`: the Graph group's colour menu is built from it.
 - Layout:
   - top: a ribbon of labeled groups (Sheet, File, Analysis, Graph, Size & export, View);
-  - left: the data sheet, a full-bleed spreadsheet;
+  - left: sheet tabs (`#tabs`), then the data sheet, a full-bleed spreadsheet;
   - right: the figure, with the results below it.
 - No status bar (removed Nov 2026). Theme, Help and a GitHub link (the repository) are icon buttons in the ribbon's View group at the far right; the tips and the "runs locally" note live in the Help dialog.
 - Ribbon buttons are equal width and symmetric. Short options are segmented controls; the real `<select>` behind each stays hidden and holds the value.
@@ -37,7 +37,8 @@ The project was called ministat until Nov 2026, when the repository was renamed.
   - `grid`: an array of columns, each `{ name, cells }`;
   - `titles`: the row titles, which name the row-factor levels for two-way ANOVA and the outcomes of contingency tables.
 
-  Both are kept in undo, in localStorage and in `.jgz` files. A column with `off: true` is excluded from the analysis (right-click → Exclude / Include): it stays on the sheet, greyed and struck through, and `collectGroups` drops it.
+  Both are kept in undo, in localStorage and in `.jgz` files.
+- Sheet tabs (Nov 2026): `sheets` holds one entry per tab, `{ name, grid, titles, settings }`; the active one lives in the usual globals and the ribbon, and `showSheet` / `stashSheet` swap them (each tab keeps its own undo stacks). localStorage and `.jgz` v5 store `sheets` + `cur` next to the old top-level `grid` / `titles` / `settings`, so older files and older code still read. Open appends a file's sheets as new tabs (a blank current tab is replaced). A column with `off: true` is excluded from the analysis (right-click → Exclude / Include): it stays on the sheet, greyed and struck through, and `collectGroups` drops it.
 - The sheet behaves like Excel (user's request, Nov 2026): `sel` holds the active cell and the far corner of a range; a click selects a cell (typing replaces it), double-click or F2 edits inside it; drag / Shift selects blocks for copy, cut, paste, Delete and fill-down; right-click opens insert / delete for rows and columns; clicking the empty grid grows the sheet. The sheet owns ⌘/Ctrl+Z, because a cell input always holds focus. Results re-run by themselves after every edit (`scheduleRun`).
 - Under the sheet is a paste bar (user's request, Nov 2026), not a textarea: click it (or Paste in the ribbon) and press ⌘/Ctrl+V, and the clipboard replaces the sheet as one undo step. A visually hidden `#pasteCatch` textarea takes the focus so the paste event fires in every browser. `importClipboard` reads tab-separated text (Excel, Sheets, Word) first, then the first HTML `<table>` (web pages), then `parseDelimited`, which also splits space-separated text from PDFs. Dropping a .csv / .txt file on the bar works too.
 
