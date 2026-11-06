@@ -2274,6 +2274,9 @@ function seedBlankData() {
 }
 function addSheet(data, at = sheets.length) {
   stashSheet();
+  // a new blank tab keeps the current test and style, but not this figure's axis titles or fixed size
+  if (!data.settings) data = Object.assign({}, data, { settings: Object.assign(collectSettings(),
+    { xLabel: GRAPH_DEFAULTS.xLabel, yLabel: GRAPH_DEFAULTS.yLabel, plotW: "", plotH: "" }) });
   sheets.splice(at, 0, Object.assign({ name: nextSheetName() }, data));
   showSheet(at, { stash: false });
 }
