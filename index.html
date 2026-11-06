@@ -160,6 +160,8 @@ body { display: grid; grid-template-rows: auto minmax(0, 1fr); grid-template-col
 .rg-end { margin-left: auto; }
 .rg .tb-btn.icon { justify-content: center; padding: 0 6px; }
 .tb-btn svg.filled { fill: currentColor; stroke: none; }
+#langBtn { font-size: 12px; font-weight: 600; color: var(--fg-muted); }
+#langBtn:hover { color: var(--fg-strong); }
 a.tb-btn { text-decoration: none; }
 /* Analysis: test + Run on top, the test's option underneath; results also re-run by themselves on every edit */
 .rg-analysis { grid-template-columns: 242px 52px; }
@@ -323,7 +325,7 @@ th.hd-on .col-letter { color: var(--accent); font-weight: 600; box-shadow: inset
 #tourBox footer button { height: 24px; padding: 0 10px; border-radius: 6px; font-size: 12px; color: var(--fg-muted); background: var(--seg-bg); }
 #tourBox footer button:hover { color: var(--fg-strong); }
 #tourBox footer button.primary { background: var(--run-bg); color: var(--run-fg); font-weight: 600; }
-#helpDlg header #tourBtn { height: 26px; margin-right: 6px; }
+#helpDlg header #tourBtn { width: auto; height: 26px; margin-right: 6px; padding: 0 10px; border-radius: 6px; font-size: 12px; line-height: 1; color: var(--fg); background: var(--seg-bg); }
 #ctxMenu { position: fixed; z-index: 50; min-width: 210px; padding: 4px; border: 1px solid var(--card-border); border-radius: 8px; background: var(--surface); box-shadow: 0 8px 28px rgba(0,0,0,.18), 0 1px 3px rgba(0,0,0,.1); }
 #ctxMenu button { display: flex; align-items: center; width: 100%; height: 26px; padding: 0 8px; border-radius: 5px; font-size: 12px; color: var(--fg); text-align: left; }
 #ctxMenu button span { flex: 1; }
@@ -549,6 +551,7 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
       <div class="rg-body">
         <button id="themeBtn" class="tb-btn icon" title="Switch between light and dark interface" aria-label="Switch theme"></button>
         <button id="helpBtn" class="tb-btn icon" title="Help: data layout, shortcuts, export" aria-label="Help"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.6"/><path d="M12 17h.01"/></svg></button>
+        <button id="langBtn" class="tb-btn icon lang" aria-label="Language / 语言">中</button>
         <a id="ghLink" class="tb-btn icon" href="https://github.com/JieqiangHe/plsig" target="_blank" rel="noopener" title="Source code, issues and feedback on GitHub" aria-label="GitHub repository"><svg viewBox="0 0 16 16" class="filled"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></a>
       </div>
       <div class="rg-cap">View</div>
@@ -598,7 +601,7 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
 
   <dialog id="helpDlg"><form method="dialog">
     <header><h3>Tips</h3><button type="button" id="tourBtn" class="tb-btn">Take the tour</button><button type="submit" value="" aria-label="Close">×</button></header>
-    <dl>
+    <dl id="helpEn" data-noi18n>
       <dt>Layout</dt><dd>One column per group. Paired, repeated-measures and Friedman tests match values by row (one subject per row). Correlation uses column A as X and B as Y. Contingency tables hold counts: columns are groups, rows are outcomes (named by the row titles).</dd>
       <dt>Two-way</dt><dd>Columns are the levels of one factor (e.g. Control / Drug); the row title names the level of the other (e.g. Male / Female). Put each replicate on its own row and repeat the row title.</dd>
       <dt>Clusters</dt><dd>For bars in clusters with letters over each bar (e.g. Control, P1–P3 × M1–M3), choose <i>One-way ANOVA across grouped cells</i>. The row title names the cluster on the x axis and each column is a bar colour; every row-title × column cell is one group, and cells may stay empty (a Control row fills only its own column).</dd>
@@ -616,9 +619,31 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
       <dt>My style</dt><dd>Style → Save as my default keeps the chart type, error bars, colours, significance labels and style in this browser: Reset, new visits and Examples then use it. Forget it returns to the built-in defaults.</dd>
       <dt>Methods</dt><dd>Under the results, a ready-to-copy paragraph for a paper's methods section describes the test that ran, its post-hoc test, how the data are shown and the sample size.</dd>
       <dt>Export</dt><dd>Export opens the options: this figure or every sheet as one panel figure lettered A, B, C…, PNG or SVG, the on-screen size or a journal column width (8.5 / 11.4 / 17.4 cm), and 300 or 600 dpi (written into the PNG, so Word and Illustrator open it at that size). Copy puts the figure on the clipboard for PowerPoint, Word or a chat.</dd>
-      <dt>Theme</dt><dd>The sun / moon button in the ribbon's View group switches between light and dark.</dd>
+      <dt>Theme</dt><dd>The sun / moon button in the ribbon's View group switches between light and dark; 中 / EN switches the interface between Chinese and English (the figure itself stays in English, for papers).</dd>
       <dt>Privacy</dt><dd>Everything runs in this browser; your data is never uploaded.</dd>
       <dt>Source</dt><dd>Open source on <a href="https://github.com/JieqiangHe/plsig" target="_blank" rel="noopener">GitHub</a>: report a problem or suggest a feature under Issues.</dd>
+    </dl>
+    <dl id="helpZh" data-noi18n hidden>
+      <dt>数据布局</dt><dd>每组一列。配对、重复测量和 Friedman 检验按行匹配（每行一个受试对象）。相关分析以 A 列为 X、B 列为 Y。列联表填计数：列为组，行为结局（由行标题命名）。</dd>
+      <dt>双因素</dt><dd>各列是一个因素的水平（如 Control / Drug）；行标题是另一个因素的水平（如 Male / Female）。每个重复单独一行，并重复填写行标题。</dd>
+      <dt>分组柱图</dt><dd>要做分组柱状图并在每根柱上标字母（如 Control、P1–P3 × M1–M3），选择<i>分组单元格单因素方差分析</i>。行标题是 x 轴上的分组，每列是一种柱子颜色；每个行标题 × 列的单元格是一组，单元格可以留空（Control 行只填自己那一列）。</dd>
+      <dt>排除列</dt><dd>右键一列（或选中多列），选择<i>从分析中排除</i>：数据保留在表格里，但不参与检验和作图。同一菜单可以重新纳入。</dd>
+      <dt>表格标签</dt><dd>表格上方的每个标签都有自己的数据、检验、图形设置和撤销记录：一个标签一张图。<b>+</b>（或双击空白处）新建；双击标签重命名；右键可复制、移动或删除。保存会把所有标签写进一个 .jgz 文件，打开会把文件里的标签追加进来。</dd>
+      <dt>粘贴</dt><dd>在任意单元格粘贴 Excel 的数据块（<kbd>⌘/Ctrl</kbd> <kbd>V</kbd>），表格会自动扩展。要替换整张表，点表格下方的粘贴栏（或功能区的粘贴）再按 <kbd>⌘/Ctrl</kbd> <kbd>V</kbd>：Excel、Word、网页、PDF 和 CSV 文本都可以，有无表头均可。也可以把 .csv / .txt 文件拖到粘贴栏上。</dd>
+      <dt>选择</dt><dd>点一个单元格直接输入即可替换；双击或按 <kbd>F2</kbd> 在格内编辑。拖动，或 <kbd>Shift</kbd> + 点击 / 方向键选择区域；点行号或列字母选中整行整列；<kbd>⌘/Ctrl</kbd> <kbd>A</kbd> 全选。点击空白网格会在那里添加行和列。</dd>
+      <dt>移动</dt><dd>方向键、<kbd>Tab</kbd> 和 <kbd>Enter</kbd> 在单元格间移动（在最后一行按 <kbd>Enter</kbd> 会新增一行）；<kbd>⌘/Ctrl</kbd> + 方向键跳到边缘。</dd>
+      <dt>编辑</dt><dd>复制、剪切和粘贴都支持区域；复制一个值粘到一个区域会填满它。<kbd>Delete</kbd> 清空区域，<kbd>⌘/Ctrl</kbd> <kbd>D</kbd> 向下填充，<kbd>Esc</kbd> 取消修改。选中区域后输入一个值再按 <kbd>⌘/Ctrl</kbd> <kbd>Enter</kbd>，会填入每个单元格。右键可插入 / 删除行和列。拖动列名左侧的点状把手（或右键 → 左移 / 右移）调整列顺序，图跟着变。结果随输入自动更新。</dd>
+      <dt>撤销</dt><dd><kbd>⌘/Ctrl</kbd> <kbd>Z</kbd>；加 <kbd>Shift</kbd> 为重做。</dd>
+      <dt>会话</dt><dd>自动保存在本浏览器中；保存 / 打开（.jgz）可以在不同电脑间转移。</dd>
+      <dt>图上文字</dt><dd>点击图上的任意文字即可修改：坐标轴标题、x 轴下的组名或图例。修改组名和图例会同时改表格里的列名或行标题（<kbd>⌘/Ctrl</kbd> <kbd>Z</kbd> 可撤销）。<kbd>Enter</kbd> 确认，<kbd>Esc</kbd> 取消。清空的坐标轴标题在屏幕上留一个浅色占位，方便再次点击；导出时不会出现。*** / P = 旁边的<i>关</i>可隐藏图上的字母和星号。</dd>
+      <dt>Y 轴</dt><dd>样式 → Y 轴：线性或对数刻度、固定范围（留空为自动）、某个值处的虚线参考线，以及两个值之间的阴影带。</dd>
+      <dt>样式</dt><dd>功能区的样式可设置字号、点大小、柱宽、空心或隐藏数据点，以及完整方框或只留左边和底边坐标轴的边框。</dd>
+      <dt>我的样式</dt><dd>样式 → 存为我的默认，会在本浏览器保存图表类型、误差线、配色、显著性标记和样式：之后重置、新访问和示例都会使用它。"忘掉它"恢复内置默认。</dd>
+      <dt>方法</dt><dd>结果下方有一段可直接复制的论文方法部分文字，描述所做的检验、事后检验、数据表示方式和样本量。</dd>
+      <dt>导出</dt><dd>导出可选：当前图，或把所有表格拼成标好 A、B、C… 的组图；PNG 或 SVG；屏幕尺寸或期刊栏宽（8.5 / 11.4 / 17.4 cm）；300 或 600 dpi（写入 PNG，Word 和 Illustrator 打开即为该尺寸）。复制会把图放到剪贴板，可粘贴到 PowerPoint、Word 或聊天中。</dd>
+      <dt>主题与语言</dt><dd>功能区视图组里的太阳 / 月亮按钮切换浅色和深色；"中 / EN"按钮切换界面语言。图本身始终是英文排版，方便投稿。</dd>
+      <dt>隐私</dt><dd>所有计算都在本浏览器中完成，数据不会上传。</dd>
+      <dt>源代码</dt><dd>在 <a href="https://github.com/JieqiangHe/plsig" target="_blank" rel="noopener">GitHub</a> 上开源：可在 Issues 中反馈问题或建议功能。</dd>
     </dl>
   </form></dialog>
 
@@ -2295,7 +2320,7 @@ function moveColumn(from, to) {
    ============================================================ */
 let sheets = [{ name: "Sheet 1" }], curSheet = 0;
 const tabsEl = $("tabs");
-function nextSheetName(base = "Sheet") {
+function nextSheetName(base = uiLang() === "zh" ? "表格" : "Sheet") {
   const used = new Set(sheets.map(s => s.name));
   for (let i = 1; ; i++) if (!used.has(`${base} ${i}`)) return `${base} ${i}`;
 }
@@ -2573,8 +2598,9 @@ function openExample(ex) {
   stashSheet();
   const cur = sheets[curSheet], blank = !cur.grid.some(c => c.cells.some(v => String(v).trim()));
   const used = new Set(sheets.filter((_, i) => !(blank && i === curSheet)).map(x => x.name));
-  let name = ex.name;
-  for (let k = 2; used.has(name); k++) name = `${ex.name} ${k}`;
+  const base = uiText(ex.name);
+  let name = base;
+  for (let k = 2; used.has(name); k++) name = `${base} ${k}`;
   const data = { name, grid: g, titles: ex.titles ? ex.titles.slice() : [], settings };
   if (blank) { sheets[curSheet] = data; showSheet(curSheet, { stash: false }); }
   else { sheets.push(data); showSheet(sheets.length - 1, { stash: false }); }
@@ -2607,15 +2633,214 @@ menuPop.addEventListener("keydown", e => {
 });
 
 /* ============================================================
+   INTERFACE LANGUAGE: English / 中文
+   The page is written in English; in Chinese, every text node and tooltip whose English
+   matches ZH (exactly, or one of ZH_PATTERNS) is shown in Chinese. A MutationObserver
+   translates whatever the app renders later (menus, results, popovers), and each node keeps
+   its English so switching back is instant. The figure, the sheet's data and tab names are
+   never touched; the help and the tour have their own Chinese text; methodsText writes
+   Chinese itself. To translate a new string, add it to ZH.
+   ============================================================ */
+const ZH = {
+  // ribbon
+  "Sheet": "表格", "File": "文件", "Analysis": "分析", "Graph": "图形", "Size & export": "尺寸与导出", "View": "视图",
+  "Row": "行", "Col": "列", "Open": "打开", "Save": "保存", "Copy": "复制", "Paste": "粘贴", "Run": "运行",
+  "Welch's correction": "Welch 校正", "Post-hoc": "事后检验", "Dunn's adjustment": "Dunn 校正", "Style": "样式", "Reset": "重置", "Reset ✓": "已重置 ✓",
+  "Export": "导出", "Off": "关", "Auto": "自动", "Copy table": "复制表格", "Results": "结果", "Examples": "示例",
+  "Click any text on the figure to edit it": "点击图上的任意文字即可修改",
+  "Paste a table from Excel, Word, a web page or CSV: click here, then Ctrl+V": "从 Excel、Word、网页或 CSV 粘贴表格：点这里，再按 Ctrl+V",
+  "Paste a table from Excel, Word, a web page or CSV: click here, then ⌘V": "从 Excel、Word、网页或 CSV 粘贴表格：点这里，再按 ⌘V",
+  "Row title": "行标题", "Tips": "使用说明", "Take the tour": "新手引导", "Undo": "撤销", "Redo": "重做",
+  // menus: tests
+  "Descriptive statistics + normality": "描述统计 + 正态性", "One-sample t-test": "单样本 t 检验", "One-sample Wilcoxon test": "单样本 Wilcoxon 检验",
+  "Unpaired t-test": "非配对 t 检验", "Mann–Whitney U test": "Mann–Whitney U 检验", "Paired t-test": "配对 t 检验", "Wilcoxon signed-rank": "Wilcoxon 符号秩检验",
+  "One-way ANOVA + post-hoc": "单因素方差分析 + 事后检验", "Kruskal–Wallis + Dunn's": "Kruskal–Wallis + Dunn 检验", "Repeated-measures ANOVA": "重复测量方差分析",
+  "Friedman + Dunn's post-hoc": "Friedman + Dunn 事后检验", "Two-way ANOVA + post-hoc": "双因素方差分析 + 事后检验", "One-way ANOVA across grouped cells": "分组单元格单因素方差分析",
+  "Correlation + linear regression": "相关 + 线性回归", "Chi-square / Fisher's exact test": "卡方 / Fisher 精确检验",
+  "Column statistics": "列统计", "Two groups — independent": "两组 — 独立", "Two groups — paired (matched rows)": "两组 — 配对（同行匹配）",
+  "Three or more groups": "三组及以上", "Three or more — repeated measures (matched rows)": "三组及以上 — 重复测量（同行匹配）",
+  "Grouped — row titles × columns": "分组 — 行标题 × 列", "XY — column A = X, column B = Y": "XY — A 列为 X，B 列为 Y", "Contingency — counts (rows = outcomes)": "列联表 — 计数（行为结局）",
+  "mean, SD, normality": "均值、标准差、正态性", "parametric": "参数检验", "rank-based": "秩检验", "letters per bar": "每根柱标字母", "Pearson + Spearman": "Pearson + Spearman", "counts": "计数",
+  "Tukey's HSD": "Tukey HSD", "Holm pairwise t-tests": "Holm 两两 t 检验", "Bonferroni pairwise t-tests": "Bonferroni 两两 t 检验", "Dunnett": "Dunnett",
+  "all pairs": "所有两两比较", "each vs. first group": "各组与第一组比较", "Holm": "Holm", "Bonferroni": "Bonferroni",
+  "Statistical test": "统计检验", "Post-hoc test": "事后检验", "Dunn's test P-value adjustment": "Dunn 检验 P 值校正", "Colour theme": "配色主题",
+  // graph options
+  "Bar + error bars": "柱状图 + 误差线", "Scatter dot plot (mean ± error)": "散点图（均值 ± 误差）", "Box & whisker": "箱线图", "Violin (with box)": "小提琴图（含箱线）",
+  "Mean ± SD": "均值 ± SD", "Mean ± SEM": "均值 ± SEM", "Mean ± 95% CI": "均值 ± 95% CI", "Asterisks (*)": "星号 (*)", "p-value": "P 值", "Hide statistics on the figure": "图上不显示统计标记",
+  "Width (px)": "宽度 (px)", "Height (px)": "高度 (px)", "Dot size": "点大小", "Smaller": "减小", "Larger": "增大",
+  "Figure style": "图形样式", "Font": "字号", "Dots": "点大小", "Bars": "柱宽", "Points": "数据点", "Frame": "边框", "Narrow": "窄", "Normal": "常规", "Wide": "宽",
+  "Filled": "实心", "Hollow": "空心", "Hidden": "隐藏", "Box": "方框", "Axes": "仅坐标轴", "Y axis": "Y 轴", "Scale": "刻度", "Linear": "线性", "Log": "对数",
+  "Range": "范围", "Line": "参考线", "Band": "阴影带", "to": "至", "auto": "自动", "from": "从", "dashed reference": "虚线参考", "Clear axis settings": "清除坐标轴设置",
+  "My default": "我的默认", "Save as my default": "存为我的默认", "Forget it": "忘掉它", "✓ Saved": "✓ 已保存",
+  "Reset, new visits and Examples use your saved style.": "重置、新访问和示例都会使用你保存的样式。",
+  "Saves chart, error bars, colours, labels and this style for Reset, new visits and Examples.": "保存图表类型、误差线、配色、标记和当前样式，供重置、新访问和示例使用。",
+  "Content": "内容", "This figure": "当前图", "All sheets": "所有表格", "Format": "格式", "Width": "宽度", "As shown": "按屏幕尺寸", "Columns": "列数", "Download": "下载",
+  // sheet & menus
+  "Cut": "剪切", "Fill down": "向下填充", "Clear contents": "清除内容", "Rename": "重命名", "Duplicate": "复制表格", "New sheet": "新建表格",
+  "Move left": "左移", "Move right": "右移", "Delete": "删除", "Insert row above": "在上方插入行", "Insert row below": "在下方插入行",
+  "Insert column left": "在左侧插入列", "Insert column right": "在右侧插入列", "Delete row": "删除行", "Delete column": "删除列",
+  "Move column left": "列左移", "Move column right": "列右移", "Exclude column from the analysis": "从分析中排除该列", "Include column in the analysis": "将该列纳入分析",
+  "Examples — each opens in a new tab": "示例 — 每个在新标签页打开",
+  "Two groups": "两组比较", "Several groups": "多组比较", "Before / after": "前后对比", "Two factors": "双因素", "Clustered treatments": "分组处理", "Dose–response": "剂量–反应", "Counts": "计数数据",
+  "unpaired t-test": "非配对 t 检验", "one-way ANOVA, letters": "单因素方差分析，字母标记", "paired t-test, one subject per row": "配对 t 检验，每行一个受试对象",
+  "two-way ANOVA, row titles = sex": "双因素方差分析，行标题 = 性别", "letters per bar, Control + P × M": "每根柱标字母，Control + P × M",
+  "correlation + regression, A = X": "相关 + 回归，A 列为 X", "chi-square / Fisher, rows = outcomes": "卡方 / Fisher，行为结局",
+  "Skip": "跳过", "Back": "上一步", "Next": "下一步", "Done": "完成",
+  "Click to select the row; right-click to insert or delete rows": "点击选中整行；右键插入或删除行", "New sheet ": "新建表格",
+  // results
+  "Descriptive statistics": "描述统计", "Statistic": "统计量", "N": "N", "Mean": "均值", "Std. Deviation": "标准差", "Std. Error (SEM)": "标准误 (SEM)", "Median": "中位数",
+  "More…": "更多…", "Minimum": "最小值", "Maximum": "最大值", "Range": "范围", "25% percentile (Q1)": "25% 分位数 (Q1)", "75% percentile (Q3)": "75% 分位数 (Q3)", "IQR": "四分位距",
+  "95% CI of mean": "均值 95% CI", "Coefficient of variation": "变异系数", "Geometric mean": "几何均值", "Skewness": "偏度", "Kurtosis (excess)": "峰度（超额）", "Sum": "总和", "Variance": "方差",
+  "Shape & spread": "形状与离散", "Normality (Shapiro–Wilk)": "正态性 (Shapiro–Wilk)", "Passed": "通过", "Not normal": "非正态", "Passed (α = 0.05)?": "通过 (α = 0.05)？", "Yes": "是", "No": "否",
+  "Assumption checks": "前提检验", "Check": "检验项目", "Result": "结论", "Equal variances (Brown–Forsythe)": "方差齐性 (Brown–Forsythe)", "not tested": "未检验", "n < 3, not tested": "n < 3，未检验",
+  "Source": "来源", "Source of variation": "变异来源", "% of total": "占总变异 %", "Between groups": "组间", "Within groups": "组内", "Total": "总计", "Residual": "残差", "Interaction": "交互作用",
+  "Row factor (row titles)": "行因素（行标题）", "Column factor (columns)": "列因素（各列）", "Treatment (between columns)": "处理（列间）", "Individual (between rows)": "个体（行间）",
+  "One-way ANOVA": "单因素方差分析", "Two-way ANOVA": "双因素方差分析", "Effect size": "效应量", "η² (eta squared)": "η²（eta 平方）", "ω² (omega squared)": "ω²（omega 平方）", "ε² (epsilon squared)": "ε²（epsilon 平方）",
+  "Compact letter display": "字母标记法", "(groups sharing a letter are not significantly different)": "（字母相同的组间差异不显著）", "Group": "组", "Letters": "字母", "Mean rank": "平均秩",
+  "Comparison": "比较", "Mean diff.": "均值差", "Mean rank diff.": "平均秩差", "95% CI": "95% CI", "Adj. P": "校正 P", "Sig.": "显著性", "P value": "P 值", "P value (two-tailed)": "P 值（双侧）",
+  "Significance": "显著性", "Cell means": "单元格均值", "Column": "列", "Groups": "分组", "(each row-title × column cell is one group)": "（每个行标题 × 列的单元格为一组）",
+  "Welch's unpaired t-test": "Welch 非配对 t 检验", "Unpaired t-test ": "非配对 t 检验", "Paired t-test ": "配对 t 检验", "Mann–Whitney U / Wilcoxon rank-sum": "Mann–Whitney U / Wilcoxon 秩和检验",
+  "95% CI of difference": "差值 95% CI", "Std. error of difference": "差值标准误", "Effect size (Cohen's d)": "效应量 (Cohen's d)", "Cohen's d": "Cohen's d", "Hedges' g": "Hedges' g",
+  "SD of differences": "差值标准差", "Number of pairs": "对子数", "Number of pairs (non-zero)": "对子数（非零）", "Was the matching effective?": "配对是否有效？",
+  "Kruskal–Wallis test": "Kruskal–Wallis 检验", "H (tie-corrected)": "H（结校正）", "Friedman test": "Friedman 检验", "Friedman statistic (tie-corrected)": "Friedman 统计量（结校正）", "Kendall's W": "Kendall's W",
+  "Repeated-measures one-way ANOVA": "单因素重复测量方差分析", "Sphericity & effect size": "球形度与效应量", "Geisser–Greenhouse ε": "Geisser–Greenhouse ε", "P (assuming sphericity)": "P（假定球形）",
+  "(treatment P uses the Geisser–Greenhouse correction)": "（处理 P 值使用 Geisser–Greenhouse 校正）", "Number of rows (subjects)": "行数（受试对象）",
+  "Correlation": "相关", "Pearson r": "Pearson r", "Spearman ρ": "Spearman ρ", "Coefficient": "系数", "R²": "R²", "Number of XY pairs": "XY 数据对数",
+  "Simple linear regression": "简单线性回归", "Parameter": "参数", "Best-fit value": "最佳拟合值", "Std. error": "标准误", "Slope": "斜率", "Y-intercept": "Y 截距", "X-intercept": "X 截距",
+  "Goodness of fit & slope test": "拟合优度与斜率检验", "R squared": "R 平方", "F (slope ≠ 0)": "F（斜率 ≠ 0）",
+  "Observed counts": "观察计数", "Column percentages": "列百分比", "Chi-square": "卡方", "Chi-square P": "卡方 P", "Chi-square with Yates' correction": "Yates 校正卡方",
+  "Fisher's exact test, P (two-sided)": "Fisher 精确检验，P（双侧）", "Odds ratio": "比值比", "Relative risk": "相对危险度", "Cramér's V": "Cramér's V", "P value (χ² approx.)": "P 值（χ² 近似）",
+  "Hypothetical mean": "假设均值", "Hypothetical median": "假设中位数", "Actual mean": "实际均值", "Actual median": "实际中位数", "P value method": "P 值方法", "Exact": "精确法",
+  "Normal approx. (tie & continuity corrected)": "正态近似（结与连续性校正）", "U statistic": "U 统计量", "Matched-pairs rank-biserial r": "配对秩二列相关 r", "W+ (sum of positive ranks)": "W+（正秩和）",
+  "W− (sum of negative ranks)": "W−（负秩和）", "Sum of signed ranks (W+ − W−)": "符号秩和 (W+ − W−)", "Partial η²": "偏 η²", "Normality of residuals (Shapiro–Wilk)": "残差正态性 (Shapiro–Wilk)",
+  "Methods paragraph": "方法部分文字", "✓ Copied": "✓ 已复制", "Copy blocked": "复制被浏览器阻止", "Run a test first": "请先运行检验", "✓ Loaded": "✓ 已打开",
+  "(Type III sums of squares)": "（III 型平方和）", "(no replicates: additive model)": "（无重复：加性模型）", "(family = each row title)": "（每个行标题为一个比较族）",
+  "(adjusted across all comparisons)": "（在全部比较中校正）",
+  "Click to rename this axis": "点击修改坐标轴标题", "Switch between light and dark interface": "切换浅色 / 深色界面", "Help: data layout, shortcuts, export": "帮助：数据布局、快捷键、导出",
+  "Source code, issues and feedback on GitHub": "GitHub 上的源代码、问题与反馈", "Figure style: font, dots, bar width, points, frame": "图形样式：字号、点、柱宽、数据点、边框",
+  "Copy the figure as an image, to paste into PowerPoint, Word or a chat": "把图复制为图片，可粘贴到 PowerPoint、Word 或聊天中",
+  "Download the figure (or every sheet as one panel figure) as PNG or SVG, at a journal width and DPI": "以期刊宽度和 DPI 下载 PNG 或 SVG（也可把所有表格拼成组图）",
+  "Restore graph to default options, size & view": "恢复图形默认选项、尺寸与视图", "Example data sets laid out for each kind of test; each opens in a new tab": "按各类检验排好的示例数据；每个在新标签页打开",
+  "Copy all result tables as TSV": "把所有结果表格复制为 TSV", "New sheet": "新建表格", "Sheets": "表格",
+  "Switch the interface to Chinese": "界面切换为中文", "Switch the interface to English": "Switch the interface to English",
+};
+const ZH_PATTERNS = [
+  [/^Is there a significant difference among the (\d+) group means\?$/, "$1 组均值之间是否有显著差异？"],
+  [/^Is there a significant difference among the (\d+) groups\?$/, "$1 组之间是否有显著差异？"],
+  [/^Is there a significant difference among the (\d+) matched columns\?$/, "$1 个配对列之间是否有显著差异？"],
+  [/^Are the means significantly different\?$/, "两组均值差异是否显著？"],
+  [/^Are the distributions significantly different\?$/, "两组分布差异是否显著？"],
+  [/^Is the mean difference significantly different from zero\?$/, "均值差是否显著不为零？"],
+  [/^Is the median difference significantly different from zero\?$/, "中位数差是否显著不为零？"],
+  [/^Is (.+) significantly correlated with (.+)\?$/, "$1 与 $2 是否显著相关？"],
+  [/^Is the distribution of outcomes different between the columns\?$/, "各列的结局分布是否不同？"],
+  [/^(\d+) of (\d+) columns? differs? significantly from (.+?) \((.+), unadjusted\)\.$/, "$2 列中有 $1 列与 $3 差异显著（$4，未校正）。"],
+  [/^Column statistics for (\d+) columns?\.$/, "共 $1 列的列统计。"],
+  [/^Two-way ANOVA: interaction$/, "双因素方差分析：交互作用"],
+  [/^([=<>] [\d.]+); row factor$/, "$1；行因素"], [/^([=<>] [\d.]+); column factor$/, "$1；列因素"],
+  [/^Normality \(Shapiro–Wilk\): (.+)$/, "正态性 (Shapiro–Wilk)：$1"],
+  [/^Post-hoc comparisons — (.+)$/, "事后比较 — $1"],
+  [/^Multiple comparisons — columns within each row title, (.+)$/, "多重比较 — 各行标题内比较各列，$1"],
+  [/^Dunn's multiple comparisons — (\w+) adjusted$/, "Dunn 多重比较 — $1 校正"],
+  [/^Partial η² — (.+)$/, "偏 η² — $1"],
+  [/^Mean difference \((.+)\)$/, "均值差（$1）"], [/^Mean of differences \((.+)\)$/, "差值均值（$1）"], [/^Median of differences \((.+)\)$/, "差值中位数（$1）"],
+  [/^Insert (\d+) rows above$/, "在上方插入 $1 行"], [/^Insert (\d+) rows below$/, "在下方插入 $1 行"], [/^Delete (\d+) rows$/, "删除 $1 行"],
+  [/^Insert (\d+) columns left$/, "在左侧插入 $1 列"], [/^Insert (\d+) columns right$/, "在右侧插入 $1 列"], [/^Delete (\d+) columns$/, "删除 $1 列"],
+  [/^Move (\d+) columns left$/, "$1 列左移"], [/^Move (\d+) columns right$/, "$1 列右移"],
+  [/^Exclude (\d+) columns from the analysis$/, "从分析中排除 $1 列"], [/^Include (\d+) columns in the analysis$/, "将 $1 列纳入分析"],
+  [/^(\d+) · fits the figure$/, "$1 · 适配图形"],
+  [/^on-screen size, (\d+) dpi$/, "屏幕尺寸，$1 dpi"], [/^on-screen size, vector$/, "屏幕尺寸，矢量"],
+  [/^([\d.]+) cm wide, (\d+) dpi$/, "宽 $1 cm，$2 dpi"], [/^([\d.]+) cm wide, vector$/, "宽 $1 cm，矢量"],
+  [/^(\d+) sheets, (.+)$/, (m, n, rest) => `${n} 个表格，${zhOf(rest) || rest}`],
+  [/^✓ (\d+) panels$/, "✓ $1 个子图"], [/^✓ (\d+) sheets$/, "✓ $1 个表格"],
+  [/^(.+) — double-click to rename, right-click for more$/, "$1 — 双击重命名，右键更多操作"],
+  [/^Close (.+)$/, "关闭 $1"],
+];
+function zhOf(en) {
+  if (Object.prototype.hasOwnProperty.call(ZH, en)) return ZH[en];
+  for (const [re, to] of ZH_PATTERNS) if (re.test(en)) return en.replace(re, to);
+  return null;
+}
+function uiLang() { return document.documentElement.lang === "zh" ? "zh" : "en"; }
+function uiText(s) { return uiLang() === "zh" ? (zhOf(s) ?? s) : s; }
+const I18N_SKIP = "#plot, script, style, select, #tabs .nm, [data-noi18n], .axis-ed";   // a <select> keeps English: labels are built from its options
+const I18N_ATTRS = ["title", "aria-label", "placeholder"];
+function translateNode(n, zh) {
+  if (n.nodeType === 3) {
+    const p = n.parentElement;
+    if (!p || p.closest(I18N_SKIP)) return;
+    if (zh) {
+      const en = n.__en ?? n.nodeValue, key = en.trim();
+      if (!key) return;
+      // the app may have replaced the text since we translated it: start again from the new English
+      if (n.__en != null && n.nodeValue !== n.__zh) { n.__en = null; return translateNode(n, zh); }
+      const t = zhOf(key);
+      if (t == null) return;
+      n.__en = en; n.__zh = en.replace(key, t);
+      if (n.nodeValue !== n.__zh) n.nodeValue = n.__zh;
+    } else if (n.__en != null) {
+      if (n.nodeValue === n.__zh) n.nodeValue = n.__en;
+      n.__en = n.__zh = null;
+    }
+    return;
+  }
+  if (n.nodeType !== 1 || n.closest(I18N_SKIP)) return;
+  n.__enAttr = n.__enAttr || {};
+  I18N_ATTRS.forEach(a => {
+    if (!n.hasAttribute(a)) return;
+    if (zh) {
+      const cur = n.getAttribute(a), en = n.__enAttr[a] != null && cur === n.__enAttr[a + "_zh"] ? n.__enAttr[a] : cur;
+      const t = zhOf(en.trim());
+      if (t != null) { n.__enAttr[a] = en; n.__enAttr[a + "_zh"] = t; if (cur !== t) n.setAttribute(a, t); }
+    } else if (n.__enAttr[a] != null) {
+      if (n.getAttribute(a) === n.__enAttr[a + "_zh"]) n.setAttribute(a, n.__enAttr[a]);
+      delete n.__enAttr[a]; delete n.__enAttr[a + "_zh"];
+    }
+  });
+}
+function translateTree(root, zh) {
+  translateNode(root, zh);
+  const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT | NodeFilter.SHOW_ELEMENT);
+  let n; while ((n = w.nextNode())) translateNode(n, zh);
+}
+const i18nObserver = new MutationObserver(muts => {
+  if (uiLang() !== "zh") return;
+  muts.forEach(m => {
+    if (m.type === "characterData") translateNode(m.target, true);
+    else if (m.type === "attributes") translateNode(m.target, true);
+    else m.addedNodes.forEach(n => translateTree(n, true));
+  });
+});
+function setLang(lang, { save = true } = {}) {
+  const zh = lang === "zh";
+  document.documentElement.lang = zh ? "zh" : "en";
+  if (save) try { localStorage.setItem("plsig:lang", zh ? "zh" : "en"); } catch (_) { /* fine */ }
+  i18nObserver.disconnect();
+  translateTree(document.body, zh);
+  $("helpEn").hidden = zh; $("helpZh").hidden = !zh;
+  $("langBtn").textContent = zh ? "EN" : "中";
+  $("langBtn").title = zh ? "Switch the interface to English" : "界面切换为中文";
+  if (zh) i18nObserver.observe(document.body, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: I18N_ATTRS });
+  if (lastReport && lastReport.methods != null) run(true);   // the methods paragraph is written in the interface language
+  if (tourStep >= 0) showTour(tourStep);
+}
+$("langBtn").onclick = () => setLang(uiLang() === "zh" ? "en" : "zh");
+
+/* ============================================================
    FIRST-RUN TOUR: a few callouts over the real interface, shown once
    (replay from Help). A ring spotlights each part; Next / Back / Skip.
    ============================================================ */
 const TOUR = [
-  { el: () => $("sheetWrap"), title: "Your data", text: "Type or paste values here, one column per group. Click a cell and type; right-click for more. Each tab above is its own sheet and figure." },
-  { el: () => $("testSelect")._btn, title: "Pick a test", text: "Choose the analysis. Results and the figure update by themselves while you edit." },
-  { el: () => $("plot"), title: "The figure", text: "Click an axis title to rename it. Graph and Style in the ribbon change the chart, colours, error bars, fonts and frame." },
-  { el: () => $("exportBtnFig"), title: "Export", text: "Download at a journal width and DPI (PNG or SVG), lay every tab out as panels A, B, C…, or Copy to paste into slides." },
-  { el: () => $("loadDemoBtn"), title: "Examples", text: "Ready-made data sets show the layout each test expects. Paste a whole table from Excel, Word or a web page into the bar on the left." },
+  { el: () => $("sheetWrap"), title: "Your data", text: "Type or paste values here, one column per group. Click a cell and type; right-click for more. Each tab above is its own sheet and figure.",
+    zt: "你的数据", zx: "在这里输入或粘贴数值，每组一列。点单元格直接输入；右键有更多操作。上方每个标签是一张独立的表格和图。" },
+  { el: () => $("testSelect")._btn, title: "Pick a test", text: "Choose the analysis. Results and the figure update by themselves while you edit.",
+    zt: "选择检验", zx: "选择统计分析。编辑数据时结果和图会自动更新。" },
+  { el: () => $("plot"), title: "The figure", text: "Click any text on the figure to edit it. Graph and Style in the ribbon change the chart, colours, error bars, fonts, frame and y axis.",
+    zt: "图", zx: "点击图上的任意文字即可修改。功能区的图形和样式可以调整图表类型、配色、误差线、字号、边框和 Y 轴。" },
+  { el: () => $("exportBtnFig"), title: "Export", text: "Download at a journal width and DPI (PNG or SVG), lay every tab out as panels A, B, C…, or Copy to paste into slides.",
+    zt: "导出", zx: "按期刊栏宽和 DPI 下载（PNG 或 SVG），把所有标签拼成 A、B、C… 组图，或复制后直接粘贴到幻灯片。" },
+  { el: () => $("loadDemoBtn"), title: "Examples", text: "Ready-made data sets show the layout each test expects. Paste a whole table from Excel, Word or a web page into the bar on the left.",
+    zt: "示例", zx: "现成的示例数据展示了每种检验需要的布局。也可以把 Excel、Word 或网页里的整张表粘贴到左边的粘贴栏。" },
 ];
 let tourStep = -1;
 const tourBox = document.createElement("div"), tourRing = document.createElement("div");
@@ -2629,7 +2854,8 @@ function showTour(i) {
   el.scrollIntoView({ block: "nearest", inline: "nearest" });
   const r = el.getBoundingClientRect(), pad = 4;
   Object.assign(tourRing.style, { left: r.left - pad + "px", top: r.top - pad + "px", width: r.width + 2 * pad + "px", height: r.height + 2 * pad + "px" });
-  tourBox.innerHTML = `<b>${st.title}</b><p>${st.text}</p><footer><span>${i + 1} / ${TOUR.length}</span>
+  const zh = uiLang() === "zh";
+  tourBox.innerHTML = `<b>${zh ? st.zt : st.title}</b><p>${zh ? st.zx : st.text}</p><footer><span>${i + 1} / ${TOUR.length}</span>
     <button type="button" data-t="skip">Skip</button>${i ? '<button type="button" data-t="back">Back</button>' : ""}
     <button type="button" data-t="next" class="primary">${i === TOUR.length - 1 ? "Done" : "Next"}</button></footer>`;
   tourRing.hidden = tourBox.hidden = false;
@@ -2831,8 +3057,6 @@ function reportHtml(rep) {
   }).join(""), methods);
 }
 const methodsSlot = (body, methods) => body + methods;
-function uiLang() { return document.documentElement.lang === "zh" ? "zh" : "en"; }
-function uiText(s) { return s; }
 document.addEventListener("click", async e => {
   if (!e.target.closest("#copyMethods") || !lastReport || !lastReport.methods) return;
   try { await navigator.clipboard.writeText(lastReport.methods); flash(e.target.closest("#copyMethods"), uiText("✓ Copied")); }
@@ -4183,6 +4407,11 @@ $("pasteBtn").onclick = armPaste;
   renderTabs();
   updateHistoryButtons();
   syncSegs();
+  // interface language: the saved choice, else the browser's
+  let lang = null;
+  try { lang = localStorage.getItem("plsig:lang"); } catch (_) { /* none */ }
+  if (!lang) lang = /^zh/i.test(navigator.language || "") ? "zh" : "en";
+  if (lang === "zh") setLang("zh", { save: false });
 })();
 </script>
 </body>
