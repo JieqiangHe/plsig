@@ -186,6 +186,10 @@ a.tb-btn { text-decoration: none; }
 #menuPop .st-row .stepper, #menuPop .st-row .seg { flex: 1; margin: 0; }
 #menuPop .st-row .seg button { flex: 1; width: auto; height: 22px; padding: 0 8px; justify-content: center; gap: 0; }
 #menuPop .st-row .seg button.on { background: var(--seg-on); color: var(--fg-strong); }
+#menuPop .ex-note { margin: 6px 8px 4px; font-size: 11px; color: var(--fg-faint); }
+#menuPop .ex-go { justify-content: center; gap: 6px; margin-top: 2px; background: var(--run-bg); color: var(--run-fg); font-weight: 600; }
+#menuPop .ex-go:hover { filter: brightness(1.06); }
+#menuPop .ex-go svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 #menuPop .stepper { display: flex; align-items: center; gap: 4px; margin: 2px 0 4px; }
 #menuPop .stepper button { width: 30px; flex: none; justify-content: center; font-size: 15px; background: var(--btn-hover); }
 #menuPop .stepper output { flex: 1; text-align: center; font-size: 12.5px; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--fg-strong); }
@@ -282,7 +286,7 @@ th.hd-on .col-letter { color: var(--accent); font-weight: 600; box-shadow: inset
 #tabs { flex: none; display: flex; align-items: flex-end; gap: 2px; padding: 5px 8px 0; overflow-x: auto; scrollbar-width: none; background: var(--bg); border-bottom: 1px solid var(--card-border); }
 #tabs .tab { position: relative; display: inline-flex; align-items: center; gap: 4px; flex: none; max-width: 180px; height: 26px; padding: 0 8px 0 11px; border: 1px solid transparent; border-bottom: 0; border-radius: 6px 6px 0 0; background: var(--seg-bg); color: var(--fg-muted); font-size: 12px; cursor: pointer; user-select: none; }
 #tabs .tab:hover { color: var(--fg-strong); }
-#tabs .tab.on { background: var(--input-bg); color: var(--fg-strong); font-weight: 600; border-color: var(--card-border); margin-bottom: -1px; height: 27px; box-shadow: inset 0 2px 0 var(--accent); }
+#tabs .tab.on { background: var(--input-bg); color: var(--fg-strong); font-weight: 600; border-color: var(--card-border); margin-bottom: -1px; height: 27px; }
 #tabs .tab .nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 #tabs .tab .x { display: grid; place-items: center; width: 16px; height: 16px; border-radius: 4px; font-size: 13px; line-height: 1; color: var(--fg-faint); visibility: hidden; }
 #tabs .tab:hover .x, #tabs .tab.on .x { visibility: visible; }
@@ -499,8 +503,8 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
         <span class="flat"><button id="styleBtn" class="tb-btn menu-btn" aria-haspopup="dialog" title="Figure style: font, dots, bar width, points, frame"><svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg><span class="lbl">Style</span><svg class="chev" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4"/></svg></button></span>
         <input id="plotH" type="number" min="220" step="20" value="" placeholder="400" title="Height in px (blank = automatic, fitted to the figure)" class="num-field size-src" hidden />
         <span class="flat"><button id="resetGraph" class="tb-btn" title="Restore graph to default options, size &amp; view"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>Reset</button></span>
-        <span class="flat"><button id="dlPng" class="tb-btn" title="PNG at 5× the on-screen size (≈ 300 dpi for a 2–3 inch figure)"><svg viewBox="0 0 24 24"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14"/></svg>PNG</button></span>
-        <span class="flat"><button id="dlSvg" class="tb-btn" title="Download as vector SVG"><svg viewBox="0 0 24 24"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14"/></svg>SVG</button></span>
+        <span class="flat"><button id="exportBtnFig" class="tb-btn menu-btn" aria-haspopup="dialog" title="Download the figure (or every sheet as one panel figure) as PNG or SVG, at a journal width and DPI"><svg viewBox="0 0 24 24"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14"/></svg><span class="lbl">Export</span><svg class="chev" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4"/></svg></button></span>
+        <span class="flat"><button id="copyFig" class="tb-btn" title="Copy the figure as an image, to paste into PowerPoint, Word or a chat"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>Copy</button></span>
       </div>
       <div class="rg-cap">Size &amp; export</div>
     </div>
@@ -574,7 +578,7 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
       <dt>Session</dt><dd>Saved in this browser automatically; Save / Open (.jgz) moves a session between machines.</dd>
       <dt>Axes</dt><dd>Click an axis title on the figure to rename it; <kbd>Enter</kbd> keeps the change, <kbd>Esc</kbd> cancels. Clear the box to drop the title: a faint placeholder stays on screen so you can click it again, and exports leave it out. <i>Off</i> next to *** / P = hides the letters and stars on the figure. Reset in the ribbon restores the default titles.</dd>
       <dt>Style</dt><dd>Style in the ribbon sets the figure's font size, dot size, bar width, hollow or hidden points, and a box or open (left and bottom axes) frame.</dd>
-      <dt>Export</dt><dd>PNG at 5× the on-screen size (≈ 300 dpi for a 2–3 inch figure); SVG is vector.</dd>
+      <dt>Export</dt><dd>Export opens the options: this figure or every sheet as one panel figure lettered A, B, C…, PNG or SVG, the on-screen size or a journal column width (8.5 / 11.4 / 17.4 cm), and 300 or 600 dpi (written into the PNG, so Word and Illustrator open it at that size). Copy puts the figure on the clipboard for PowerPoint, Word or a chat.</dd>
       <dt>Theme</dt><dd>The sun / moon button in the ribbon's View group switches between light and dark.</dd>
       <dt>Privacy</dt><dd>Everything runs in this browser; your data is never uploaded.</dd>
       <dt>Source</dt><dd>Open source on <a href="https://github.com/JieqiangHe/plsig" target="_blank" rel="noopener">GitHub</a>: report a problem or suggest a feature under Issues.</dd>
@@ -3203,7 +3207,7 @@ function render(traces, layout) {
     layout.shapes = layout.shapes.filter(a => a.name !== "sig");
   }
   $("plotHint").hidden = false;
-  Plotly.newPlot("plot", traces, layout, { responsive: true, displayModeBar: false });
+  renderDone = Plotly.newPlot("plot", traces, layout, { responsive: true, displayModeBar: false });
 }
 /* Axis titles are renamed in a small text box laid over the title. (Plotly's own in-place
    editor lost the text in some browsers, e.g. with an input method, and an emptied title
@@ -3543,19 +3547,165 @@ $("resetGraph").onclick = () => {
   flash($("resetGraph"), "Reset ✓");
 };
 
-// Exports keep the on-screen aspect ratio; PNG is rendered at 5× for print resolution.
-function downloadPlot(format, btn) {
-  if (!lastPlot) { flash(btn, "Run a test first"); return; }
+/* ---- export: this figure or every sheet as one panel figure (A, B, C …), PNG or SVG,
+   at the on-screen size or a journal column width, PNG at 300 / 600 dpi (written into the file) ---- */
+const EXPORT_OPTS = {
+  what: { name: "Content", opts: [["one", "This figure"], ["all", "All sheets"]] },
+  fmt: { name: "Format", opts: [["png", "PNG"], ["svg", "SVG"]] },
+  width: { name: "Width", opts: [["auto", "As shown"], ["8.5", "8.5 cm"], ["11.4", "11.4 cm"], ["17.4", "17.4 cm"]] },
+  dpi: { name: "DPI", opts: [["300", "300"], ["600", "600"]] },
+  cols: { name: "Columns", opts: [["1", "1"], ["2", "2"], ["3", "3"], ["4", "4"]] },
+};
+let exportPrefs = { what: "one", fmt: "png", width: "auto", dpi: "300", cols: "2" };
+try { Object.assign(exportPrefs, JSON.parse(localStorage.getItem("plsig:export") || "{}")); } catch (_) { /* defaults */ }
+const exportAnchor = { _btn: $("exportBtnFig") };
+function exportHtml() {
+  const hide = (k) => (k === "dpi" && exportPrefs.fmt === "svg") || (k === "cols" && exportPrefs.what === "one");
+  return `<h4>Export</h4>` + Object.entries(EXPORT_OPTS).filter(([k]) => !hide(k)).map(([k, o]) =>
+    `<div class="st-row"><span>${o.name}</span><div class="seg">${o.opts.map(([v, t]) =>
+      `<button type="button" data-ek="${k}" data-ev="${v}"${exportPrefs[k] === v ? ' class="on"' : ""}>${t}</button>`).join("")}</div></div>`).join("") +
+    `<p class="ex-note">${exportNote()}</p><button type="button" class="ex-go" data-ego="1"><svg viewBox="0 0 24 24"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14"/></svg>Download</button>`;
+}
+function exportNote() {
+  const n = exportPrefs.what === "all" ? sheets.length : 1;
+  const wcm = exportPrefs.width === "auto" ? null : +exportPrefs.width;
+  const size = wcm ? `${wcm} cm wide` : "on-screen size";
+  return exportPrefs.fmt === "png" ? `${n > 1 ? n + " sheets, " : ""}${size}, ${exportPrefs.dpi} dpi` : `${n > 1 ? n + " sheets, " : ""}${size}, vector`;
+}
+function openExportPop() {
+  closeMenuPop();
+  menuFor = exportAnchor;
+  menuPop.innerHTML = exportHtml();
+  menuPop.hidden = false;
+  const r = $("exportBtnFig").getBoundingClientRect();
+  menuPop.style.minWidth = "300px"; menuPop.style.maxHeight = "";
+  menuPop.style.top = r.bottom + 4 + "px";
+  menuPop.style.left = Math.max(6, Math.min(r.left, innerWidth - menuPop.offsetWidth - 6)) + "px";
+  $("exportBtnFig").classList.add("open");
+  menuPop.querySelector(".ex-go").focus({ preventScroll: true });
+}
+$("exportBtnFig").onclick = () => (menuFor === exportAnchor ? closeMenuPop() : openExportPop());
+menuPop.addEventListener("click", e => {
+  if (menuFor !== exportAnchor) return;
+  const b = e.target.closest("button[data-ek], button[data-ego]");
+  if (!b) return;
+  if (b.dataset.ego) { closeMenuPop(); exportFigure().catch(err => alert("Export failed: " + err.message)); return; }
+  exportPrefs[b.dataset.ek] = b.dataset.ev;
+  try { localStorage.setItem("plsig:export", JSON.stringify(exportPrefs)); } catch (_) { /* fine */ }
+  menuPop.innerHTML = exportHtml();
+  menuPop.querySelector(`[data-ek="${b.dataset.ek}"][data-ev="${b.dataset.ev}"]`)?.focus({ preventScroll: true });
+});
+
+/* the current sheet's figure as plain data, without the screen-only placeholder titles */
+function currentFigure() {
   const el = $("plot");
-  const { w, h } = plotSize();
-  // placeholder titles are a screen-only hint: export without them
+  if (!lastPlot || !el.data) return null;
   const layout = JSON.parse(JSON.stringify(el.layout));
   if (placeholderAxes.has("xLabel")) layout.xaxis.title = { text: "" };
   if (placeholderAxes.has("yLabel")) layout.yaxis.title = { text: "" };
-  Plotly.downloadImage({ data: el.data, layout }, { format, width: w, height: h, scale: format === "png" ? 5 : 1, filename: "graph" });
+  const { w, h } = plotSize();
+  return { data: JSON.parse(JSON.stringify(el.data)), layout, w, h, name: sheets[curSheet].name };
 }
-$("dlPng").onclick = () => downloadPlot("png", $("dlPng"));
-$("dlSvg").onclick = () => downloadPlot("svg", $("dlSvg"));
+let renderDone = Promise.resolve();
+const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+/* every sheet's figure: shows each sheet in turn (its analysis re-runs), then returns to this one */
+async function allFigures() {
+  const back = curSheet, figs = [];
+  for (let i = 0; i < sheets.length; i++) {
+    if (i !== curSheet) { showSheet(i); await sleep(80); await renderDone; }
+    const f = currentFigure();
+    if (f) figs.push(f);
+  }
+  if (curSheet !== back) { showSheet(back); await sleep(80); await renderDone; }
+  return figs;
+}
+const svgOf = async (f, w, h) => decodeURIComponent((await Plotly.toImage({ data: f.data, layout: f.layout }, { format: "svg", width: f.w, height: f.h })).replace(/^data:image\/svg\+xml,/, ""))
+  .replace(/^<svg([^>]*?) width="[\d.]+" height="[\d.]+"/, `<svg$1 width="${w}" height="${h}"`);   // Plotly's own viewBox stays
+/* panel layout: figures in rows of `cols`, each at its own size (so every panel has the same
+   font size once the page is scaled), rows left-aligned; a bold letter goes at each top-left */
+function panelLayout(figs, cols) {
+  const cells = [];
+  let y = 0, W = 0;
+  for (let r = 0; r * cols < figs.length; r++) {
+    let x = 0;
+    const row = figs.slice(r * cols, r * cols + cols).map(f => { const c = { f, x, w: f.w, h: f.h }; x += f.w; return c; });
+    row.forEach(c => { c.y = y; cells.push(c); });
+    W = Math.max(W, x); y += Math.max(...row.map(c => c.h));
+  }
+  return { cells, W, H: y };
+}
+async function exportFigure() {
+  const btn = $("exportBtnFig"), P = exportPrefs;
+  const figs = P.what === "all" ? await allFigures() : [currentFigure()].filter(Boolean);
+  if (!figs.length) { flash(btn, "Run a test first"); return; }
+  const cols = P.what === "all" ? Math.min(+P.cols, figs.length) : 1;
+  const wcm = P.width === "auto" ? null : +P.width;
+  // layout units are CSS px (96 per inch); the chosen width in cm fixes the physical size
+  const L = panelLayout(figs, cols), W = L.W;
+  const multi = figs.length > 1, lab = (k) => String.fromCharCode(65 + k);
+  const physIn = wcm ? wcm / 2.54 : W / 96;
+  const name = multi ? "figures" : (figs[0].name || "graph").replace(/[\\/:*?"<>|]+/g, "_");
+  if (P.fmt === "svg") {
+    const parts = await Promise.all(L.cells.map(c => svgOf(c.f, c.w, c.h)));
+    const fs = 16;
+    const body = L.cells.map((c, k) => `<g transform="translate(${c.x},${c.y})">${parts[k]}${multi ? `<text x="6" y="${fs + 2}" font-family="Arial, Helvetica, sans-serif" font-size="${fs}" font-weight="bold">${lab(k)}</text>` : ""}</g>`).join("");
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${(physIn * 2.54).toFixed(2)}cm" height="${(physIn * 2.54 * L.H / W).toFixed(2)}cm" viewBox="0 0 ${W} ${L.H}"><rect width="100%" height="100%" fill="#fff"/>${body}</svg>`;
+    saveBlob(new Blob([svg], { type: "image/svg+xml" }), name + ".svg");
+  } else {
+    const blob = await panelPng(L, multi, Math.round(physIn * +P.dpi), +P.dpi);
+    saveBlob(blob, name + ".png");
+  }
+  flash(btn, multi ? `✓ ${figs.length} panels` : "✓ Saved");
+}
+/* PNG of a panel layout at `pxW` pixels wide, with the DPI written into the file (pHYs) */
+async function panelPng(L, multi, pxW, dpi) {
+  const k = pxW / L.W, cv = document.createElement("canvas");
+  cv.width = pxW; cv.height = Math.round(L.H * k);
+  const ctx = cv.getContext("2d");
+  ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, cv.width, cv.height);
+  for (let i = 0; i < L.cells.length; i++) {
+    const c = L.cells[i], scale = c.w * k / c.f.w;
+    const url = await Plotly.toImage({ data: c.f.data, layout: c.f.layout }, { format: "png", width: c.f.w, height: c.f.h, scale });
+    const img = new Image(); img.src = url; await img.decode();
+    ctx.drawImage(img, Math.round(c.x * k), Math.round(c.y * k), Math.round(c.w * k), Math.round(c.h * k));
+    if (multi) { ctx.fillStyle = "#141413"; ctx.font = `bold ${Math.round(16 * k)}px Arial, Helvetica, sans-serif`; ctx.textBaseline = "top"; ctx.fillText(String.fromCharCode(65 + i), Math.round((c.x + 6) * k), Math.round((c.y + 4) * k)); }
+  }
+  const blob = await new Promise(r => cv.toBlob(r, "image/png"));
+  return dpi ? withDpi(blob, dpi) : blob;
+}
+/* add a pHYs chunk (pixels per metre) after IHDR, so Word / Illustrator open the PNG at its physical size */
+async function withDpi(blob, dpi) {
+  const src = new Uint8Array(await blob.arrayBuffer()), ppm = Math.round(dpi / 0.0254);
+  const chunk = new Uint8Array(21), dv = new DataView(chunk.buffer);
+  dv.setUint32(0, 9); chunk.set([112, 72, 89, 115], 4); dv.setUint32(8, ppm); dv.setUint32(12, ppm); chunk[16] = 1;
+  dv.setUint32(17, crc32(chunk.subarray(4, 17)));
+  const out = new Uint8Array(src.length + 21);
+  out.set(src.subarray(0, 33)); out.set(chunk, 33); out.set(src.subarray(33), 54);   // 8 signature + 25 IHDR
+  return new Blob([out], { type: "image/png" });
+}
+let CRC_T = null;
+function crc32(bytes) {
+  if (!CRC_T) { CRC_T = new Uint32Array(256); for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; CRC_T[n] = c >>> 0; } }
+  let c = 0xFFFFFFFF;
+  for (const b of bytes) c = CRC_T[(c ^ b) & 255] ^ (c >>> 8);
+  return (c ^ 0xFFFFFFFF) >>> 0;
+}
+function saveBlob(blob, filename) {
+  const url = URL.createObjectURL(blob), a = document.createElement("a");
+  a.href = url; a.download = filename; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1500);
+}
+/* copy the figure as a PNG (300 dpi at the on-screen size) to paste into slides or documents */
+$("copyFig").onclick = async () => {
+  const f = currentFigure();
+  if (!f) { flash($("copyFig"), "Run a test first"); return; }
+  try {
+    if (!navigator.clipboard || typeof ClipboardItem === "undefined") throw new Error("no clipboard");
+    const png = panelPng(panelLayout([f], 1), false, Math.round(f.w / 96 * 300), 300);
+    await navigator.clipboard.write([new ClipboardItem({ "image/png": png })]);   // a promise keeps Safari's user gesture
+    flash($("copyFig"), "✓ Copied");
+  } catch (_) { flash($("copyFig"), "Copy blocked"); }
+};
 
 /* ============================================================
    SESSION EXPORT / IMPORT  (.jgz = gzip-compressed JSON)
