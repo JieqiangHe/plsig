@@ -178,41 +178,41 @@ a.tb-btn { text-decoration: none; }
 .menu-btn .k { color: var(--fg-faint); margin-right: 5px; }
 .menu-btn svg.chev { width: 9px; height: 9px; stroke-width: 1.6; }
 #menuPop { position: fixed; z-index: 60; width: max-content; max-width: 360px; overflow-y: auto; padding: 5px; border: 1px solid var(--card-border); border-radius: 8px; background: var(--surface); box-shadow: 0 8px 28px rgba(0,0,0,.18), 0 1px 3px rgba(0,0,0,.1); }
-#menuPop h4 { margin: 7px 8px 3px; font-size: 9.5px; font-weight: 500; letter-spacing: .07em; text-transform: uppercase; color: var(--fg-faint); }
-#menuPop h4:first-child { margin-top: 3px; }
-#menuPop button { display: flex; align-items: center; gap: 18px; width: 100%; height: 26px; padding: 0 9px; border-radius: 5px; font-size: 12px; color: var(--fg); text-align: left; white-space: nowrap; }
-#menuPop button span { flex: 1; }
-#menuPop button small { font-size: 11px; color: var(--fg-faint); }
-#menuPop button.on { font-weight: 600; color: var(--accent); }
-#menuPop .st-row { display: flex; align-items: center; gap: 12px; padding: 2px 4px 2px 8px; }
-#menuPop .st-row > span { width: 44px; flex: none; font-size: 12px; color: var(--fg-muted); }
-#menuPop .st-row .stepper, #menuPop .st-row .seg { flex: 1; margin: 0; }
-#menuPop .st-row .seg button { flex: 1; width: auto; height: 22px; padding: 0 8px; justify-content: center; gap: 0; }
-#menuPop .st-row .seg button.on { background: var(--seg-on); color: var(--fg-strong); }
-#menuPop .ex-note { margin: 6px 8px 4px; font-size: 11px; color: var(--fg-faint); }
-#menuPop .ex-go { justify-content: center; gap: 6px; margin-top: 2px; background: var(--run-bg); color: var(--run-fg); font-weight: 600; }
-#menuPop .ex-go:hover { filter: brightness(1.06); }
-#menuPop .ex-go svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
-#menuPop .st-pair { flex: 1; display: flex; align-items: center; gap: 6px; }
-#menuPop .st-pair i { font-style: normal; font-size: 11px; color: var(--fg-faint); min-width: 12px; text-align: center; }
-#menuPop .st-hint { font-size: 11px; color: var(--fg-faint); white-space: nowrap; }
-#menuPop .st-num { width: 64px; height: 22px; padding: 0 6px; border: 1px solid var(--input-border); border-radius: 5px; background: var(--input-bg); color: var(--fg-strong); font-size: 12px; font-variant-numeric: tabular-nums; outline: none; }
-#menuPop .st-num:focus { border-color: var(--focus-border); }
-#menuPop .st-num.bad { border-color: var(--bad-border); }
-#menuPop .st-clear { justify-content: center; margin-top: 6px; height: 24px; font-size: 11.5px; color: var(--fg-muted); background: var(--seg-bg); }
-#menuPop .st-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
-#menuPop .st-cols > div { min-width: 260px; }
-#menuPop .st-pick { display: flex; flex-direction: column; gap: 2px; max-height: 180px; overflow-y: auto; margin: 4px 4px 2px 8px; }
-#menuPop .st-pick label { display: flex; align-items: center; gap: 7px; font-size: 12px; color: var(--fg); cursor: pointer; white-space: nowrap; }
-#menuPop .st-mine { display: flex; gap: 6px; padding: 0 4px; }
-#menuPop .st-mine button { flex: 1; justify-content: center; height: 24px; font-size: 12px; background: var(--seg-bg); }
-#menuPop .stepper { display: flex; align-items: center; gap: 4px; margin: 2px 0 4px; }
-#menuPop .stepper button { width: 30px; flex: none; justify-content: center; font-size: 15px; background: var(--btn-hover); }
-#menuPop .stepper output { flex: 1; text-align: center; font-size: 12.5px; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--fg-strong); }
+:is(#menuPop, #styleCard) h4 { margin: 7px 8px 3px; font-size: 9.5px; font-weight: 500; letter-spacing: .07em; text-transform: uppercase; color: var(--fg-faint); }
+:is(#menuPop, #styleCard) h4:first-child { margin-top: 3px; }
+:is(#menuPop, #styleCard) button { display: flex; align-items: center; gap: 18px; width: 100%; height: 26px; padding: 0 9px; border-radius: 5px; font-size: 12px; color: var(--fg); text-align: left; white-space: nowrap; }
+:is(#menuPop, #styleCard) button span { flex: 1; }
+:is(#menuPop, #styleCard) button small { font-size: 11px; color: var(--fg-faint); }
+:is(#menuPop, #styleCard) button.on { font-weight: 600; color: var(--accent); }
+:is(#menuPop, #styleCard) .st-row { display: flex; align-items: center; gap: 12px; padding: 2px 4px 2px 8px; }
+:is(#menuPop, #styleCard) .st-row > span { width: 44px; flex: none; font-size: 12px; color: var(--fg-muted); }
+:is(#menuPop, #styleCard) .st-row .stepper, :is(#menuPop, #styleCard) .st-row .seg { flex: 1; margin: 0; }
+:is(#menuPop, #styleCard) .st-row .seg button { flex: 1; width: auto; height: 22px; padding: 0 8px; justify-content: center; gap: 0; }
+:is(#menuPop, #styleCard) .st-row .seg button.on { background: var(--seg-on); color: var(--fg-strong); }
+:is(#menuPop, #styleCard) .ex-note { margin: 6px 8px 4px; font-size: 11px; color: var(--fg-faint); }
+:is(#menuPop, #styleCard) .ex-go { justify-content: center; gap: 6px; margin-top: 2px; background: var(--run-bg); color: var(--run-fg); font-weight: 600; }
+:is(#menuPop, #styleCard) .ex-go:hover { filter: brightness(1.06); }
+:is(#menuPop, #styleCard) .ex-go svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+:is(#menuPop, #styleCard) .st-pair { flex: 1; display: flex; align-items: center; gap: 6px; }
+:is(#menuPop, #styleCard) .st-pair i { font-style: normal; font-size: 11px; color: var(--fg-faint); min-width: 12px; text-align: center; }
+:is(#menuPop, #styleCard) .st-hint { font-size: 11px; color: var(--fg-faint); white-space: nowrap; }
+:is(#menuPop, #styleCard) .st-num { width: 64px; height: 22px; padding: 0 6px; border: 1px solid var(--input-border); border-radius: 5px; background: var(--input-bg); color: var(--fg-strong); font-size: 12px; font-variant-numeric: tabular-nums; outline: none; }
+:is(#menuPop, #styleCard) .st-num:focus { border-color: var(--focus-border); }
+:is(#menuPop, #styleCard) .st-num.bad { border-color: var(--bad-border); }
+:is(#menuPop, #styleCard) .st-clear { justify-content: center; margin-top: 6px; height: 24px; font-size: 11.5px; color: var(--fg-muted); background: var(--seg-bg); }
+:is(#menuPop, #styleCard) .st-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
+:is(#menuPop, #styleCard) .st-cols > div { min-width: 260px; }
+:is(#menuPop, #styleCard) .st-pick { display: flex; flex-direction: column; gap: 2px; max-height: 180px; overflow-y: auto; margin: 4px 4px 2px 8px; }
+:is(#menuPop, #styleCard) .st-pick label { display: flex; align-items: center; gap: 7px; font-size: 12px; color: var(--fg); cursor: pointer; white-space: nowrap; }
+:is(#menuPop, #styleCard) .st-mine { display: flex; gap: 6px; padding: 0 4px; }
+:is(#menuPop, #styleCard) .st-mine button { flex: 1; justify-content: center; height: 24px; font-size: 12px; background: var(--seg-bg); }
+:is(#menuPop, #styleCard) .stepper { display: flex; align-items: center; gap: 4px; margin: 2px 0 4px; }
+:is(#menuPop, #styleCard) .stepper button { width: 30px; flex: none; justify-content: center; font-size: 15px; background: var(--btn-hover); }
+:is(#menuPop, #styleCard) .stepper output { flex: 1; text-align: center; font-size: 12.5px; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--fg-strong); }
 #ribbon .size-btn .val { font-variant-numeric: tabular-nums; }
 #ribbon .size-btn.auto .val { font-weight: 400; color: var(--fg-muted); }
-#menuPop button:hover, #menuPop button:focus-visible { outline: none; background: var(--accent); color: #fff; }
-#menuPop button:hover small, #menuPop button:focus-visible small { color: rgba(255,255,255,.8); }
+:is(#menuPop, #styleCard) button:hover, :is(#menuPop, #styleCard) button:focus-visible { outline: none; background: var(--accent); color: #fff; }
+:is(#menuPop, #styleCard) button:hover small, :is(#menuPop, #styleCard) button:focus-visible small { color: rgba(255,255,255,.8); }
 /* on / off button (Welch's correction) */
 #ribbon .toggle { width: auto; padding: 0 8px 0 6px; border-color: transparent; background: transparent; box-shadow: none; }
 #ribbon .toggle:hover { background: var(--btn-hover); }
@@ -363,8 +363,21 @@ th.hd-on .col-letter { color: var(--accent); font-weight: 600; box-shadow: inset
 .rowhdr { font-size: 10.5px; color: var(--fg-faint); text-align: center; vertical-align: middle; font-variant-numeric: tabular-nums; }
 
 /* output: figure (white paper) + results */
-#vOut { min-height: 0; overflow: auto; background: var(--side); }
-#vGraph { display: flex; flex-direction: column; align-items: center; padding: 20px 16px 10px; border-bottom: 1px solid var(--card-border); }
+#vOut { min-height: 0; overflow: auto; background: var(--side); display: flex; flex-direction: column; }
+/* Results folded: the figure takes the whole pane, centred, and the conclusion sits as a strip at the foot */
+#vOut.res-folded #vGraph { flex: 1 0 auto; justify-content: safe center; }
+#vOut.res-folded #vResults { position: sticky; bottom: 0; padding: 8px 18px 10px; }
+/* Style card: takes the results' place under the figure (one or the other shows, never both),
+   so the figure stays in view while it is styled; the card scrolls on its own */
+#vOut.styling #vGraph { flex: none; }   /* the figure keeps its full height; the card scrolls in what is left */
+#vOut.styling #vResults { display: none; }
+#styleCard { position: relative; flex: 1 1 0; min-height: 200px; overflow-y: auto; padding: 8px 12px 12px; background: var(--surface); }
+#styleCard .st-cols { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
+#styleCard .st-cols > div { min-width: 0; }
+#styleCard .st-row .seg { min-width: 0; }
+#styleCard .st-row .seg button { min-width: 0; padding: 0 4px; }
+#styleClose { position: absolute; top: 6px; right: 8px; z-index: 1; width: 24px !important; height: 24px !important; padding: 0 !important; justify-content: center; font-size: 16px !important; color: var(--fg-muted) !important; }
+#vGraph { display: flex; flex-direction: column; align-items: safe center; padding: 20px 16px 10px; border-bottom: 1px solid var(--card-border); }
 #plotHint { margin-top: 7px; max-width: 520px; font-size: 11px; line-height: 1.5; text-align: center; color: var(--fg-faint); user-select: none; }
 #plotHint a { color: var(--accent); text-decoration: none; }
 #plotHint a:hover { text-decoration: underline; }
@@ -590,7 +603,7 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
         <select id="avgReps" hidden><option value="off" selected>Keep</option><option value="on">Average</option></select>
         <input id="breakLo" hidden /><input id="breakHi" hidden /><!-- broken y axis: the gap from … to … -->
         <input id="yMin" hidden /><input id="yMax" hidden /><input id="refY" hidden /><input id="bandLo" hidden /><input id="bandHi" hidden />
-        <span class="flat"><button id="styleBtn" class="tb-btn menu-btn" aria-haspopup="dialog" title="Figure style: font, dots, bar width, points, frame"><svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg><span class="lbl">Style</span><svg class="chev" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4"/></svg></button></span>
+        <span class="flat"><button id="styleBtn" class="tb-btn menu-btn" aria-expanded="false" aria-controls="styleCard" title="Figure style: font, dots, bar width, points, frame"><svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg><span class="lbl">Style</span><svg class="chev" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4"/></svg></button></span>
         <input id="plotH" type="number" min="220" step="20" value="" placeholder="400" title="Height in px (blank = automatic, fitted to the figure)" class="num-field size-src" hidden />
         <span class="flat"><button id="resetGraph" class="tb-btn" title="Restore graph to default options, size &amp; view"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>Reset</button></span>
         <span class="flat"><button id="exportBtnFig" class="tb-btn menu-btn" aria-haspopup="dialog" title="Download the figure (or every sheet as one panel figure) as PNG or SVG, at a journal width and DPI"><svg viewBox="0 0 24 24"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14"/></svg><span class="lbl">Export</span><svg class="chev" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4"/></svg></button></span>
@@ -639,6 +652,7 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
     <!-- ============ OUTPUT: graph + results ============ -->
     <section id="vOut">
       <div id="vGraph"><div id="plot" style="height: 400px;"></div><p id="plotHint" hidden><span>Click text or a bar to edit and format it; right-click for analyses and copying.</span> <span>For finer editing, copy as SVG and paste into</span> <a href="https://www.svguest.online" target="_blank" rel="noopener" title="svguest: an in-browser SVG editor">svguest</a></p></div>
+      <div id="styleCard" hidden><button type="button" id="styleClose" aria-label="Close" title="Close the style card (the results come back)">×</button><div id="styleBody"></div></div>
       <div id="vResults">
         <div class="res-head">
           <h2><button type="button" id="resToggle" aria-expanded="true" title="Fold or unfold the result tables (the conclusion stays)"><svg class="chev" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4"/></svg>Results</button></h2>
@@ -1723,7 +1737,7 @@ function collectSettings() {
 /* segmented buttons for short <select>s (class "as-seg"); the select stays the
    source of truth (hidden), so saving / loading / reset work unchanged */
 function syncSegs() {
-  syncSizeBtns();
+  syncSizeBtns(); refreshStyleCard();
   document.querySelectorAll("select.as-seg").forEach(sel => {
     sel.nextElementSibling.querySelectorAll("button").forEach(b => b.classList.toggle("on", b.dataset.v === sel.value));
   });
@@ -1889,7 +1903,6 @@ menuPop.addEventListener("click", e => {
    each writes its hidden field and redraws the figure */
 const STYLE_STEPS = { fontSize: { name: "Font", step: 1, min: 8, max: 24 }, dotSize: { name: "Dots", step: 1, min: 2, max: 20 } };
 const STYLE_SEGS = { barWidth: "Bars", pointStyle: "Points", frame: "Frame" };
-const styleAnchor = { _btn: $("styleBtn") };
 function styleHtml() {
   const step = (id, c) => `<div class="st-row"><span>${c.name}</span><div class="stepper"><button type="button" data-sid="${id}" data-sstep="-1" aria-label="Smaller">−</button><output>${$(id).value}</output><button type="button" data-sid="${id}" data-sstep="1" aria-label="Larger">+</button></div></div>`;
   const seg = (id, name) => `<div class="st-row"><span>${name}</span><div class="seg">${[...$(id).options].map(o =>
@@ -1918,22 +1931,34 @@ function styleHtml() {
          `<h4>Significance</h4>` + seg("sigMarks", "Marks") + seg("sigShow", "Show") + pick;
   return `<div class="st-cols"><div>${left}</div><div>${right}</div></div>`;
 }
-$("styleBtn").onclick = () => {
-  if (menuFor === styleAnchor) { closeMenuPop(); return; }
+/* Style opens as a card in the results' place, under the figure: the figure stays in view
+   while it is styled (user's request, Nov 2026). Style and results take turns: one shows at a time. */
+const styleCard = $("styleCard"), styleBody = $("styleBody");
+function openStyleCard() {
   closeMenuPop();
-  menuFor = styleAnchor;
-  menuPop.innerHTML = styleHtml();
-  menuPop.hidden = false;
-  const r = $("styleBtn").getBoundingClientRect();
-  menuPop.style.minWidth = "240px"; menuPop.style.maxWidth = "620px"; menuPop.style.maxHeight = innerHeight - r.bottom - 12 + "px";
-  menuPop.style.top = r.bottom + 4 + "px";
-  menuPop.style.left = Math.max(6, Math.min(r.left, innerWidth - menuPop.offsetWidth - 6)) + "px";
+  styleBody.innerHTML = styleHtml();
+  styleCard.hidden = false; $("vOut").classList.add("styling");
   $("styleBtn").classList.add("open"); $("styleBtn").setAttribute("aria-expanded", "true");
-  menuPop.querySelector("button").focus({ preventScroll: true });
-};
-menuPop.addEventListener("click", e => {
+  styleCard.querySelector("#styleBody button").focus({ preventScroll: true });
+}
+function closeStyleCard(refocus) {
+  if (styleCard.hidden) return;
+  styleCard.hidden = true; $("vOut").classList.remove("styling");
+  $("styleBtn").classList.remove("open"); $("styleBtn").setAttribute("aria-expanded", "false");
+  if (refocus) $("styleBtn").focus();
+}
+// settings changed from elsewhere (ribbon, undo, another tab, Reset): show them in the open card
+function refreshStyleCard() {
+  const card = document.getElementById("styleCard");
+  if (!card || card.hidden || card.contains(document.activeElement) && document.activeElement.matches("input")) return;
+  const sc = card.scrollTop; document.getElementById("styleBody").innerHTML = styleHtml(); card.scrollTop = sc;
+}
+$("styleBtn").onclick = () => (styleCard.hidden ? openStyleCard() : closeStyleCard());
+$("styleClose").onclick = () => closeStyleCard(true);
+styleCard.addEventListener("keydown", e => { if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); closeStyleCard(true); } });
+styleCard.addEventListener("click", e => {
   const b = e.target.closest("button[data-sid]");
-  if (!b || menuFor !== styleAnchor) return;
+  if (!b) return;
   const id = b.dataset.sid, el = $(id);
   if (b.dataset.sstep) {
     const c = STYLE_STEPS[id];
@@ -1945,19 +1970,19 @@ menuPop.addEventListener("click", e => {
   }
   scheduleSave(); redraw();
   if (["sigShow", "sigMarks", "journal"].includes(id)) {   // these change what the panel shows
-    const sc = menuPop.scrollTop; menuPop.innerHTML = styleHtml(); menuPop.scrollTop = sc;
+    const sc = styleCard.scrollTop; styleBody.innerHTML = styleHtml(); styleCard.scrollTop = sc;
   }
 });
-menuPop.addEventListener("change", e => {
+styleCard.addEventListener("change", e => {
   const c = e.target.closest("input[data-pick]");
-  if (!c || menuFor !== styleAnchor) return;
-  $("sigPick").value = JSON.stringify([...menuPop.querySelectorAll("input[data-pick]:checked")].map(x => x.dataset.pick));
+  if (!c) return;
+  $("sigPick").value = JSON.stringify([...styleCard.querySelectorAll("input[data-pick]:checked")].map(x => x.dataset.pick));
   scheduleSave(); redraw();
 });
 let styleNumTimer = null;
-menuPop.addEventListener("input", e => {
+styleCard.addEventListener("input", e => {
   const f = e.target.closest("input[data-nid]");
-  if (!f || menuFor !== styleAnchor) return;
+  if (!f) return;
   const v = f.value.trim().replace(",", ".");
   f.classList.toggle("bad", v !== "" && !Number.isFinite(+v));
   $(f.dataset.nid).value = v !== "" && Number.isFinite(+v) ? v : "";
@@ -1970,20 +1995,20 @@ let myStyle = {};
 try { myStyle = JSON.parse(localStorage.getItem("plsig:mystyle") || "{}") || {}; } catch (_) { myStyle = {}; }
 const hasMyStyle = () => Object.keys(myStyle).length > 0;
 const graphDefaults = () => Object.assign({}, GRAPH_DEFAULTS, myStyle);
-menuPop.addEventListener("click", e => {
+styleCard.addEventListener("click", e => {
   const b = e.target.closest("[data-mine]");
-  if (!b || menuFor !== styleAnchor) return;
+  if (!b) return;
   if (b.dataset.mine === "save") { myStyle = {}; MY_STYLE_IDS.forEach(id => { myStyle[id] = $(id).value; }); }
   else myStyle = {};
   try { if (hasMyStyle()) localStorage.setItem("plsig:mystyle", JSON.stringify(myStyle)); else localStorage.removeItem("plsig:mystyle"); } catch (_) { /* fine */ }
-  menuPop.innerHTML = styleHtml();
-  const ok = menuPop.querySelector(`[data-mine="${b.dataset.mine === "save" ? "save" : "save"}"]`);
+  styleBody.innerHTML = styleHtml();
+  const ok = styleCard.querySelector(`[data-mine="${b.dataset.mine === "save" ? "save" : "save"}"]`);
   if (ok && b.dataset.mine === "save") { ok.textContent = "✓ Saved"; setTimeout(() => { if (ok.isConnected) ok.textContent = "Save as my default"; }, 1400); }
 });
-menuPop.addEventListener("click", e => {
-  if (!e.target.closest("[data-sclear]") || menuFor !== styleAnchor) return;
+styleCard.addEventListener("click", e => {
+  if (!e.target.closest("[data-sclear]")) return;
   ["yScale", "yMin", "yMax", "refY", "bandLo", "bandHi", "breakLo", "breakHi"].forEach(id => { $(id).value = GRAPH_DEFAULTS[id]; });
-  menuPop.innerHTML = styleHtml(); scheduleSave(); redraw();
+  styleBody.innerHTML = styleHtml(); scheduleSave(); redraw();
 });
 addEventListener("mousedown", e => { if (menuFor && !menuPop.contains(e.target) && !menuFor._btn.contains(e.target)) closeMenuPop(); }, true);
 addEventListener("resize", () => closeMenuPop());
@@ -2961,7 +2986,7 @@ menuPop.addEventListener("click", e => {
   openExample(EXAMPLES[+b.dataset.ex]);
 });
 menuPop.addEventListener("keydown", e => {
-  if (menuFor !== exampleAnchor && menuFor !== exportAnchor && menuFor !== styleAnchor) return;
+  if (menuFor !== exampleAnchor && menuFor !== exportAnchor) return;
   const items = [...menuPop.querySelectorAll("button")], i = items.indexOf(document.activeElement);
   if (e.key === "ArrowDown" || e.key === "ArrowUp") { e.preventDefault(); items[Math.max(0, Math.min(items.length - 1, i + (e.key === "ArrowDown" ? 1 : -1)))].focus(); }
 });
@@ -3088,7 +3113,7 @@ const ZH = {
   "Copy a link that opens these sheets (data and settings) in any browser": "复制一个链接，在任何浏览器中打开这些表格（含数据和设置）",
   "Fill": "填充", "Colour": "彩色", "Pattern": "图案", "Grey": "灰度",
   "Open a saved .jgz session, an Excel .xlsx file (each worksheet becomes a tab) or a .csv / .txt table": "打开 .jgz 会话、Excel .xlsx 文件（每个工作表成为一个标签）或 .csv / .txt 表格",
-  "Fold or unfold the result tables (the conclusion stays)": "折叠或展开结果表格（结论保留）", "Click to fold or unfold this table": "点击折叠或展开此表格", "Click to fold or unfold": "点击折叠或展开",
+  "Fold or unfold the result tables (the conclusion stays)": "折叠或展开结果表格（结论保留）", "Close the style card (the results come back)": "关闭样式卡片（结果重新显示）", "Click to fold or unfold this table": "点击折叠或展开此表格", "Click to fold or unfold": "点击折叠或展开",
   "Click text or a bar to edit and format it; right-click for analyses and copying.": "点击文字或柱子可编辑和设置格式；右键可做分析和复制。",
   "For finer editing, copy as SVG and paste into": "更精细的编辑：复制为 SVG 后粘贴到", "svguest: an in-browser SVG editor": "svguest：浏览器里的 SVG 编辑器",
   "Bold": "加粗", "Italic": "斜体", "Any colour": "任意颜色", "Back to the default look": "恢复默认样式", "Format": "格式",
@@ -3518,6 +3543,7 @@ let shutSections = new Set();
 try { shutSections = new Set(JSON.parse(localStorage.getItem("plsig:shut") || "[]")); } catch (_) { /* none */ }
 function setResultsFolded(f) {
   $("vResults").classList.toggle("folded", f);
+  $("vOut").classList.toggle("res-folded", f);
   $("resToggle").setAttribute("aria-expanded", String(!f));
   try { localStorage.setItem("plsig:resFolded", f ? "1" : "0"); } catch (_) { /* fine */ }
 }
