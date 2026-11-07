@@ -208,8 +208,9 @@ a.tb-btn { text-decoration: none; }
 :is(#menuPop, #styleCard) .st-pick label { display: flex; align-items: center; gap: 7px; font-size: 12px; color: var(--fg); cursor: pointer; white-space: nowrap; }
 :is(#menuPop, #styleCard) .st-mine { display: flex; gap: 6px; padding: 0 4px; }
 :is(#menuPop, #styleCard) .st-mine button { flex: 1; justify-content: center; height: 24px; font-size: 12px; background: var(--seg-bg); }
-:is(#menuPop, #styleCard) .stepper { display: flex; align-items: center; gap: 4px; margin: 2px 0 4px; }
-:is(#menuPop, #styleCard) .stepper button { width: 30px; flex: none; justify-content: center; font-size: 15px; background: var(--btn-hover); }
+:is(#menuPop, #styleCard) .stepper { display: flex; align-items: center; gap: 0; margin: 2px 0; border-radius: 6px; background: var(--seg-bg); }
+:is(#menuPop, #styleCard) .stepper button { width: 28px; height: 26px; flex: none; justify-content: center; padding: 0; font-size: 15px; background: transparent; }
+:is(#menuPop, #styleCard) .stepper button:hover, :is(#menuPop, #styleCard) .stepper button:focus-visible { background: var(--btn-hover); color: var(--fg-strong); }
 :is(#menuPop, #styleCard) .stepper .st-val { flex: 1; min-width: 0; width: 100%; height: 24px; padding: 0 4px; border: 1px solid transparent; border-radius: 5px; background: transparent; text-align: center; font-size: 12.5px; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--fg-strong); outline: none; }
 :is(#menuPop, #styleCard) .stepper .st-val:hover { border-color: var(--input-border); }
 :is(#menuPop, #styleCard) .stepper .st-val:focus { border-color: var(--focus-border); background: var(--input-bg); }
@@ -218,9 +219,17 @@ a.tb-btn { text-decoration: none; }
 :is(#menuPop, #styleCard) .st-steps { display: grid; grid-template-columns: 44px minmax(0, 1fr) 44px minmax(0, 1fr); column-gap: 12px; }
 :is(#menuPop, #styleCard) .st-steps .st-lab { width: auto; font-size: 12px; color: var(--fg-muted); }
 :is(#menuPop, #styleCard) .st-steps .stepper + .st-lab { margin-left: 6px; }
-:is(#menuPop, #styleCard) .st-steps .stepper { margin: 2px 0; gap: 0; border-radius: 6px; background: var(--seg-bg); }
-:is(#menuPop, #styleCard) .st-steps .stepper button { width: 26px; height: 24px; background: transparent; }
-:is(#menuPop, #styleCard) .st-steps .stepper button:hover { background: var(--btn-hover); color: var(--fg-strong); }
+:is(#menuPop, #styleCard) .st-steps .stepper button { width: 26px; height: 24px; }
+/* W / H popover: the stepper, Auto across the full width, then the presets as a grid of equal chips */
+#menuPop.sz-pop { width: 212px; padding: 6px 8px 8px; }
+#menuPop.sz-pop h4 { text-align: center; margin: 4px 0 6px; }
+#menuPop .sz-auto { justify-content: center; gap: 6px; margin: 6px 0 4px; background: var(--seg-bg); }
+#menuPop .sz-auto span { flex: none; }
+#menuPop .sz-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; }
+#menuPop .sz-grid button { justify-content: center; gap: 0; padding: 0; background: var(--seg-bg); font-variant-numeric: tabular-nums; }
+#menuPop .sz-grid button span { flex: none; }
+#menuPop.sz-pop button.on { background: var(--accent-soft); }
+#menuPop.sz-pop button.on:hover { background: var(--accent); }
 #ribbon .size-btn .val { font-variant-numeric: tabular-nums; }
 #ribbon .size-btn.auto .val { font-weight: 400; color: var(--fg-muted); }
 :is(#menuPop, #styleCard) button:hover, :is(#menuPop, #styleCard) button:focus-visible { outline: none; background: var(--accent); color: #fff; }
@@ -1892,7 +1901,7 @@ function closeMenuPop(refocus) {
   if (!menuFor) return;
   const b = menuFor._btn;
   b.classList.remove("open"); b.setAttribute("aria-expanded", "false");
-  menuFor = null; menuPop.hidden = true; menuPop.style.maxWidth = "";
+  menuFor = null; menuPop.hidden = true; menuPop.style.maxWidth = ""; menuPop.classList.remove("sz-pop");
   if (refocus) b.focus();
 }
 menuPop.addEventListener("click", e => {
@@ -1961,10 +1970,13 @@ function openSizePop(inp) {
   closeMenuPop();
   menuFor = inp;
   const cfg = SIZE_BTNS[inp.id], cur = inp.value === "" ? "" : String(parseInt(inp.value, 10));
-  const opt = (v, text, hint) => `<button type="button" role="option" data-v="${v}"${cur === String(v) ? ' class="on"' : ""}><span>${text}</span>${hint ? `<small>${hint}</small>` : ""}</button>`;
+  const opt = (v, text, hint, cls = "") => { const c = [cls, cur === String(v) ? "on" : ""].filter(Boolean).join(" ");
+    return `<button type="button" role="option" data-v="${v}"${c ? ` class="${c}"` : ""}><span>${text}</span>${hint ? `<small>${hint}</small>` : ""}</button>`; };
   menuPop.innerHTML = `<h4>${cfg.name}</h4>
     <div class="stepper"><button type="button" data-step="-1" aria-label="Smaller">−</button><input class="st-val" data-size="1" inputmode="numeric" value="${sizeValue(inp)}" aria-label="${cfg.name}" title="${cfg.min}–${cfg.max}" /><button type="button" data-step="1" aria-label="Larger">+</button></div>` +
-    (cfg.auto ? opt("", "Auto", inp.placeholder + " · fits the figure") : "") + cfg.presets.map(v => opt(v, String(v))).join("");
+    (cfg.auto ? opt("", "Auto", inp.placeholder + " · fits the figure", "sz-auto") : "") +
+    `<div class="sz-grid">${cfg.presets.map(v => opt(v, String(v))).join("")}</div>`;
+  menuPop.classList.add("sz-pop");
   menuPop.hidden = false;
   const r = inp._btn.getBoundingClientRect();
   menuPop.style.minWidth = "150px";
