@@ -224,7 +224,12 @@ a.tb-btn { text-decoration: none; }
 #plot.on-title, #plot.on-title * { cursor: text !important; }
 #vGraph { position: relative; }
 .axis-ed { position: absolute; z-index: 20; height: 26px; box-sizing: border-box; padding: 0 8px; font: 14px Arial, Helvetica, "PingFang SC", "Microsoft YaHei", sans-serif; text-align: center;
-           color: #1f1f1f; background: #fff; border: 1px solid var(--accent); border-radius: 6px; outline: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent); }
+           color: #1f1f1f; background: #fff; border: 1px solid var(--accent); border-radius: 6px; outline: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent);
+           color-scheme: light; caret-color: #1f1f1f; -webkit-text-fill-color: #1f1f1f; }
+/* the box sits on the white figure in either theme: keep its text and selection dark-on-light
+   (in dark mode the browser drew selected text white, so it vanished on the white box) */
+.axis-ed::selection { background: #b6d3fb; color: #1f1f1f; -webkit-text-fill-color: #1f1f1f; }
+.axis-ed::placeholder { color: #9a9a9a; -webkit-text-fill-color: #9a9a9a; }
 #runBtn { display: flex; align-items: center; justify-content: center; gap: 5px; height: 24px; background: var(--run-bg); color: var(--run-fg); border: 0; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; }
 #runBtn svg { width: 10px; height: 10px; fill: currentColor; }
 #runBtn:hover:not(:disabled) { background: var(--run-hover); }
