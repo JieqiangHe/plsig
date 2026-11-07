@@ -460,15 +460,33 @@ button { transition: background-color .15s, color .15s, border-color .15s; }
 /* help dialog */
 dialog { border: 1px solid var(--card-border); border-radius: 12px; padding: 0; background: var(--surface); color: var(--fg); box-shadow: 0 20px 50px rgba(0,0,0,.25); }
 dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
-#helpDlg { width: min(520px, 92vw); }
-#helpDlg form { padding: 16px 20px 20px; }
-#helpDlg header { display: flex; align-items: center; margin-bottom: 12px; }
-#helpDlg h3 { flex: 1; margin: 0; font-size: 15px; font-weight: 600; color: var(--fg-strong); }
+#helpDlg { width: min(880px, 94vw); max-height: 88vh; overflow: hidden; }
+#helpDlg[open] { display: flex; flex-direction: column; }
+#helpDlg form { display: flex; flex-direction: column; min-height: 0; max-height: 88vh; padding: 0; }
+#helpDlg header { display: flex; align-items: center; flex: none; padding: 14px 18px 12px 22px; border-bottom: 1px solid var(--card-border); }
+#helpDlg h3 { flex: 1; margin: 0; font-size: 16px; font-weight: 600; color: var(--fg-strong); }
 #helpDlg header button { border: 0; background: none; font-size: 18px; line-height: 18px; width: 28px; height: 28px; border-radius: 6px; color: var(--fg-muted); }
 #helpDlg header button:hover { color: var(--fg); background: var(--btn-hover); }
-#helpDlg dl { display: grid; grid-template-columns: 76px 1fr; gap: 10px 14px; margin: 0; font-size: 12.5px; line-height: 1.55; }
-#helpDlg dt { font-weight: 600; color: var(--fg-muted); }
-#helpDlg dd { margin: 0; }
+#helpDlg .help-body { overflow-y: auto; min-height: 0; padding: 16px 22px 22px; scroll-behavior: smooth; }
+/* quick start: three numbered steps */
+#helpDlg .help-quick { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin: 0 0 14px; padding: 0; list-style: none; }
+#helpDlg .help-quick li { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border-radius: 8px; background: var(--accent-soft); font-size: 12.5px; line-height: 1.5; color: var(--fg); }
+#helpDlg .help-quick b { flex: none; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: var(--accent); color: #fff; font-size: 12px; }
+#helpDlg .help-quick strong { display: block; margin-bottom: 1px; font-size: 13px; color: var(--fg-strong); }
+/* section chips */
+#helpDlg .help-nav { position: sticky; top: -16px; z-index: 1; display: flex; flex-wrap: wrap; gap: 6px; margin: 0 -22px 4px; padding: 8px 22px; background: var(--surface); }
+#helpDlg .help-nav a { padding: 4px 11px; border-radius: 999px; background: var(--seg-bg); color: var(--fg); font-size: 12px; text-decoration: none; }
+#helpDlg .help-nav a:hover { background: var(--btn-hover); color: var(--fg-strong); }
+#helpDlg .hs { scroll-margin-top: 50px; }
+#helpDlg .hs h4 { display: flex; align-items: center; gap: 7px; margin: 16px 0 8px; font-size: 11px; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; color: var(--fg-muted); }
+#helpDlg .hs h4 svg { width: 15px; height: 15px; fill: none; stroke: var(--accent); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+#helpDlg .hs dl { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 8px; margin: 0; }
+#helpDlg .hi { padding: 10px 13px 11px; border: 1px solid var(--card-border); border-radius: 8px; background: var(--surface); }
+#helpDlg dt { margin-bottom: 3px; font-size: 12.5px; font-weight: 600; color: var(--fg-strong); }
+#helpDlg dd { margin: 0; font-size: 12.5px; line-height: 1.6; color: var(--fg-soft, var(--fg)); }
+#helpDlg dd a { color: var(--accent); text-decoration: none; }
+#helpDlg dd a:hover { text-decoration: underline; }
+#helpDlg kbd { font-size: 10.5px; }
 </style>
 </head>
 
@@ -674,66 +692,94 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
 
   <dialog id="helpDlg"><form method="dialog">
     <header><h3>Tips</h3><button type="button" id="tourBtn" class="tb-btn">Take the tour</button><button type="submit" value="" aria-label="Close">×</button></header>
-    <dl id="helpEn" data-noi18n>
-      <dt>Layout</dt><dd>One column per group. Paired, repeated-measures and Friedman tests match values by row (one subject per row). Correlation uses column A as X and B as Y. Contingency tables hold counts: columns are groups, rows are outcomes (named by the row titles).</dd>
-      <dt>Two-way</dt><dd>Columns are the levels of one factor (e.g. Control / Drug); the row title names the level of the other (e.g. Male / Female). Put each replicate on its own row and repeat the row title.</dd>
-      <dt>Clusters</dt><dd>For bars in clusters with letters over each bar (e.g. Control, P1–P3 × M1–M3), choose <i>One-way ANOVA across grouped cells</i>. The row title names the cluster on the x axis and each column is a bar colour; every row-title × column cell is one group, and cells may stay empty (a Control row fills only its own column).</dd>
-      <dt>Exclude</dt><dd>Right-click a column (or a block of columns) and choose <i>Exclude from the analysis</i> to keep the data on the sheet but out of the test and the figure. The same menu includes it again.</dd>
-      <dt>Sheets</dt><dd>The tabs over the sheet each hold their own data, test, figure options and undo history: one tab per figure. <b>+</b> (or a double-click on the empty strip) adds one; double-click a tab to rename it; right-click to duplicate, move or delete. Save writes every tab into one .jgz file, and Open adds a file's tabs to the ones you have.</dd>
-      <dt>Paste</dt><dd>Paste a block from Excel/Sheets into any cell (<kbd>⌘/Ctrl</kbd> <kbd>V</kbd>); the grid expands to fit. To replace the whole sheet, click the paste bar under the sheet (or Paste in the ribbon) and press <kbd>⌘/Ctrl</kbd> <kbd>V</kbd>: tables from Excel, Word, web pages, PDFs and CSV text all work, with or without a header row. You can also drop a .csv / .txt file on the bar.</dd>
-      <dt>Select</dt><dd>Click a cell and just type to replace it; double-click or <kbd>F2</kbd> to edit inside it. Drag, or <kbd>Shift</kbd> + click / arrows, to select a block; click a row number or column letter for a whole row or column; <kbd>⌘/Ctrl</kbd> <kbd>A</kbd> selects everything. Click the empty grid to add rows and columns there.</dd>
-      <dt>Move</dt><dd>Arrows, <kbd>Tab</kbd> and <kbd>Enter</kbd> move between cells (<kbd>Enter</kbd> on the last row adds one); <kbd>⌘/Ctrl</kbd> + arrow jumps to the edge.</dd>
-      <dt>Edit</dt><dd>Copy, cut and paste work on blocks; one copied value pasted onto a block fills it. <kbd>Delete</kbd> clears the block, <kbd>⌘/Ctrl</kbd> <kbd>D</kbd> fills down, <kbd>Esc</kbd> cancels a change. Type a value with a block selected and press <kbd>⌘/Ctrl</kbd> <kbd>Enter</kbd> to put it in every cell. Right-click for insert / delete rows and columns. Drag a column by the dotted handle at the left of its name (or right-click → Move left / right) to reorder it; the figure follows. Results update as you type.</dd>
-      <dt>Undo</dt><dd><kbd>⌘/Ctrl</kbd> <kbd>Z</kbd>; add <kbd>Shift</kbd> for redo. Undo covers the data and the figure settings (chart, colours, size, style, test).</dd>
-      <dt>Session</dt><dd>Saved in this browser automatically; Save / Open (.jgz) moves a session between machines.</dd>
-      <dt>Format</dt><dd>Click a bar to pick its colour, or any text (titles, group names, legend, letters / stars, y-axis numbers) for bold, italic, colour and size. Shift-click bars to select several; right-click the figure to compare the selected bars in a new tab (t-test, Mann–Whitney, ANOVA, Kruskal–Wallis), show or hide them, or copy the figure as SVG or PNG. For finer editing, paste the SVG into <a href="https://www.svguest.online" target="_blank" rel="noopener">svguest</a>.</dd>
-      <dt>Figure text</dt><dd>Click any text on the figure to edit it: an axis title, a group name under the x axis, or a legend entry. Group names and legend entries rename the column or row title on the sheet (<kbd>⌘/Ctrl</kbd> <kbd>Z</kbd> undoes it). <kbd>Enter</kbd> keeps the change, <kbd>Esc</kbd> cancels. A cleared axis title stays as a faint placeholder on screen so you can click it again; exports leave it out. <i>Off</i> next to *** / P = hides the letters and stars on the figure.</dd>
-      <dt>Y axis</dt><dd>Style → Y axis: linear or log scale, a fixed range (blank = automatic), a dashed reference line at a value, a shaded band between two values, and a break (from … to …) that cuts the axis with // marks when one group is far taller than the rest.</dd>
-      <dt>Style</dt><dd>Style in the ribbon sets the figure's font size, dot size, bar width, hollow or hidden points, and a box or open (left and bottom axes) frame.</dd>
-      <dt>My style</dt><dd>Style → Save as my default keeps the chart type, error bars, colours, significance labels and style in this browser: Reset, new visits and Examples then use it. Forget it returns to the built-in defaults.</dd>
-      <dt>Results</dt><dd>Click <b>Results</b> to fold the tables away (the one-line conclusion stays), or click one table's title to fold just that table. Folds are remembered.</dd>
-      <dt>Methods</dt><dd>Under the results, a ready-to-copy paragraph for a paper's methods section describes the test that ran, its post-hoc test, how the data are shown and the sample size.</dd>
-      <dt>Curves</dt><dd><i>Dose–response curve (4PL)</i>: column A = dose, the other columns = replicate responses; a four-parameter logistic is fitted on log10(dose) and reports EC50 / IC50 with its 95% CI. <i>Kaplan–Meier survival</i>: column A = time, each other column a group with 1 = event and 0 = censored (blank = not in that group); curves are compared with the log-rank test.</dd>
-      <dt>Outliers</dt><dd>Grubbs' test (α = 0.05) runs on every column; suspected outliers are highlighted on the sheet and listed in the results, but nothing is removed. Right-click a cell → Exclude value to leave it out (it stays on the sheet, struck through); the same menu includes it again.</dd>
-      <dt>Files</dt><dd>Open reads a .jgz session, an Excel .xlsx file (each worksheet becomes a tab; formulas give their last computed value) or a .csv / .txt table; you can also drop any of these on the paste bar.</dd>
-      <dt>Share</dt><dd>Share (right of the sheet tabs) copies a link that holds every tab, data and settings included. Whoever opens it gets the same sheets and figures; nothing is uploaded, the data travel inside the link. Very large sessions are better sent as a Save file.</dd>
-      <dt>Offline</dt><dd>After one visit online, the page works without a network (it keeps itself and its two scripts in the browser).</dd>
-      <dt>Export</dt><dd>Export opens the options: this figure or every sheet as one panel figure lettered A, B, C…, PNG or SVG, the on-screen size or a journal column width (8.5 / 11.4 / 17.4 cm), and 300 or 600 dpi (written into the PNG, so Word and Illustrator open it at that size). Copy puts the figure on the clipboard for PowerPoint, Word or a chat.</dd>
-      <dt>Theme</dt><dd>The sun / moon button in the ribbon's View group switches between light and dark; 中 / EN switches the interface between Chinese and English (the figure itself stays in English, for papers).</dd>
-      <dt>Colours</dt><dd>Besides Claude and Classic Prism, the colour menu offers the journal-style palettes NPG, AAAS, NEJM, Lancet, JAMA, JCO and D3 from <a href="https://github.com/nanxstats/ggsci" target="_blank" rel="noopener">ggsci</a> by Nan Xiao (GPL, like plsig).</dd>
-      <dt>Privacy</dt><dd>Everything runs in this browser; your data is never uploaded.</dd>
-      <dt>Source</dt><dd>Open source on <a href="https://github.com/JieqiangHe/plsig" target="_blank" rel="noopener">GitHub</a>: report a problem or suggest a feature under Issues.</dd>
-    </dl>
-    <dl id="helpZh" data-noi18n hidden>
-      <dt>数据布局</dt><dd>每组一列。配对、重复测量和 Friedman 检验按行匹配（每行一个受试对象）。相关分析以 A 列为 X、B 列为 Y。列联表填计数：列为组，行为结局（由行标题命名）。</dd>
-      <dt>双因素</dt><dd>各列是一个因素的水平（如 Control / Drug）；行标题是另一个因素的水平（如 Male / Female）。每个重复单独一行，并重复填写行标题。</dd>
-      <dt>分组柱图</dt><dd>要做分组柱状图并在每根柱上标字母（如 Control、P1–P3 × M1–M3），选择<i>分组单元格单因素方差分析</i>。行标题是 x 轴上的分组，每列是一种柱子颜色；每个行标题 × 列的单元格是一组，单元格可以留空（Control 行只填自己那一列）。</dd>
-      <dt>排除列</dt><dd>右键一列（或选中多列），选择<i>从分析中排除</i>：数据保留在表格里，但不参与检验和作图。同一菜单可以重新纳入。</dd>
-      <dt>表格标签</dt><dd>表格上方的每个标签都有自己的数据、检验、图形设置和撤销记录：一个标签一张图。<b>+</b>（或双击空白处）新建；双击标签重命名；右键可复制、移动或删除。保存会把所有标签写进一个 .jgz 文件，打开会把文件里的标签追加进来。</dd>
-      <dt>粘贴</dt><dd>在任意单元格粘贴 Excel 的数据块（<kbd>⌘/Ctrl</kbd> <kbd>V</kbd>），表格会自动扩展。要替换整张表，点表格下方的粘贴栏（或功能区的粘贴）再按 <kbd>⌘/Ctrl</kbd> <kbd>V</kbd>：Excel、Word、网页、PDF 和 CSV 文本都可以，有无表头均可。也可以把 .csv / .txt 文件拖到粘贴栏上。</dd>
-      <dt>选择</dt><dd>点一个单元格直接输入即可替换；双击或按 <kbd>F2</kbd> 在格内编辑。拖动，或 <kbd>Shift</kbd> + 点击 / 方向键选择区域；点行号或列字母选中整行整列；<kbd>⌘/Ctrl</kbd> <kbd>A</kbd> 全选。点击空白网格会在那里添加行和列。</dd>
-      <dt>移动</dt><dd>方向键、<kbd>Tab</kbd> 和 <kbd>Enter</kbd> 在单元格间移动（在最后一行按 <kbd>Enter</kbd> 会新增一行）；<kbd>⌘/Ctrl</kbd> + 方向键跳到边缘。</dd>
-      <dt>编辑</dt><dd>复制、剪切和粘贴都支持区域；复制一个值粘到一个区域会填满它。<kbd>Delete</kbd> 清空区域，<kbd>⌘/Ctrl</kbd> <kbd>D</kbd> 向下填充，<kbd>Esc</kbd> 取消修改。选中区域后输入一个值再按 <kbd>⌘/Ctrl</kbd> <kbd>Enter</kbd>，会填入每个单元格。右键可插入 / 删除行和列。拖动列名左侧的点状把手（或右键 → 左移 / 右移）调整列顺序，图跟着变。结果随输入自动更新。</dd>
-      <dt>撤销</dt><dd><kbd>⌘/Ctrl</kbd> <kbd>Z</kbd>；加 <kbd>Shift</kbd> 为重做。撤销同时覆盖数据和图形设置（图表类型、配色、尺寸、样式、检验）。</dd>
-      <dt>会话</dt><dd>自动保存在本浏览器中；保存 / 打开（.jgz）可以在不同电脑间转移。</dd>
-      <dt>图上文字</dt><dd>点击图上的任意文字即可修改：坐标轴标题、x 轴下的组名或图例。修改组名和图例会同时改表格里的列名或行标题（<kbd>⌘/Ctrl</kbd> <kbd>Z</kbd> 可撤销）。<kbd>Enter</kbd> 确认，<kbd>Esc</kbd> 取消。清空的坐标轴标题在屏幕上留一个浅色占位，方便再次点击；导出时不会出现。*** / P = 旁边的<i>关</i>可隐藏图上的字母和星号。</dd>
-      <dt>格式</dt><dd>点击柱子可选颜色；点击任意文字（标题、组名、图例、字母 / 星号、y 轴数字）可设置加粗、斜体、颜色和字号。Shift 点击可选中多根柱子；在图上右键可在新标签页比较所选柱子（t 检验、Mann–Whitney、方差分析、Kruskal–Wallis）、只显示或隐藏它们，或把图复制为 SVG / PNG。更精细的编辑，可把 SVG 粘贴到 <a href="https://www.svguest.online" target="_blank" rel="noopener">svguest</a>。</dd>
-      <dt>Y 轴</dt><dd>样式 → Y 轴：线性或对数刻度、固定范围（留空为自动）、某个值处的虚线参考线、两个值之间的阴影带，以及截断（从 … 到 …）：某一组远高于其他组时，用 // 标记把坐标轴截断。</dd>
-      <dt>样式</dt><dd>功能区的样式可设置字号、点大小、柱宽、空心或隐藏数据点，以及完整方框或只留左边和底边坐标轴的边框。</dd>
-      <dt>我的样式</dt><dd>样式 → 存为我的默认，会在本浏览器保存图表类型、误差线、配色、显著性标记和样式：之后重置、新访问和示例都会使用它。"忘掉它"恢复内置默认。</dd>
-      <dt>结果</dt><dd>点击"结果"可折叠所有表格（一句话结论保留），点击某个表格的标题只折叠该表格。折叠状态会被记住。</dd>
-      <dt>方法</dt><dd>结果下方有一段可直接复制的论文方法部分文字，描述所做的检验、事后检验、数据表示方式和样本量。</dd>
-      <dt>曲线</dt><dd><i>剂量–反应曲线（4PL）</i>：A 列为剂量，其余列为重复的反应值；以 log10(剂量) 拟合四参数 logistic 模型，给出 EC50 / IC50 及其 95% 置信区间。<i>Kaplan–Meier 生存分析</i>：A 列为时间，其余每列是一组，1 = 事件、0 = 删失（留空 = 不属于该组）；用 log-rank 检验比较生存曲线。</dd>
-      <dt>离群值</dt><dd>每列都会做 Grubbs 检验（α = 0.05），可疑离群值在表格中高亮并列在结果里，但不会被删除。右键单元格 → 排除该值即可排除（以删除线保留在表格中），同一菜单可重新纳入。</dd>
-      <dt>文件</dt><dd>打开可读取 .jgz 会话、Excel .xlsx 文件（每个工作表成为一个标签；公式取最后一次计算的值）或 .csv / .txt 表格；也可以把这些文件拖到粘贴栏上。</dd>
-      <dt>分享</dt><dd>表格标签右侧的"分享"会复制一个包含所有标签（数据和设置）的链接。对方打开后看到相同的表格和图；数据不上传，而是包含在链接里。会话很大时建议用保存的文件发送。</dd>
-      <dt>离线</dt><dd>联网访问一次之后，即使没有网络也能使用（页面和两个脚本会保存在浏览器中）。</dd>
-      <dt>导出</dt><dd>导出可选：当前图，或把所有表格拼成标好 A、B、C… 的组图；PNG 或 SVG；屏幕尺寸或期刊栏宽（8.5 / 11.4 / 17.4 cm）；300 或 600 dpi（写入 PNG，Word 和 Illustrator 打开即为该尺寸）。复制会把图放到剪贴板，可粘贴到 PowerPoint、Word 或聊天中。</dd>
-      <dt>主题与语言</dt><dd>功能区视图组里的太阳 / 月亮按钮切换浅色和深色；"中 / EN"按钮切换界面语言。图本身始终是英文排版，方便投稿。</dd>
-      <dt>配色</dt><dd>除 Claude 和 Classic Prism 外，配色菜单还提供来自 <a href="https://github.com/nanxstats/ggsci" target="_blank" rel="noopener">ggsci</a>（Nan Xiao 开发，与 plsig 同为 GPL 协议）的期刊风格配色：NPG、AAAS、NEJM、Lancet、JAMA、JCO 和 D3。</dd>
-      <dt>隐私</dt><dd>所有计算都在本浏览器中完成，数据不会上传。</dd>
-      <dt>源代码</dt><dd>在 <a href="https://github.com/JieqiangHe/plsig" target="_blank" rel="noopener">GitHub</a> 上开源：可在 Issues 中反馈问题或建议功能。</dd>
-    </dl>
+    <div id="helpEn" class="help-body" data-noi18n>
+    <ol class="help-quick"><li><b>1</b><span><strong>Paste</strong>Copy a table from Excel and paste it into the bar under the sheet.</span></li><li><b>2</b><span><strong>Pick a test</strong>Choose it in Analysis; results and the figure update as you type.</span></li><li><b>3</b><span><strong>Edit the figure</strong>Click any text or bar on the figure; right-click for more.</span></li></ol>
+    <nav class="help-nav"><a href="#h-data-en">Your data</a><a href="#h-sheet-en">The sheet</a><a href="#h-figure-en">The figure</a><a href="#h-results-en">Results</a><a href="#h-files-en">Files and sharing</a><a href="#h-about-en">About</a></nav>
+    <section class="hs" id="h-data-en"><h4><svg viewBox="0 0 24 24"><path d="M4 5h16v14H4zM4 10h16M10 5v14"/></svg>Your data</h4><dl>
+        <div class="hi"><dt>Layout</dt><dd>One column per group. Paired, repeated-measures and Friedman tests match values by row (one subject per row). Correlation uses column A as X and B as Y. Contingency tables hold counts: columns are groups, rows are outcomes (named by the row titles).</dd></div>
+        <div class="hi"><dt>Two-way</dt><dd>Columns are the levels of one factor (e.g. Control / Drug); the row title names the level of the other (e.g. Male / Female). Put each replicate on its own row and repeat the row title.</dd></div>
+        <div class="hi"><dt>Clusters</dt><dd>For bars in clusters with letters over each bar (e.g. Control, P1–P3 × M1–M3), choose <i>One-way ANOVA across grouped cells</i>. The row title names the cluster on the x axis and each column is a bar colour; every row-title × column cell is one group, and cells may stay empty (a Control row fills only its own column).</dd></div>
+        <div class="hi"><dt>Curves</dt><dd><i>Dose–response curve (4PL)</i>: column A = dose, the other columns = replicate responses; a four-parameter logistic is fitted on log10(dose) and reports EC50 / IC50 with its 95% CI. <i>Kaplan–Meier survival</i>: column A = time, each other column a group with 1 = event and 0 = censored (blank = not in that group); curves are compared with the log-rank test.</dd></div>
+        <div class="hi"><dt>Exclude</dt><dd>Right-click a column (or a block of columns) and choose <i>Exclude from the analysis</i> to keep the data on the sheet but out of the test and the figure. The same menu includes it again.</dd></div>
+        <div class="hi"><dt>Outliers</dt><dd>Grubbs' test (α = 0.05) runs on every column; suspected outliers are highlighted on the sheet and listed in the results, but nothing is removed. Right-click a cell → Exclude value to leave it out (it stays on the sheet, struck through); the same menu includes it again.</dd></div>
+    </dl></section>
+    <section class="hs" id="h-sheet-en"><h4><svg viewBox="0 0 24 24"><path d="M5 4h14v16H5zM9 8h6M9 12h6M9 16h4"/></svg>The sheet</h4><dl>
+        <div class="hi"><dt>Sheets</dt><dd>The tabs over the sheet each hold their own data, test, figure options and undo history: one tab per figure. <b>+</b> (or a double-click on the empty strip) adds one; double-click a tab to rename it; right-click to duplicate, move or delete. Save writes every tab into one .jgz file, and Open adds a file's tabs to the ones you have.</dd></div>
+        <div class="hi"><dt>Paste</dt><dd>Paste a block from Excel/Sheets into any cell (<kbd>⌘/Ctrl</kbd> <kbd>V</kbd>); the grid expands to fit. To replace the whole sheet, click the paste bar under the sheet (or Paste in the ribbon) and press <kbd>⌘/Ctrl</kbd> <kbd>V</kbd>: tables from Excel, Word, web pages, PDFs and CSV text all work, with or without a header row. You can also drop a .csv / .txt file on the bar.</dd></div>
+        <div class="hi"><dt>Select</dt><dd>Click a cell and just type to replace it; double-click or <kbd>F2</kbd> to edit inside it. Drag, or <kbd>Shift</kbd> + click / arrows, to select a block; click a row number or column letter for a whole row or column; <kbd>⌘/Ctrl</kbd> <kbd>A</kbd> selects everything. Click the empty grid to add rows and columns there.</dd></div>
+        <div class="hi"><dt>Move</dt><dd>Arrows, <kbd>Tab</kbd> and <kbd>Enter</kbd> move between cells (<kbd>Enter</kbd> on the last row adds one); <kbd>⌘/Ctrl</kbd> + arrow jumps to the edge.</dd></div>
+        <div class="hi"><dt>Edit</dt><dd>Copy, cut and paste work on blocks; one copied value pasted onto a block fills it. <kbd>Delete</kbd> clears the block, <kbd>⌘/Ctrl</kbd> <kbd>D</kbd> fills down, <kbd>Esc</kbd> cancels a change. Type a value with a block selected and press <kbd>⌘/Ctrl</kbd> <kbd>Enter</kbd> to put it in every cell. Right-click for insert / delete rows and columns. Drag a column by the dotted handle at the left of its name (or right-click → Move left / right) to reorder it; the figure follows. Results update as you type.</dd></div>
+        <div class="hi"><dt>Undo</dt><dd><kbd>⌘/Ctrl</kbd> <kbd>Z</kbd>; add <kbd>Shift</kbd> for redo. Undo covers the data and the figure settings (chart, colours, size, style, test).</dd></div>
+    </dl></section>
+    <section class="hs" id="h-figure-en"><h4><svg viewBox="0 0 24 24"><path d="M4 20V4M4 20h16M8 16v-5M12 16V8M16 16v-3"/></svg>The figure</h4><dl>
+        <div class="hi"><dt>Figure text</dt><dd>Click any text on the figure to edit it: an axis title, a group name under the x axis, or a legend entry. Group names and legend entries rename the column or row title on the sheet (<kbd>⌘/Ctrl</kbd> <kbd>Z</kbd> undoes it). <kbd>Enter</kbd> keeps the change, <kbd>Esc</kbd> cancels. A cleared axis title stays as a faint placeholder on screen so you can click it again; exports leave it out. <i>Off</i> next to *** / P = hides the letters and stars on the figure.</dd></div>
+        <div class="hi"><dt>Format</dt><dd>Click a bar to pick its colour, or any text (titles, group names, legend, letters / stars, y-axis numbers) for bold, italic, colour and size. Shift-click bars to select several; right-click the figure to compare the selected bars in a new tab (t-test, Mann–Whitney, ANOVA, Kruskal–Wallis), show or hide them, or copy the figure as SVG or PNG. For finer editing, paste the SVG into <a href="https://www.svguest.online" target="_blank" rel="noopener">svguest</a>.</dd></div>
+        <div class="hi"><dt>Style</dt><dd>Style in the ribbon sets the figure's font size, dot size, bar width, hollow or hidden points, and a box or open (left and bottom axes) frame.</dd></div>
+        <div class="hi"><dt>Y axis</dt><dd>Style → Y axis: linear or log scale, a fixed range (blank = automatic), a dashed reference line at a value, a shaded band between two values, and a break (from … to …) that cuts the axis with // marks when one group is far taller than the rest.</dd></div>
+        <div class="hi"><dt>My style</dt><dd>Style → Save as my default keeps the chart type, error bars, colours, significance labels and style in this browser: Reset, new visits and Examples then use it. Forget it returns to the built-in defaults.</dd></div>
+        <div class="hi"><dt>Colours</dt><dd>Besides Claude and Classic Prism, the colour menu offers the journal-style palettes NPG, AAAS, NEJM, Lancet, JAMA, JCO and D3 from <a href="https://github.com/nanxstats/ggsci" target="_blank" rel="noopener">ggsci</a> by Nan Xiao (GPL, like plsig).</dd></div>
+    </dl></section>
+    <section class="hs" id="h-results-en"><h4><svg viewBox="0 0 24 24"><path d="M5 12l4 4 10-10"/></svg>Results</h4><dl>
+        <div class="hi"><dt>Results</dt><dd>Click <b>Results</b> to fold the tables away (the one-line conclusion stays), or click one table's title to fold just that table. Folds are remembered.</dd></div>
+        <div class="hi"><dt>Methods</dt><dd>Under the results, a ready-to-copy paragraph for a paper's methods section describes the test that ran, its post-hoc test, how the data are shown and the sample size.</dd></div>
+    </dl></section>
+    <section class="hs" id="h-files-en"><h4><svg viewBox="0 0 24 24"><path d="M12 4v11M8 8l4-4 4 4M5 15v4h14v-4"/></svg>Files and sharing</h4><dl>
+        <div class="hi"><dt>Session</dt><dd>Saved in this browser automatically; Save / Open (.jgz) moves a session between machines.</dd></div>
+        <div class="hi"><dt>Files</dt><dd>Open reads a .jgz session, an Excel .xlsx file (each worksheet becomes a tab; formulas give their last computed value) or a .csv / .txt table; you can also drop any of these on the paste bar.</dd></div>
+        <div class="hi"><dt>Share</dt><dd>Share (right of the sheet tabs) copies a link that holds every tab, data and settings included. Whoever opens it gets the same sheets and figures; nothing is uploaded, the data travel inside the link. Very large sessions are better sent as a Save file.</dd></div>
+        <div class="hi"><dt>Export</dt><dd>Export opens the options: this figure or every sheet as one panel figure lettered A, B, C…, PNG or SVG, the on-screen size or a journal column width (8.5 / 11.4 / 17.4 cm), and 300 or 600 dpi (written into the PNG, so Word and Illustrator open it at that size). Copy puts the figure on the clipboard for PowerPoint, Word or a chat.</dd></div>
+        <div class="hi"><dt>Offline</dt><dd>After one visit online, the page works without a network (it keeps itself and its two scripts in the browser).</dd></div>
+    </dl></section>
+    <section class="hs" id="h-about-en"><h4><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 11v5M12 8h.01"/></svg>About</h4><dl>
+        <div class="hi"><dt>Theme</dt><dd>The sun / moon button in the ribbon's View group switches between light and dark; 中 / EN switches the interface between Chinese and English (the figure itself stays in English, for papers).</dd></div>
+        <div class="hi"><dt>Privacy</dt><dd>Everything runs in this browser; your data is never uploaded.</dd></div>
+        <div class="hi"><dt>Source</dt><dd>Open source on <a href="https://github.com/JieqiangHe/plsig" target="_blank" rel="noopener">GitHub</a>: report a problem or suggest a feature under Issues.</dd></div>
+    </dl></section>
+    </div>
+    <div id="helpZh" class="help-body" data-noi18n hidden>
+    <ol class="help-quick"><li><b>1</b><span><strong>粘贴</strong>从 Excel 复制表格，粘贴到表格下方的粘贴栏。</span></li><li><b>2</b><span><strong>选择检验</strong>在“分析”里选择；结果和图随输入自动更新。</span></li><li><b>3</b><span><strong>编辑图形</strong>点击图上的文字或柱子即可修改；右键有更多操作。</span></li></ol>
+    <nav class="help-nav"><a href="#h-data-zh">数据</a><a href="#h-sheet-zh">表格</a><a href="#h-figure-zh">图形</a><a href="#h-results-zh">结果</a><a href="#h-files-zh">文件与分享</a><a href="#h-about-zh">关于</a></nav>
+    <section class="hs" id="h-data-zh"><h4><svg viewBox="0 0 24 24"><path d="M4 5h16v14H4zM4 10h16M10 5v14"/></svg>数据</h4><dl>
+        <div class="hi"><dt>数据布局</dt><dd>每组一列。配对、重复测量和 Friedman 检验按行匹配（每行一个受试对象）。相关分析以 A 列为 X、B 列为 Y。列联表填计数：列为组，行为结局（由行标题命名）。</dd></div>
+        <div class="hi"><dt>双因素</dt><dd>各列是一个因素的水平（如 Control / Drug）；行标题是另一个因素的水平（如 Male / Female）。每个重复单独一行，并重复填写行标题。</dd></div>
+        <div class="hi"><dt>分组柱图</dt><dd>要做分组柱状图并在每根柱上标字母（如 Control、P1–P3 × M1–M3），选择<i>分组单元格单因素方差分析</i>。行标题是 x 轴上的分组，每列是一种柱子颜色；每个行标题 × 列的单元格是一组，单元格可以留空（Control 行只填自己那一列）。</dd></div>
+        <div class="hi"><dt>曲线</dt><dd><i>剂量–反应曲线（4PL）</i>：A 列为剂量，其余列为重复的反应值；以 log10(剂量) 拟合四参数 logistic 模型，给出 EC50 / IC50 及其 95% 置信区间。<i>Kaplan–Meier 生存分析</i>：A 列为时间，其余每列是一组，1 = 事件、0 = 删失（留空 = 不属于该组）；用 log-rank 检验比较生存曲线。</dd></div>
+        <div class="hi"><dt>排除列</dt><dd>右键一列（或选中多列），选择<i>从分析中排除</i>：数据保留在表格里，但不参与检验和作图。同一菜单可以重新纳入。</dd></div>
+        <div class="hi"><dt>离群值</dt><dd>每列都会做 Grubbs 检验（α = 0.05），可疑离群值在表格中高亮并列在结果里，但不会被删除。右键单元格 → 排除该值即可排除（以删除线保留在表格中），同一菜单可重新纳入。</dd></div>
+    </dl></section>
+    <section class="hs" id="h-sheet-zh"><h4><svg viewBox="0 0 24 24"><path d="M5 4h14v16H5zM9 8h6M9 12h6M9 16h4"/></svg>表格</h4><dl>
+        <div class="hi"><dt>表格标签</dt><dd>表格上方的每个标签都有自己的数据、检验、图形设置和撤销记录：一个标签一张图。<b>+</b>（或双击空白处）新建；双击标签重命名；右键可复制、移动或删除。保存会把所有标签写进一个 .jgz 文件，打开会把文件里的标签追加进来。</dd></div>
+        <div class="hi"><dt>粘贴</dt><dd>在任意单元格粘贴 Excel 的数据块（<kbd>⌘/Ctrl</kbd> <kbd>V</kbd>），表格会自动扩展。要替换整张表，点表格下方的粘贴栏（或功能区的粘贴）再按 <kbd>⌘/Ctrl</kbd> <kbd>V</kbd>：Excel、Word、网页、PDF 和 CSV 文本都可以，有无表头均可。也可以把 .csv / .txt 文件拖到粘贴栏上。</dd></div>
+        <div class="hi"><dt>选择</dt><dd>点一个单元格直接输入即可替换；双击或按 <kbd>F2</kbd> 在格内编辑。拖动，或 <kbd>Shift</kbd> + 点击 / 方向键选择区域；点行号或列字母选中整行整列；<kbd>⌘/Ctrl</kbd> <kbd>A</kbd> 全选。点击空白网格会在那里添加行和列。</dd></div>
+        <div class="hi"><dt>移动</dt><dd>方向键、<kbd>Tab</kbd> 和 <kbd>Enter</kbd> 在单元格间移动（在最后一行按 <kbd>Enter</kbd> 会新增一行）；<kbd>⌘/Ctrl</kbd> + 方向键跳到边缘。</dd></div>
+        <div class="hi"><dt>编辑</dt><dd>复制、剪切和粘贴都支持区域；复制一个值粘到一个区域会填满它。<kbd>Delete</kbd> 清空区域，<kbd>⌘/Ctrl</kbd> <kbd>D</kbd> 向下填充，<kbd>Esc</kbd> 取消修改。选中区域后输入一个值再按 <kbd>⌘/Ctrl</kbd> <kbd>Enter</kbd>，会填入每个单元格。右键可插入 / 删除行和列。拖动列名左侧的点状把手（或右键 → 左移 / 右移）调整列顺序，图跟着变。结果随输入自动更新。</dd></div>
+        <div class="hi"><dt>撤销</dt><dd><kbd>⌘/Ctrl</kbd> <kbd>Z</kbd>；加 <kbd>Shift</kbd> 为重做。撤销同时覆盖数据和图形设置（图表类型、配色、尺寸、样式、检验）。</dd></div>
+    </dl></section>
+    <section class="hs" id="h-figure-zh"><h4><svg viewBox="0 0 24 24"><path d="M4 20V4M4 20h16M8 16v-5M12 16V8M16 16v-3"/></svg>图形</h4><dl>
+        <div class="hi"><dt>图上文字</dt><dd>点击图上的任意文字即可修改：坐标轴标题、x 轴下的组名或图例。修改组名和图例会同时改表格里的列名或行标题（<kbd>⌘/Ctrl</kbd> <kbd>Z</kbd> 可撤销）。<kbd>Enter</kbd> 确认，<kbd>Esc</kbd> 取消。清空的坐标轴标题在屏幕上留一个浅色占位，方便再次点击；导出时不会出现。*** / P = 旁边的<i>关</i>可隐藏图上的字母和星号。</dd></div>
+        <div class="hi"><dt>格式</dt><dd>点击柱子可选颜色；点击任意文字（标题、组名、图例、字母 / 星号、y 轴数字）可设置加粗、斜体、颜色和字号。Shift 点击可选中多根柱子；在图上右键可在新标签页比较所选柱子（t 检验、Mann–Whitney、方差分析、Kruskal–Wallis）、只显示或隐藏它们，或把图复制为 SVG / PNG。更精细的编辑，可把 SVG 粘贴到 <a href="https://www.svguest.online" target="_blank" rel="noopener">svguest</a>。</dd></div>
+        <div class="hi"><dt>样式</dt><dd>功能区的样式可设置字号、点大小、柱宽、空心或隐藏数据点，以及完整方框或只留左边和底边坐标轴的边框。</dd></div>
+        <div class="hi"><dt>Y 轴</dt><dd>样式 → Y 轴：线性或对数刻度、固定范围（留空为自动）、某个值处的虚线参考线、两个值之间的阴影带，以及截断（从 … 到 …）：某一组远高于其他组时，用 // 标记把坐标轴截断。</dd></div>
+        <div class="hi"><dt>我的样式</dt><dd>样式 → 存为我的默认，会在本浏览器保存图表类型、误差线、配色、显著性标记和样式：之后重置、新访问和示例都会使用它。"忘掉它"恢复内置默认。</dd></div>
+        <div class="hi"><dt>配色</dt><dd>除 Claude 和 Classic Prism 外，配色菜单还提供来自 <a href="https://github.com/nanxstats/ggsci" target="_blank" rel="noopener">ggsci</a>（Nan Xiao 开发，与 plsig 同为 GPL 协议）的期刊风格配色：NPG、AAAS、NEJM、Lancet、JAMA、JCO 和 D3。</dd></div>
+    </dl></section>
+    <section class="hs" id="h-results-zh"><h4><svg viewBox="0 0 24 24"><path d="M5 12l4 4 10-10"/></svg>结果</h4><dl>
+        <div class="hi"><dt>结果</dt><dd>点击"结果"可折叠所有表格（一句话结论保留），点击某个表格的标题只折叠该表格。折叠状态会被记住。</dd></div>
+        <div class="hi"><dt>方法</dt><dd>结果下方有一段可直接复制的论文方法部分文字，描述所做的检验、事后检验、数据表示方式和样本量。</dd></div>
+    </dl></section>
+    <section class="hs" id="h-files-zh"><h4><svg viewBox="0 0 24 24"><path d="M12 4v11M8 8l4-4 4 4M5 15v4h14v-4"/></svg>文件与分享</h4><dl>
+        <div class="hi"><dt>会话</dt><dd>自动保存在本浏览器中；保存 / 打开（.jgz）可以在不同电脑间转移。</dd></div>
+        <div class="hi"><dt>文件</dt><dd>打开可读取 .jgz 会话、Excel .xlsx 文件（每个工作表成为一个标签；公式取最后一次计算的值）或 .csv / .txt 表格；也可以把这些文件拖到粘贴栏上。</dd></div>
+        <div class="hi"><dt>分享</dt><dd>表格标签右侧的"分享"会复制一个包含所有标签（数据和设置）的链接。对方打开后看到相同的表格和图；数据不上传，而是包含在链接里。会话很大时建议用保存的文件发送。</dd></div>
+        <div class="hi"><dt>导出</dt><dd>导出可选：当前图，或把所有表格拼成标好 A、B、C… 的组图；PNG 或 SVG；屏幕尺寸或期刊栏宽（8.5 / 11.4 / 17.4 cm）；300 或 600 dpi（写入 PNG，Word 和 Illustrator 打开即为该尺寸）。复制会把图放到剪贴板，可粘贴到 PowerPoint、Word 或聊天中。</dd></div>
+        <div class="hi"><dt>离线</dt><dd>联网访问一次之后，即使没有网络也能使用（页面和两个脚本会保存在浏览器中）。</dd></div>
+    </dl></section>
+    <section class="hs" id="h-about-zh"><h4><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 11v5M12 8h.01"/></svg>关于</h4><dl>
+        <div class="hi"><dt>主题与语言</dt><dd>功能区视图组里的太阳 / 月亮按钮切换浅色和深色；"中 / EN"按钮切换界面语言。图本身始终是英文排版，方便投稿。</dd></div>
+        <div class="hi"><dt>隐私</dt><dd>所有计算都在本浏览器中完成，数据不会上传。</dd></div>
+        <div class="hi"><dt>源代码</dt><dd>在 <a href="https://github.com/JieqiangHe/plsig" target="_blank" rel="noopener">GitHub</a> 上开源：可在 Issues 中反馈问题或建议功能。</dd></div>
+    </dl></section>
+    </div>
   </form></dialog>
 
 <script src="https://cdn.jsdelivr.net/npm/jstat@1.9.6/dist/jstat.min.js" integrity="sha384-7uGOMhLhjroTamet5l69PR8EGxKUyWZlZOFFDRymtVqIfsh4Hj7uZRctW67ZCdkD" crossorigin="anonymous"></script>
@@ -5578,6 +5624,10 @@ themeBtn.onclick = () => {
 };
 applyUiTheme(document.documentElement.dataset.theme === "light");
 $("helpBtn").onclick = () => $("helpDlg").showModal();
+// section chips scroll within the dialog (no address hash: #s= carries share links)
+document.querySelectorAll("#helpDlg .help-nav a").forEach(l => l.addEventListener("click", e => {
+  e.preventDefault(); $(l.getAttribute("href").slice(1)).scrollIntoView({ block: "start" });
+}));
 $("pasteBtn").onclick = armPaste;
 
 
