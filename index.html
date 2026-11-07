@@ -177,6 +177,8 @@ a.tb-btn { text-decoration: none; }
 .menu-btn .val { font-weight: 600; color: var(--fg-strong); }
 .menu-btn .k { color: var(--fg-faint); margin-right: 5px; }
 .menu-btn svg.chev { width: 9px; height: 9px; stroke-width: 1.6; }
+#styleBtn { justify-content: center; }   /* opens a card, not a menu: no chevron, label centred */
+#styleBtn .lbl { flex: none; }
 #menuPop { position: fixed; z-index: 60; width: max-content; max-width: 360px; overflow-y: auto; padding: 5px; border: 1px solid var(--card-border); border-radius: 8px; background: var(--surface); box-shadow: 0 8px 28px rgba(0,0,0,.18), 0 1px 3px rgba(0,0,0,.1); }
 :is(#menuPop, #styleCard) h4 { margin: 7px 8px 3px; font-size: 9.5px; font-weight: 500; letter-spacing: .07em; text-transform: uppercase; color: var(--fg-faint); }
 :is(#menuPop, #styleCard) h4:first-child { margin-top: 3px; }
@@ -208,7 +210,17 @@ a.tb-btn { text-decoration: none; }
 :is(#menuPop, #styleCard) .st-mine button { flex: 1; justify-content: center; height: 24px; font-size: 12px; background: var(--seg-bg); }
 :is(#menuPop, #styleCard) .stepper { display: flex; align-items: center; gap: 4px; margin: 2px 0 4px; }
 :is(#menuPop, #styleCard) .stepper button { width: 30px; flex: none; justify-content: center; font-size: 15px; background: var(--btn-hover); }
-:is(#menuPop, #styleCard) .stepper output { flex: 1; text-align: center; font-size: 12.5px; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--fg-strong); }
+:is(#menuPop, #styleCard) .stepper .st-val { flex: 1; min-width: 0; width: 100%; height: 24px; padding: 0 4px; border: 1px solid transparent; border-radius: 5px; background: transparent; text-align: center; font-size: 12.5px; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--fg-strong); outline: none; }
+:is(#menuPop, #styleCard) .stepper .st-val:hover { border-color: var(--input-border); }
+:is(#menuPop, #styleCard) .stepper .st-val:focus { border-color: var(--focus-border); background: var(--input-bg); }
+:is(#menuPop, #styleCard) .stepper .st-val.bad { border-color: var(--bad-border); }
+/* font and dots side by side on one row */
+:is(#menuPop, #styleCard) .st-steps { display: grid; grid-template-columns: 44px minmax(0, 1fr) 44px minmax(0, 1fr); column-gap: 12px; }
+:is(#menuPop, #styleCard) .st-steps .st-lab { width: auto; font-size: 12px; color: var(--fg-muted); }
+:is(#menuPop, #styleCard) .st-steps .stepper + .st-lab { margin-left: 6px; }
+:is(#menuPop, #styleCard) .st-steps .stepper { margin: 2px 0; gap: 0; border-radius: 6px; background: var(--seg-bg); }
+:is(#menuPop, #styleCard) .st-steps .stepper button { width: 26px; height: 24px; background: transparent; }
+:is(#menuPop, #styleCard) .st-steps .stepper button:hover { background: var(--btn-hover); color: var(--fg-strong); }
 #ribbon .size-btn .val { font-variant-numeric: tabular-nums; }
 #ribbon .size-btn.auto .val { font-weight: 400; color: var(--fg-muted); }
 :is(#menuPop, #styleCard) button:hover, :is(#menuPop, #styleCard) button:focus-visible { outline: none; background: var(--accent); color: #fff; }
@@ -238,7 +250,13 @@ a.tb-btn { text-decoration: none; }
 #clearBtn:hover svg { color: var(--danger-hover-fg) !important; }
 
 /* work area: sheet | graph + results */
-#work { min-width: 0; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr) minmax(420px, 42%); }
+#work { position: relative; min-width: 0; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr) minmax(420px, 42%); }
+/* the line between the sheet and the figure: drag it to resize the panes, double-click to reset */
+#split { position: absolute; top: 0; bottom: 0; z-index: 15; width: 9px; margin-left: -4px; cursor: col-resize; touch-action: none; }
+#split::after { content: ""; position: absolute; top: 0; bottom: 0; left: 3px; width: 3px; background: transparent; transition: background .12s; }
+#split:hover::after, #split.drag::after, #split:focus-visible::after { background: var(--accent); }
+#split:focus-visible { outline: none; }
+body.splitting, body.splitting * { cursor: col-resize !important; user-select: none !important; }
 
 /* the sheet: full-bleed spreadsheet; empty gridlines continue past the data */
 #vData { display: flex; flex-direction: column; min-height: 0; background: var(--input-bg); }
@@ -450,6 +468,7 @@ button { transition: background-color .15s, color .15s, border-color .15s; }
 @media (max-width: 880px) {
   body { display: flex; flex-direction: column; height: auto; overflow: auto; }
   #work { display: flex; flex-direction: column; }
+  #split { display: none; }
   #ribbon { flex-wrap: wrap; overflow-x: auto; }
   .rg { border-bottom: 1px solid var(--card-border); }
   #sheetWrap { min-height: 280px; max-height: 60vh; }
@@ -626,7 +645,7 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
         <select id="avgReps" hidden><option value="off" selected>Keep</option><option value="on">Average</option></select>
         <input id="breakLo" hidden /><input id="breakHi" hidden /><!-- broken y axis: the gap from … to … -->
         <input id="yMin" hidden /><input id="yMax" hidden /><input id="refY" hidden /><input id="bandLo" hidden /><input id="bandHi" hidden />
-        <span class="flat"><button id="styleBtn" class="tb-btn menu-btn" aria-expanded="false" aria-controls="styleCard" title="Figure style: font, dots, bar width, points, frame"><svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg><span class="lbl">Style</span><svg class="chev" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4"/></svg></button></span>
+        <span class="flat"><button id="styleBtn" class="tb-btn menu-btn" aria-expanded="false" aria-controls="styleCard" title="Figure style: font, dots, bar width, points, frame"><svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg><span class="lbl">Style</span></button></span>
         <input id="plotH" type="number" min="220" step="20" value="" placeholder="400" title="Height in px (blank = automatic, fitted to the figure)" class="num-field size-src" hidden />
         <span class="flat"><button id="resetGraph" class="tb-btn" title="Restore graph to default options, size &amp; view"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>Reset</button></span>
         <span class="flat"><button id="exportBtnFig" class="tb-btn menu-btn" aria-haspopup="dialog" title="Download the figure (or every sheet as one panel figure) as PNG or SVG, at a journal width and DPI"><svg viewBox="0 0 24 24"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14"/></svg><span class="lbl">Export</span><svg class="chev" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4"/></svg></button></span>
@@ -649,6 +668,7 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
   </header>
 
   <div id="work">
+    <div id="split" role="separator" aria-orientation="vertical" aria-label="Resize the sheet and the figure" tabindex="0" title="Drag to resize the sheet and the figure; double-click to reset"></div>
     <!-- ============ DATA SHEET ============ -->
     <section id="vData">
       <!-- one tab per data sheet; each keeps its own data, test, figure options and undo -->
@@ -1885,7 +1905,20 @@ menuPop.addEventListener("click", e => {
   sel.value = b.dataset.v; syncSegs();
   sel.dispatchEvent(new Event("change"));
 });
+menuPop.addEventListener("input", e => {
+  const f = e.target.closest("input[data-size]");
+  if (!f || !menuFor || menuFor.tagName !== "INPUT") return;
+  const cfg = SIZE_BTNS[menuFor.id], v = parseInt(f.value, 10);
+  const ok = /^\s*\d+\s*$/.test(f.value) && v >= cfg.min && v <= cfg.max;
+  f.classList.toggle("bad", f.value.trim() !== "" && !ok);
+  if (!ok) return;
+  setSize(menuFor, v);
+  menuPop.querySelectorAll("button[data-v]").forEach(b => b.classList.toggle("on", b.dataset.v === String(v)));
+});
 menuPop.addEventListener("keydown", e => {
+  const f = e.target.closest && e.target.closest("input[data-size]");
+  if (f && e.key === "Enter") { e.preventDefault(); closeMenuPop(true); return; }
+  if (f && e.key !== "Escape" && e.key !== "Tab") return;   // typing in the value: keys edit the text
   const items = [...menuPop.querySelectorAll("button[data-v]")], i = items.indexOf(document.activeElement);
   const go = (j) => { e.preventDefault(); if (items.length) items[Math.max(0, Math.min(items.length - 1, j))].focus(); };
   if (e.key === "ArrowDown") go(i + 1);
@@ -1930,7 +1963,7 @@ function openSizePop(inp) {
   const cfg = SIZE_BTNS[inp.id], cur = inp.value === "" ? "" : String(parseInt(inp.value, 10));
   const opt = (v, text, hint) => `<button type="button" role="option" data-v="${v}"${cur === String(v) ? ' class="on"' : ""}><span>${text}</span>${hint ? `<small>${hint}</small>` : ""}</button>`;
   menuPop.innerHTML = `<h4>${cfg.name}</h4>
-    <div class="stepper"><button type="button" data-step="-1" aria-label="Smaller">−</button><output>${sizeValue(inp)}</output><button type="button" data-step="1" aria-label="Larger">+</button></div>` +
+    <div class="stepper"><button type="button" data-step="-1" aria-label="Smaller">−</button><input class="st-val" data-size="1" inputmode="numeric" value="${sizeValue(inp)}" aria-label="${cfg.name}" title="${cfg.min}–${cfg.max}" /><button type="button" data-step="1" aria-label="Larger">+</button></div>` +
     (cfg.auto ? opt("", "Auto", inp.placeholder + " · fits the figure") : "") + cfg.presets.map(v => opt(v, String(v))).join("");
   menuPop.hidden = false;
   const r = inp._btn.getBoundingClientRect();
@@ -1947,7 +1980,7 @@ menuPop.addEventListener("click", e => {
   const cfg = SIZE_BTNS[menuFor.id];
   const v = Math.max(cfg.min, Math.min(cfg.max, sizeValue(menuFor) + cfg.step * +st.dataset.step));
   setSize(menuFor, v);
-  menuPop.querySelector("output").textContent = v;
+  menuPop.querySelector("input.st-val").value = v;
   menuPop.querySelectorAll("button[data-v]").forEach(b => b.classList.toggle("on", b.dataset.v === String(v)));
 });
 /* Style popover: steppers for font and dot size, segments for bar width, points and frame;
@@ -1955,7 +1988,8 @@ menuPop.addEventListener("click", e => {
 const STYLE_STEPS = { fontSize: { name: "Font", step: 1, min: 8, max: 24 }, dotSize: { name: "Dots", step: 1, min: 2, max: 20 } };
 const STYLE_SEGS = { barWidth: "Bars", pointStyle: "Points", frame: "Frame" };
 function styleHtml() {
-  const step = (id, c) => `<div class="st-row"><span>${c.name}</span><div class="stepper"><button type="button" data-sid="${id}" data-sstep="-1" aria-label="Smaller">−</button><output>${$(id).value}</output><button type="button" data-sid="${id}" data-sstep="1" aria-label="Larger">+</button></div></div>`;
+  // font and dots share one row: label, − value +, where the value can also be typed
+  const step = (id, c) => `<span class="st-lab">${c.name}</span><div class="stepper"><button type="button" data-sid="${id}" data-sstep="-1" aria-label="Smaller">−</button><input class="st-val" data-vid="${id}" inputmode="numeric" value="${escapeHtml($(id).value)}" aria-label="${c.name}" title="${c.min}–${c.max}" /><button type="button" data-sid="${id}" data-sstep="1" aria-label="Larger">+</button></div>`;
   const seg = (id, name) => `<div class="st-row"><span>${name}</span><div class="seg">${[...$(id).options].map(o =>
     `<button type="button" data-sid="${id}" data-sv="${o.value}"${o.value === $(id).value ? ' class="on"' : ""}>${o.text}</button>`).join("")}</div></div>`;
   const num = (id, ph) => `<input class="st-num" data-nid="${id}" inputmode="decimal" placeholder="${ph}" value="${escapeHtml($(id).value)}" aria-label="${id}" />`;
@@ -1966,7 +2000,7 @@ function styleHtml() {
     pick = keys.length ? `<div class="st-pick">${keys.map(k => `<label><input type="checkbox" data-pick="${escapeHtml(k)}"${on.has(k) ? " checked" : ""}/><span>${escapeHtml(k)}</span></label>`).join("")}</div>`
                        : `<p class="ex-note">Pick works with brackets: choose Brackets above (one-way tests) or a two-way design.</p>`;
   }
-  const left = `<h4>Figure style</h4>` + Object.entries(STYLE_STEPS).map(([id, c]) => step(id, c)).join("") +
+  const left = `<h4>Figure style</h4>` + `<div class="st-row st-steps">${Object.entries(STYLE_STEPS).map(([id, c]) => step(id, c)).join("")}</div>` +
          Object.entries(STYLE_SEGS).map(([id, n]) => seg(id, n)).join("") + seg("errDir", "Error bars") + seg("fillStyle", "Fill") +
          `<h4>Journal</h4>` + seg("journal", "Preset") +
          `<p class="ex-note">${$("journal").value ? "7 pt text and thin lines at the journal's column width; Export uses that width." : "Sets 7 pt text and thin lines for the journal's column width."}</p>` +
@@ -2014,7 +2048,7 @@ styleCard.addEventListener("click", e => {
   if (b.dataset.sstep) {
     const c = STYLE_STEPS[id];
     el.value = Math.max(c.min, Math.min(c.max, (parseInt(el.value, 10) || +GRAPH_DEFAULTS[id]) + c.step * +b.dataset.sstep));
-    b.parentElement.querySelector("output").textContent = el.value;
+    b.parentElement.querySelector("input").value = el.value;
   } else {
     el.value = b.dataset.sv;
     b.parentElement.querySelectorAll("button").forEach(x => x.classList.toggle("on", x === b));
@@ -2040,6 +2074,37 @@ styleCard.addEventListener("input", e => {
   clearTimeout(styleNumTimer);
   styleNumTimer = setTimeout(() => { scheduleSave(); redraw(); }, 250);
 });
+let styleValTimer = null;
+styleCard.addEventListener("input", e => {
+  const f = e.target.closest("input[data-vid]");
+  if (!f) return;
+  const c = STYLE_STEPS[f.dataset.vid], v = parseInt(f.value, 10);
+  const ok = /^\s*\d+\s*$/.test(f.value) && v >= c.min && v <= c.max;
+  f.classList.toggle("bad", f.value.trim() !== "" && !ok);
+  if (!ok) return;
+  $(f.dataset.vid).value = v;
+  clearTimeout(styleValTimer);
+  styleValTimer = setTimeout(() => { scheduleSave(); redraw(); }, 250);
+});
+styleCard.addEventListener("change", e => {
+  const f = e.target.closest("input[data-vid]");
+  if (!f) return;
+  const id = f.dataset.vid, c = STYLE_STEPS[id], v = parseInt(f.value, 10);
+  const nv = Number.isFinite(v) ? Math.max(c.min, Math.min(c.max, v)) : +$(id).value;
+  f.value = nv; f.classList.remove("bad");
+  if (String(nv) !== String($(id).value)) { $(id).value = nv; scheduleSave(); redraw(); }
+});
+styleCard.addEventListener("keydown", e => {
+  const f = e.target.closest("input[data-vid]");
+  if (!f) return;
+  if (e.key === "Enter") { e.preventDefault(); f.dispatchEvent(new Event("change", { bubbles: true })); f.select(); }
+  else if (e.key === "ArrowUp" || e.key === "ArrowDown") {   // arrows step the value, as in a number field
+    e.preventDefault();
+    const c = STYLE_STEPS[f.dataset.vid];
+    f.value = Math.max(c.min, Math.min(c.max, (parseInt(f.value, 10) || +$(f.dataset.vid).value) + (e.key === "ArrowUp" ? 1 : -1) * c.step));
+    f.dispatchEvent(new Event("input", { bubbles: true }));
+  }
+});
 /* "my default": the figure options a user wants every time, kept in this browser */
 const MY_STYLE_IDS = ["chartType", "errType", "themeSelect", "sigLabel", "dotSize", "fontSize", "barWidth", "pointStyle", "frame", "errDir", "sigMarks", "journal", "fillStyle"];
 let myStyle = {};
@@ -2063,6 +2128,37 @@ styleCard.addEventListener("click", e => {
 });
 addEventListener("mousedown", e => { if (menuFor && !menuPop.contains(e.target) && !menuFor._btn.contains(e.target)) closeMenuPop(); }, true);
 addEventListener("resize", () => closeMenuPop());
+
+/* Pane splitter: the right pane's width in px, kept in this browser (plsig:split). The grid
+   clamps it, so a narrower window never squeezes either pane below a usable width. */
+(() => {
+  const work = $("work"), split = $("split"), data = $("vData");
+  const apply = (w) => { work.style.gridTemplateColumns = w ? `minmax(0, 1fr) clamp(320px, ${Math.round(w)}px, calc(100% - 360px))` : ""; };
+  const place = () => { split.style.left = data.getBoundingClientRect().width + "px"; };
+  let saved = 0;
+  try { saved = +localStorage.getItem("plsig:split") || 0; } catch (_) { /* none */ }
+  apply(saved);
+  new ResizeObserver(place).observe(data); place();
+  const keep = (w) => { saved = w; apply(w); try { w ? localStorage.setItem("plsig:split", String(Math.round(w))) : localStorage.removeItem("plsig:split"); } catch (_) { /* fine */ } };
+  const clampW = (w) => { const W = work.getBoundingClientRect().width; return Math.max(320, Math.min(W - 360, w)); };
+  split.addEventListener("pointerdown", e => {
+    if (e.button !== 0) return;
+    e.preventDefault(); split.setPointerCapture(e.pointerId);
+    split.classList.add("drag"); document.body.classList.add("splitting");
+    const right = work.getBoundingClientRect().right;
+    const move = (ev) => keep(clampW(right - ev.clientX));
+    const up = () => { split.classList.remove("drag"); document.body.classList.remove("splitting");
+                       split.removeEventListener("pointermove", move); split.removeEventListener("pointerup", up); split.removeEventListener("pointercancel", up); };
+    split.addEventListener("pointermove", move); split.addEventListener("pointerup", up); split.addEventListener("pointercancel", up);
+  });
+  split.addEventListener("dblclick", () => keep(0));
+  split.addEventListener("keydown", e => {
+    if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+    e.preventDefault();
+    const cur = $("vOut").getBoundingClientRect().width;
+    keep(clampW(cur + (e.key === "ArrowLeft" ? 20 : -20) * (e.shiftKey ? 4 : 1)));
+  });
+})();
 addEventListener("blur", () => closeMenuPop());
 
 /* Welch's correction: an on / off button over the hidden checkbox */
@@ -3164,7 +3260,7 @@ const ZH = {
   "Copy a link that opens these sheets (data and settings) in any browser": "复制一个链接，在任何浏览器中打开这些表格（含数据和设置）",
   "Fill": "填充", "Colour": "彩色", "Pattern": "图案", "Grey": "灰度",
   "Open a saved .jgz session, an Excel .xlsx file (each worksheet becomes a tab) or a .csv / .txt table": "打开 .jgz 会话、Excel .xlsx 文件（每个工作表成为一个标签）或 .csv / .txt 表格",
-  "Fold or unfold the result tables (the conclusion stays)": "折叠或展开结果表格（结论保留）", "Close the style card (the results come back)": "关闭样式卡片（结果重新显示）", "Click to fold or unfold this table": "点击折叠或展开此表格", "Click to fold or unfold": "点击折叠或展开",
+  "Fold or unfold the result tables (the conclusion stays)": "折叠或展开结果表格（结论保留）", "Close the style card (the results come back)": "关闭样式卡片（结果重新显示）", "Drag to resize the sheet and the figure; double-click to reset": "拖动可调整表格和图的宽度；双击恢复默认", "Resize the sheet and the figure": "调整表格和图的宽度", "Click to fold or unfold this table": "点击折叠或展开此表格", "Click to fold or unfold": "点击折叠或展开",
   "Click text or a bar to edit and format it; right-click for analyses and copying.": "点击文字或柱子可编辑和设置格式；右键可做分析和复制。",
   "For finer editing, copy as SVG and paste into": "更精细的编辑：复制为 SVG 后粘贴到", "svguest: an in-browser SVG editor": "svguest：浏览器里的 SVG 编辑器",
   "Bold": "加粗", "Italic": "斜体", "Any colour": "任意颜色", "Back to the default look": "恢复默认样式", "Format": "格式",
