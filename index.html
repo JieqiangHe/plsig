@@ -215,10 +215,12 @@ a.tb-btn { text-decoration: none; }
 :is(#menuPop, #styleCard) .stepper .st-val:focus { border-color: var(--focus-border); background: var(--input-bg); }
 :is(#menuPop, #styleCard) .stepper .st-val.bad { border-color: var(--bad-border); }
 /* font and dots side by side on one row */
-:is(#menuPop, #styleCard) .st-steps { gap: 8px; }
-:is(#menuPop, #styleCard) .st-steps .st-lab { flex: none; width: 44px; font-size: 12px; color: var(--fg-muted); }
-:is(#menuPop, #styleCard) .st-steps .st-lab + .stepper { flex: 1; }
-:is(#menuPop, #styleCard) .st-steps .stepper + .st-lab { width: auto; margin-left: 8px; }
+:is(#menuPop, #styleCard) .st-steps { display: grid; grid-template-columns: 44px minmax(0, 1fr) 44px minmax(0, 1fr); column-gap: 12px; }
+:is(#menuPop, #styleCard) .st-steps .st-lab { width: auto; font-size: 12px; color: var(--fg-muted); }
+:is(#menuPop, #styleCard) .st-steps .stepper + .st-lab { margin-left: 6px; }
+:is(#menuPop, #styleCard) .st-steps .stepper { margin: 2px 0; gap: 0; border-radius: 6px; background: var(--seg-bg); }
+:is(#menuPop, #styleCard) .st-steps .stepper button { width: 26px; height: 24px; background: transparent; }
+:is(#menuPop, #styleCard) .st-steps .stepper button:hover { background: var(--btn-hover); color: var(--fg-strong); }
 #ribbon .size-btn .val { font-variant-numeric: tabular-nums; }
 #ribbon .size-btn.auto .val { font-weight: 400; color: var(--fg-muted); }
 :is(#menuPop, #styleCard) button:hover, :is(#menuPop, #styleCard) button:focus-visible { outline: none; background: var(--accent); color: #fff; }
