@@ -8,7 +8,7 @@ Free statistics and scientific graphing in the browser. Paste a table from Excel
 
 **Live:** https://jieqianghe.github.io/plsig/
 
-The interface is in English or Chinese (中 / EN). Figures always stay in English, ready for papers.
+The interface can be switched between English and Chinese. Figures always stay in English, ready for papers.
 
 ## Analyses
 
@@ -46,10 +46,6 @@ Every statistic was checked against SciPy or pingouin. The Grubbs test flags pos
 ## Running it
 
 `index.html` is the whole app: there is no build step and no server. Open it in a browser, or serve the folder with any static file server. `sw.js` makes it work offline. The only scripts it loads are [jStat](https://github.com/jstat/jstat) and the [Plotly](https://plotly.com/javascript/) cartesian bundle, both pinned and integrity-checked from jsDelivr.
-
-## 中文简介
-
-plsig 是一个免费的浏览器端统计与科研作图工具，思路接近 GraphPad Prism。从 Excel 粘贴数据，选择检验方法，就能得到结果表格、可直接放进论文的方法段落和投稿级图表。数据不会上传，所有计算都在本地完成。支持 t 检验、非参数检验、单因素 / 重复测量 / 双因素方差分析及事后检验、相关与回归、剂量反应曲线 (EC50)、生存分析和列联表。可以直接点击图上的文字和柱子进行编辑，提供期刊预设和多面板导出。界面可切换中文。
 
 ## License
 
