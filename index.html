@@ -60,11 +60,14 @@ svg { display: block; }
   --ns-pill-bg: #383838;  --ns-pill-fg: #cfcfcf;                  /* "ns" pill */
   --plot-shadow: 0 0 0 1px #383838;   /* flat: a hairline edge, no drop shadow */
   /* RStudio-style shell: panes on a gutter, each with a header strip */
-  --gutter: #141414;  --pane-head: #2b2b2b;  --pane-border: #3a3a3a;  --menubar: #262626;
+  --gutter: #141414;  --pane-head: #2b2b2b;  --pane-border: #3a3a3a;  --menubar: #1f1f1f;
+  /* svguest's button tokens (its app.html, dark): field / raised chip, hairline, hover overlay, small shadow, muted icon */
+  --sv-btn: #303030;  --sv-btnb: #ffffff1f;  --sv-btnh: #ffffff14;  --sv-sh: 0 1px 2px #0009;  --sv-h4: #a6a6a6;
 }
 [data-theme="light"] {
   color-scheme: light;
-  --gutter: #dfe2e6;  --pane-head: #f3f4f6;  --pane-border: #c9cdd2;  --menubar: #ffffff;
+  --gutter: #dfe2e6;  --pane-head: #f3f4f6;  --pane-border: #c9cdd2;  --menubar: #e9e9e9;
+  --sv-btn: #fafafa;  --sv-btnb: #00000021;  --sv-btnh: #00000012;  --sv-sh: 0 1px 2px #0000001f;  --sv-h4: #595959;
   /* plain white and light greys with a blue accent, as in svguest */
   --bg: #f7f7f7;
   --surface: #ffffff;
@@ -576,6 +579,37 @@ body.vsplitting, body.vsplitting * { cursor: row-resize !important; user-select:
 #vOut.res-folded #splitV { pointer-events: none; }
 #vOut.res-folded #copyStats { display: none; }
 #vOut.res-folded.styling #resPane { flex: 0 0 var(--res-h, 42%); }
+
+/* ===== toolbar in svguest's style (user's request, Nov 2026; from svguest app.html #mBar / #mTools):
+   the bar is --bar grey; buttons are transparent with 6–7px corners and muted icons, a translucent
+   hover overlay; the chosen segment is a raised chip (field colour, hairline, small shadow); menu
+   buttons read as fields (field colour + hairline); groups are split by 18px hairlines ===== */
+#menubar > button:hover, #menubar > button.open { background: var(--sv-btnh); }
+#mbPop button:hover:not(:disabled), #mbPop button:focus-visible { background: var(--sv-btnh); }
+#ribbon { height: 34px; gap: 0; }
+#ribbon .rg + .rg::before { top: 8px; bottom: 8px; background: var(--sv-btnb); }
+:is(#ribbon, #graphHead) .tb-btn, :is(#ribbon, #graphHead) .flat .tb-btn, :is(#ribbon, #graphHead) .rg-flat .tb-btn {
+  height: 26px; border: 1px solid transparent; border-radius: 7px; background: transparent; box-shadow: none; color: var(--fg); }
+:is(#ribbon, #graphHead) .tb-btn svg { color: var(--sv-h4); }
+:is(#ribbon, #graphHead) .tb-btn:hover:not(:disabled) { background: var(--sv-btnh); }
+:is(#ribbon, #graphHead) .tb-btn:hover:not(:disabled) svg { color: var(--fg-strong); }
+:is(#ribbon, #graphHead) .tb-btn.ic { width: 27px !important; }
+#ribbon .rg-analysis > .menu-btn { width: 226px; }
+/* menu buttons (test, post-hoc, colour theme, W / H) read as fields */
+:is(#ribbon, #graphHead) .menu-btn { height: 26px; border: 1px solid var(--sv-btnb); border-radius: 6px; background: var(--sv-btn); box-shadow: none; }
+:is(#ribbon, #graphHead) .menu-btn:hover, :is(#ribbon, #graphHead) .menu-btn.open { background: var(--sv-btn) linear-gradient(var(--sv-btnh), var(--sv-btnh)); }
+#graphHead #styleBtn { border-color: transparent; background: transparent; }
+#graphHead #styleBtn:hover, #graphHead #styleBtn.open { background: var(--sv-btnh); }
+#graphHead .menu-btn, #graphHead .tb-btn { height: 22px; }
+/* segments: no tray; the chosen one is a raised chip */
+:is(#ribbon, #graphHead) .seg { gap: 1px; padding: 0; background: transparent; border-radius: 7px; }
+:is(#ribbon, #graphHead) .seg button { height: 26px; padding: 0 7px; border: 1px solid transparent; border-radius: 6px; color: var(--sv-h4); }
+:is(#ribbon, #graphHead) .seg button:hover { background: var(--sv-btnh); color: var(--fg-strong); }
+:is(#ribbon, #graphHead) .seg button.on { background: var(--sv-btn); border-color: var(--sv-btnb); box-shadow: var(--sv-sh); color: var(--fg-strong); font-weight: 500; }
+/* on / off (Welch): svguest's button.on, a soft accent tint */
+#ribbon .toggle { height: 26px; border-radius: 6px; }
+#ribbon .toggle.on { background: var(--accent-soft); border-color: transparent; }
+#runBtn { height: 26px; border-radius: 6px; }
 
 @media (max-width: 880px) {
   body { display: flex; flex-direction: column; height: auto; overflow: auto; }
