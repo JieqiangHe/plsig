@@ -737,10 +737,10 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
 
     <div class="rg rg-flat rg-end">
       <div class="rg-body">
-        <button id="themeBtn" class="tb-btn icon" title="Switch between light and dark interface" aria-label="Switch theme"></button>
-        <button id="helpBtn" class="tb-btn icon" title="Help: data layout, shortcuts, export" aria-label="Help"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.6"/><path d="M12 17h.01"/></svg></button>
-        <button id="langBtn" class="tb-btn icon lang" aria-label="Language / 语言">中</button>
-        <a id="ghLink" class="tb-btn icon" href="https://github.com/JieqiangHe/plsig" target="_blank" rel="noopener" title="Source code, issues and feedback on GitHub" aria-label="GitHub repository"><svg viewBox="0 0 16 16" class="filled"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></a>
+        <button id="themeBtn" class="tb-btn icon" hidden title="Switch between light and dark interface" aria-label="Switch theme"></button>
+        <button id="helpBtn" class="tb-btn icon" hidden title="Help: data layout, shortcuts, export" aria-label="Help"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.6"/><path d="M12 17h.01"/></svg></button>
+        <button id="langBtn" class="tb-btn icon lang" hidden aria-label="Language / 语言">中</button>
+        <a id="ghLink" class="tb-btn icon" hidden href="https://github.com/JieqiangHe/plsig" target="_blank" rel="noopener" title="Source code, issues and feedback on GitHub" aria-label="GitHub repository"><svg viewBox="0 0 16 16" class="filled"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></a>
       </div>
     </div>
   </header>
@@ -825,8 +825,16 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
   <dialog id="helpDlg"><form method="dialog">
     <header><h3>Tips</h3><button type="button" id="tourBtn" class="tb-btn">Take the tour</button><button type="submit" value="" aria-label="Close">×</button></header>
     <div id="helpEn" class="help-body" data-noi18n>
-    <ol class="help-quick"><li><b>1</b><span><strong>Paste</strong>Copy a table from Excel and paste it into the bar under the sheet.</span></li><li><b>2</b><span><strong>Pick a test</strong>Choose it in Analysis; results and the figure update as you type.</span></li><li><b>3</b><span><strong>Edit the figure</strong>Click any text or bar on the figure; right-click for more.</span></li></ol>
-    <nav class="help-nav"><a href="#h-data-en">Your data</a><a href="#h-sheet-en">The sheet</a><a href="#h-figure-en">The figure</a><a href="#h-results-en">Results</a><a href="#h-files-en">Files and sharing</a><a href="#h-about-en">About</a></nav>
+    <ol class="help-quick"><li><b>1</b><span><strong>Paste</strong>Copy a table from Excel and paste it into the bar under the sheet.</span></li><li><b>2</b><span><strong>Pick a test</strong>Choose it in the toolbar; the figure (top right) and the results (below it) update as you type.</span></li><li><b>3</b><span><strong>Edit the figure</strong>Click any text or bar on the figure; right-click for more.</span></li></ol>
+    <nav class="help-nav"><a href="#h-window-en">The window</a><a href="#h-data-en">Your data</a><a href="#h-sheet-en">The sheet</a><a href="#h-figure-en">The figure</a><a href="#h-results-en">Results</a><a href="#h-files-en">Files and sharing</a><a href="#h-about-en">About</a></nav>
+    <section class="hs" id="h-window-en"><h4><svg viewBox="0 0 24 24"><path d="M3 4h18v16H3zM3 8h18M11 8v12M11 14h10"/></svg>The window</h4><dl>
+        <div class="hi"><dt>Menu bar</dt><dd>Every command is in the menus at the top: <i>File</i> (open, save, examples, paste, share, export), <i>Edit</i> (undo, rows and columns, clear), <i>Data</i> (subcolumns, transform), <i>Analysis</i> (test, results), <i>Graph</i> (style, size, colours), <i>View</i> (dark / light interface, 中文 / English, pane sizes) and <i>Help</i> (these tips, the tour, GitHub).</dd></div>
+        <div class="hi"><dt>Toolbar</dt><dd>The row under the menus holds what you change most: undo / redo / clear, add a row or column, open / save / copy / paste, the test with its option and Run, then the chart type, error bars, colour theme and significance labels. Hover a button for its name.</dd></div>
+        <div class="hi"><dt>Sheet pane</dt><dd>On the left: the sheet tabs, with Subcolumns, Transform and Share at their right; the sheet; and the paste bar with Examples at the foot.</dd></div>
+        <div class="hi"><dt>Plot pane</dt><dd>Top right: the figure. Its header holds Style, the width (W) and height (H), Reset, Export and Copy.</dd></div>
+        <div class="hi"><dt>Results pane</dt><dd>Bottom right, with two tabs: <i>Results</i> (the conclusion, the tables and a methods paragraph) and <i>Style</i> (font, dots, bars, frame, y axis, significance marks). Click Results again to fold the tables and give the figure the room.</dd></div>
+        <div class="hi"><dt>Pane sizes</dt><dd>Drag the gap between the sheet and the figure, or between the figure and the results, to resize the panes (or focus it and use the arrow keys). Double-click a gap, or View → Reset pane sizes, to go back. Sizes are kept in this browser.</dd></div>
+    </dl></section>
     <section class="hs" id="h-data-en"><h4><svg viewBox="0 0 24 24"><path d="M4 5h16v14H4zM4 10h16M10 5v14"/></svg>Your data</h4><dl>
         <div class="hi"><dt>Layout</dt><dd>One column per group. Paired, repeated-measures and Friedman tests match values by row (one subject per row). Correlation uses column A as X and B as Y. Contingency tables hold counts: columns are groups, rows are outcomes (named by the row titles).</dd></div>
         <div class="hi"><dt>Two-way</dt><dd>Columns are the levels of one factor (e.g. Control / Drug); the row title names the level of the other (e.g. Male / Female). Put each replicate on its own row and repeat the row title.</dd></div>
@@ -838,7 +846,7 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
     </dl></section>
     <section class="hs" id="h-sheet-en"><h4><svg viewBox="0 0 24 24"><path d="M5 4h14v16H5zM9 8h6M9 12h6M9 16h4"/></svg>The sheet</h4><dl>
         <div class="hi"><dt>Sheets</dt><dd>The tabs over the sheet each hold their own data, test, figure options and undo history: one tab per figure. <b>+</b> (or a double-click on the empty strip) adds one; double-click a tab to rename it; right-click to duplicate, move or delete. Save writes every tab into one .jgz file, and Open adds a file's tabs to the ones you have.</dd></div>
-        <div class="hi"><dt>Paste</dt><dd>Paste a block from Excel/Sheets into any cell (<kbd>⌘/Ctrl</kbd> <kbd>V</kbd>); the grid expands to fit. To replace the whole sheet, click the paste bar under the sheet (or Paste in the ribbon) and press <kbd>⌘/Ctrl</kbd> <kbd>V</kbd>: tables from Excel, Word, web pages, PDFs and CSV text all work, with or without a header row. You can also drop a .csv / .txt file on the bar.</dd></div>
+        <div class="hi"><dt>Paste</dt><dd>Paste a block from Excel/Sheets into any cell (<kbd>⌘/Ctrl</kbd> <kbd>V</kbd>); the grid expands to fit. To replace the whole sheet, click the paste bar under the sheet (or File → Paste table into sheet) and press <kbd>⌘/Ctrl</kbd> <kbd>V</kbd>: tables from Excel, Word, web pages, PDFs and CSV text all work, with or without a header row. You can also drop a .csv / .txt file on the bar.</dd></div>
         <div class="hi"><dt>Select</dt><dd>Click a cell and just type to replace it; double-click or <kbd>F2</kbd> to edit inside it. Drag, or <kbd>Shift</kbd> + click / arrows, to select a block; click a row number or column letter for a whole row or column; <kbd>⌘/Ctrl</kbd> <kbd>A</kbd> selects everything. Click the empty grid to add rows and columns there.</dd></div>
         <div class="hi"><dt>Move</dt><dd>Arrows, <kbd>Tab</kbd> and <kbd>Enter</kbd> move between cells (<kbd>Enter</kbd> on the last row adds one); <kbd>⌘/Ctrl</kbd> + arrow jumps to the edge.</dd></div>
         <div class="hi"><dt>Edit</dt><dd>Copy, cut and paste work on blocks; one copied value pasted onto a block fills it. <kbd>Delete</kbd> clears the block, <kbd>⌘/Ctrl</kbd> <kbd>D</kbd> fills down, <kbd>Esc</kbd> cancels a change. Type a value with a block selected and press <kbd>⌘/Ctrl</kbd> <kbd>Enter</kbd> to put it in every cell. Right-click for insert / delete rows and columns. Drag a column by the dotted handle at the left of its name (or right-click → Move left / right) to reorder it; the figure follows. Results update as you type.</dd></div>
@@ -847,31 +855,39 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
     <section class="hs" id="h-figure-en"><h4><svg viewBox="0 0 24 24"><path d="M4 20V4M4 20h16M8 16v-5M12 16V8M16 16v-3"/></svg>The figure</h4><dl>
         <div class="hi"><dt>Figure text</dt><dd>Click any text on the figure to edit it: an axis title, a group name under the x axis, or a legend entry. Group names and legend entries rename the column or row title on the sheet (<kbd>⌘/Ctrl</kbd> <kbd>Z</kbd> undoes it). <kbd>Enter</kbd> keeps the change, <kbd>Esc</kbd> cancels. A cleared axis title stays as a faint placeholder on screen so you can click it again; exports leave it out. <i>Off</i> next to *** / P = hides the letters and stars on the figure.</dd></div>
         <div class="hi"><dt>Format</dt><dd>Click a bar to pick its colour, or any text (titles, group names, legend, letters / stars, y-axis numbers) for bold, italic, colour and size. Shift-click bars to select several; right-click the figure to compare the selected bars in a new tab (t-test, Mann–Whitney, ANOVA, Kruskal–Wallis), show or hide them, or copy the figure as SVG or PNG. For finer editing, paste the SVG into <a href="https://www.svguest.online" target="_blank" rel="noopener">svguest</a>.</dd></div>
-        <div class="hi"><dt>Style</dt><dd>Style in the ribbon sets the figure's font size, dot size, bar width, hollow or hidden points, and a box or open (left and bottom axes) frame.</dd></div>
+        <div class="hi"><dt>Style</dt><dd>Style (in the Plot pane's header, or the Style tab under the figure) sets the figure's font size, dot size, bar width, hollow or hidden points, and a box or open (left and bottom axes) frame.</dd></div>
         <div class="hi"><dt>Y axis</dt><dd>Style → Y axis: linear or log scale, a fixed range (blank = automatic), a dashed reference line at a value, a shaded band between two values, and a break (from … to …) that cuts the axis with // marks when one group is far taller than the rest.</dd></div>
         <div class="hi"><dt>My style</dt><dd>Style → Save as my default keeps the chart type, error bars, colours, significance labels and style in this browser: Reset, new visits and Examples then use it. Forget it returns to the built-in defaults.</dd></div>
         <div class="hi"><dt>Colours</dt><dd>Besides Claude and Classic Prism, the colour menu offers the journal-style palettes NPG, AAAS, NEJM, Lancet, JAMA, JCO and D3 from <a href="https://github.com/nanxstats/ggsci" target="_blank" rel="noopener">ggsci</a> by Nan Xiao (GPL, like plsig).</dd></div>
     </dl></section>
     <section class="hs" id="h-results-en"><h4><svg viewBox="0 0 24 24"><path d="M5 12l4 4 10-10"/></svg>Results</h4><dl>
-        <div class="hi"><dt>Results</dt><dd>Click <b>Results</b> to fold the tables away (the one-line conclusion stays), or click one table's title to fold just that table. Folds are remembered.</dd></div>
+        <div class="hi"><dt>Results</dt><dd>Click the <b>Results</b> tab again to fold the tables away (the one-line conclusion stays and the figure takes the room), or click one table's title to fold just that table. Folds are remembered. Copy table (right of the tabs) copies every table as TSV for Excel.</dd></div>
         <div class="hi"><dt>Methods</dt><dd>Under the results, a ready-to-copy paragraph for a paper's methods section describes the test that ran, its post-hoc test, how the data are shown and the sample size.</dd></div>
     </dl></section>
     <section class="hs" id="h-files-en"><h4><svg viewBox="0 0 24 24"><path d="M12 4v11M8 8l4-4 4 4M5 15v4h14v-4"/></svg>Files and sharing</h4><dl>
-        <div class="hi"><dt>Session</dt><dd>Saved in this browser automatically; Save / Open (.jgz) moves a session between machines.</dd></div>
+        <div class="hi"><dt>Session</dt><dd>Saved in this browser automatically; File → Save session / Open (.jgz) moves a session between machines.</dd></div>
         <div class="hi"><dt>Files</dt><dd>Open reads a .jgz session, an Excel .xlsx file (each worksheet becomes a tab; formulas give their last computed value) or a .csv / .txt table; you can also drop any of these on the paste bar.</dd></div>
         <div class="hi"><dt>Share</dt><dd>Share (right of the sheet tabs) copies a link that holds every tab, data and settings included. Whoever opens it gets the same sheets and figures; nothing is uploaded, the data travel inside the link. Very large sessions are better sent as a Save file.</dd></div>
-        <div class="hi"><dt>Export</dt><dd>Export opens the options: this figure or every sheet as one panel figure lettered A, B, C…, PNG or SVG, the on-screen size or a journal column width (8.5 / 11.4 / 17.4 cm), and 300 or 600 dpi (written into the PNG, so Word and Illustrator open it at that size). Copy puts the figure on the clipboard for PowerPoint, Word or a chat.</dd></div>
+        <div class="hi"><dt>Export</dt><dd>Export (in the Plot pane's header, or File → Export figure) opens the options: this figure or every sheet as one panel figure lettered A, B, C…, PNG or SVG, the on-screen size or a journal column width (8.5 / 11.4 / 17.4 cm), and 300 or 600 dpi (written into the PNG, so Word and Illustrator open it at that size). Copy puts the figure on the clipboard for PowerPoint, Word or a chat.</dd></div>
         <div class="hi"><dt>Offline</dt><dd>After one visit online, the page works without a network (it keeps itself and its two scripts in the browser).</dd></div>
     </dl></section>
     <section class="hs" id="h-about-en"><h4><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 11v5M12 8h.01"/></svg>About</h4><dl>
-        <div class="hi"><dt>Theme</dt><dd>The sun / moon button in the ribbon's View group switches between light and dark; 中 / EN switches the interface between Chinese and English (the figure itself stays in English, for papers).</dd></div>
+        <div class="hi"><dt>Theme</dt><dd>View → Dark / Light interface switches the interface colours; View → 中文 / English switches its language (the figure itself stays in English, for papers).</dd></div>
         <div class="hi"><dt>Privacy</dt><dd>Everything runs in this browser; your data is never uploaded.</dd></div>
-        <div class="hi"><dt>Source</dt><dd>Open source on <a href="https://github.com/JieqiangHe/plsig" target="_blank" rel="noopener">GitHub</a>: report a problem or suggest a feature under Issues.</dd></div>
+        <div class="hi"><dt>Source</dt><dd>Open source on <a href="https://github.com/JieqiangHe/plsig" target="_blank" rel="noopener">GitHub</a> (Help → GitHub repository): report a problem or suggest a feature under Issues.</dd></div>
     </dl></section>
     </div>
     <div id="helpZh" class="help-body" data-noi18n hidden>
-    <ol class="help-quick"><li><b>1</b><span><strong>粘贴</strong>从 Excel 复制表格，粘贴到表格下方的粘贴栏。</span></li><li><b>2</b><span><strong>选择检验</strong>在“分析”里选择；结果和图随输入自动更新。</span></li><li><b>3</b><span><strong>编辑图形</strong>点击图上的文字或柱子即可修改；右键有更多操作。</span></li></ol>
-    <nav class="help-nav"><a href="#h-data-zh">数据</a><a href="#h-sheet-zh">表格</a><a href="#h-figure-zh">图形</a><a href="#h-results-zh">结果</a><a href="#h-files-zh">文件与分享</a><a href="#h-about-zh">关于</a></nav>
+    <ol class="help-quick"><li><b>1</b><span><strong>粘贴</strong>从 Excel 复制表格，粘贴到表格下方的粘贴栏。</span></li><li><b>2</b><span><strong>选择检验</strong>在工具栏里选择；右上的图和下方的结果随输入自动更新。</span></li><li><b>3</b><span><strong>编辑图形</strong>点击图上的文字或柱子即可修改；右键有更多操作。</span></li></ol>
+    <nav class="help-nav"><a href="#h-window-zh">界面</a><a href="#h-data-zh">数据</a><a href="#h-sheet-zh">表格</a><a href="#h-figure-zh">图形</a><a href="#h-results-zh">结果</a><a href="#h-files-zh">文件与分享</a><a href="#h-about-zh">关于</a></nav>
+    <section class="hs" id="h-window-zh"><h4><svg viewBox="0 0 24 24"><path d="M3 4h18v16H3zM3 8h18M11 8v12M11 14h10"/></svg>界面</h4><dl>
+        <div class="hi"><dt>菜单栏</dt><dd>所有命令都在顶部菜单里：<i>文件</i>（打开、保存、示例、粘贴、分享、导出）、<i>编辑</i>（撤销、行和列、清空）、<i>数据</i>（子列、数据变换）、<i>分析</i>（检验、结果）、<i>图形</i>（样式、尺寸、配色）、<i>视图</i>（深色 / 浅色界面、English / 中文、窗格大小）和<i>帮助</i>（本说明、新手引导、GitHub）。</dd></div>
+        <div class="hi"><dt>工具栏</dt><dd>菜单下面一行放最常用的：撤销 / 重做 / 清空、加行或加列、打开 / 保存 / 复制 / 粘贴、检验及其选项和运行，然后是图表类型、误差线、配色和显著性标记。鼠标停在按钮上会显示名称。</dd></div>
+        <div class="hi"><dt>表格窗格</dt><dd>左边：表格标签（右侧是子列、数据变换和分享）、表格本身，底部是粘贴栏和示例。</dd></div>
+        <div class="hi"><dt>图窗格</dt><dd>右上：图。标题栏里有样式、宽度（W）和高度（H）、重置、导出和复制。</dd></div>
+        <div class="hi"><dt>结果窗格</dt><dd>右下，有两个标签：<i>结果</i>（结论、各个表格和方法段落）和<i>样式</i>（字号、点、柱、边框、Y 轴、显著性标记）。在结果显示时再点一次"结果"可折叠表格，把空间留给图。</dd></div>
+        <div class="hi"><dt>窗格大小</dt><dd>拖动表格和图之间、或图和结果之间的缝隙即可调整窗格大小（也可以选中后用方向键）。双击缝隙，或视图 → 重置窗格大小，即可还原。大小会保存在本浏览器中。</dd></div>
+    </dl></section>
     <section class="hs" id="h-data-zh"><h4><svg viewBox="0 0 24 24"><path d="M4 5h16v14H4zM4 10h16M10 5v14"/></svg>数据</h4><dl>
         <div class="hi"><dt>数据布局</dt><dd>每组一列。配对、重复测量和 Friedman 检验按行匹配（每行一个受试对象）。相关分析以 A 列为 X、B 列为 Y。列联表填计数：列为组，行为结局（由行标题命名）。</dd></div>
         <div class="hi"><dt>双因素</dt><dd>各列是一个因素的水平（如 Control / Drug）；行标题是另一个因素的水平（如 Male / Female）。每个重复单独一行，并重复填写行标题。</dd></div>
@@ -883,7 +899,7 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
     </dl></section>
     <section class="hs" id="h-sheet-zh"><h4><svg viewBox="0 0 24 24"><path d="M5 4h14v16H5zM9 8h6M9 12h6M9 16h4"/></svg>表格</h4><dl>
         <div class="hi"><dt>表格标签</dt><dd>表格上方的每个标签都有自己的数据、检验、图形设置和撤销记录：一个标签一张图。<b>+</b>（或双击空白处）新建；双击标签重命名；右键可复制、移动或删除。保存会把所有标签写进一个 .jgz 文件，打开会把文件里的标签追加进来。</dd></div>
-        <div class="hi"><dt>粘贴</dt><dd>在任意单元格粘贴 Excel 的数据块（<kbd>⌘/Ctrl</kbd> <kbd>V</kbd>），表格会自动扩展。要替换整张表，点表格下方的粘贴栏（或功能区的粘贴）再按 <kbd>⌘/Ctrl</kbd> <kbd>V</kbd>：Excel、Word、网页、PDF 和 CSV 文本都可以，有无表头均可。也可以把 .csv / .txt 文件拖到粘贴栏上。</dd></div>
+        <div class="hi"><dt>粘贴</dt><dd>在任意单元格粘贴 Excel 的数据块（<kbd>⌘/Ctrl</kbd> <kbd>V</kbd>），表格会自动扩展。要替换整张表，点表格下方的粘贴栏（或文件 → 粘贴表格）再按 <kbd>⌘/Ctrl</kbd> <kbd>V</kbd>：Excel、Word、网页、PDF 和 CSV 文本都可以，有无表头均可。也可以把 .csv / .txt 文件拖到粘贴栏上。</dd></div>
         <div class="hi"><dt>选择</dt><dd>点一个单元格直接输入即可替换；双击或按 <kbd>F2</kbd> 在格内编辑。拖动，或 <kbd>Shift</kbd> + 点击 / 方向键选择区域；点行号或列字母选中整行整列；<kbd>⌘/Ctrl</kbd> <kbd>A</kbd> 全选。点击空白网格会在那里添加行和列。</dd></div>
         <div class="hi"><dt>移动</dt><dd>方向键、<kbd>Tab</kbd> 和 <kbd>Enter</kbd> 在单元格间移动（在最后一行按 <kbd>Enter</kbd> 会新增一行）；<kbd>⌘/Ctrl</kbd> + 方向键跳到边缘。</dd></div>
         <div class="hi"><dt>编辑</dt><dd>复制、剪切和粘贴都支持区域；复制一个值粘到一个区域会填满它。<kbd>Delete</kbd> 清空区域，<kbd>⌘/Ctrl</kbd> <kbd>D</kbd> 向下填充，<kbd>Esc</kbd> 取消修改。选中区域后输入一个值再按 <kbd>⌘/Ctrl</kbd> <kbd>Enter</kbd>，会填入每个单元格。右键可插入 / 删除行和列。拖动列名左侧的点状把手（或右键 → 左移 / 右移）调整列顺序，图跟着变。结果随输入自动更新。</dd></div>
@@ -892,26 +908,26 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
     <section class="hs" id="h-figure-zh"><h4><svg viewBox="0 0 24 24"><path d="M4 20V4M4 20h16M8 16v-5M12 16V8M16 16v-3"/></svg>图形</h4><dl>
         <div class="hi"><dt>图上文字</dt><dd>点击图上的任意文字即可修改：坐标轴标题、x 轴下的组名或图例。修改组名和图例会同时改表格里的列名或行标题（<kbd>⌘/Ctrl</kbd> <kbd>Z</kbd> 可撤销）。<kbd>Enter</kbd> 确认，<kbd>Esc</kbd> 取消。清空的坐标轴标题在屏幕上留一个浅色占位，方便再次点击；导出时不会出现。*** / P = 旁边的<i>关</i>可隐藏图上的字母和星号。</dd></div>
         <div class="hi"><dt>格式</dt><dd>点击柱子可选颜色；点击任意文字（标题、组名、图例、字母 / 星号、y 轴数字）可设置加粗、斜体、颜色和字号。Shift 点击可选中多根柱子；在图上右键可在新标签页比较所选柱子（t 检验、Mann–Whitney、方差分析、Kruskal–Wallis）、只显示或隐藏它们，或把图复制为 SVG / PNG。更精细的编辑，可把 SVG 粘贴到 <a href="https://www.svguest.online" target="_blank" rel="noopener">svguest</a>。</dd></div>
-        <div class="hi"><dt>样式</dt><dd>功能区的样式可设置字号、点大小、柱宽、空心或隐藏数据点，以及完整方框或只留左边和底边坐标轴的边框。</dd></div>
+        <div class="hi"><dt>样式</dt><dd>样式（图窗格标题栏里，或图下方的"样式"标签）可设置字号、点大小、柱宽、空心或隐藏数据点，以及完整方框或只留左边和底边坐标轴的边框。</dd></div>
         <div class="hi"><dt>Y 轴</dt><dd>样式 → Y 轴：线性或对数刻度、固定范围（留空为自动）、某个值处的虚线参考线、两个值之间的阴影带，以及截断（从 … 到 …）：某一组远高于其他组时，用 // 标记把坐标轴截断。</dd></div>
         <div class="hi"><dt>我的样式</dt><dd>样式 → 存为我的默认，会在本浏览器保存图表类型、误差线、配色、显著性标记和样式：之后重置、新访问和示例都会使用它。"忘掉它"恢复内置默认。</dd></div>
         <div class="hi"><dt>配色</dt><dd>除 Claude 和 Classic Prism 外，配色菜单还提供来自 <a href="https://github.com/nanxstats/ggsci" target="_blank" rel="noopener">ggsci</a>（Nan Xiao 开发，与 plsig 同为 GPL 协议）的期刊风格配色：NPG、AAAS、NEJM、Lancet、JAMA、JCO 和 D3。</dd></div>
     </dl></section>
     <section class="hs" id="h-results-zh"><h4><svg viewBox="0 0 24 24"><path d="M5 12l4 4 10-10"/></svg>结果</h4><dl>
-        <div class="hi"><dt>结果</dt><dd>点击"结果"可折叠所有表格（一句话结论保留），点击某个表格的标题只折叠该表格。折叠状态会被记住。</dd></div>
+        <div class="hi"><dt>结果</dt><dd>在结果显示时再点一次"结果"标签可折叠所有表格（一句话结论保留，空间留给图），点击某个表格的标题只折叠该表格。折叠状态会被记住。"复制表格"（标签右侧）把所有表格复制为 TSV，可直接粘到 Excel。</dd></div>
         <div class="hi"><dt>方法</dt><dd>结果下方有一段可直接复制的论文方法部分文字，描述所做的检验、事后检验、数据表示方式和样本量。</dd></div>
     </dl></section>
     <section class="hs" id="h-files-zh"><h4><svg viewBox="0 0 24 24"><path d="M12 4v11M8 8l4-4 4 4M5 15v4h14v-4"/></svg>文件与分享</h4><dl>
-        <div class="hi"><dt>会话</dt><dd>自动保存在本浏览器中；保存 / 打开（.jgz）可以在不同电脑间转移。</dd></div>
+        <div class="hi"><dt>会话</dt><dd>自动保存在本浏览器中；文件 → 保存会话 / 打开（.jgz）可以在不同电脑间转移。</dd></div>
         <div class="hi"><dt>文件</dt><dd>打开可读取 .jgz 会话、Excel .xlsx 文件（每个工作表成为一个标签；公式取最后一次计算的值）或 .csv / .txt 表格；也可以把这些文件拖到粘贴栏上。</dd></div>
         <div class="hi"><dt>分享</dt><dd>表格标签右侧的"分享"会复制一个包含所有标签（数据和设置）的链接。对方打开后看到相同的表格和图；数据不上传，而是包含在链接里。会话很大时建议用保存的文件发送。</dd></div>
-        <div class="hi"><dt>导出</dt><dd>导出可选：当前图，或把所有表格拼成标好 A、B、C… 的组图；PNG 或 SVG；屏幕尺寸或期刊栏宽（8.5 / 11.4 / 17.4 cm）；300 或 600 dpi（写入 PNG，Word 和 Illustrator 打开即为该尺寸）。复制会把图放到剪贴板，可粘贴到 PowerPoint、Word 或聊天中。</dd></div>
+        <div class="hi"><dt>导出</dt><dd>导出（图窗格标题栏里，或文件 → 导出图）可选：当前图，或把所有表格拼成标好 A、B、C… 的组图；PNG 或 SVG；屏幕尺寸或期刊栏宽（8.5 / 11.4 / 17.4 cm）；300 或 600 dpi（写入 PNG，Word 和 Illustrator 打开即为该尺寸）。复制会把图放到剪贴板，可粘贴到 PowerPoint、Word 或聊天中。</dd></div>
         <div class="hi"><dt>离线</dt><dd>联网访问一次之后，即使没有网络也能使用（页面和两个脚本会保存在浏览器中）。</dd></div>
     </dl></section>
     <section class="hs" id="h-about-zh"><h4><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 11v5M12 8h.01"/></svg>关于</h4><dl>
-        <div class="hi"><dt>主题与语言</dt><dd>功能区视图组里的太阳 / 月亮按钮切换浅色和深色；"中 / EN"按钮切换界面语言。图本身始终是英文排版，方便投稿。</dd></div>
+        <div class="hi"><dt>主题与语言</dt><dd>视图 → 深色 / 浅色界面切换界面颜色；视图 → English / 中文切换界面语言。图本身始终是英文排版，方便投稿。</dd></div>
         <div class="hi"><dt>隐私</dt><dd>所有计算都在本浏览器中完成，数据不会上传。</dd></div>
-        <div class="hi"><dt>源代码</dt><dd>在 <a href="https://github.com/JieqiangHe/plsig" target="_blank" rel="noopener">GitHub</a> 上开源：可在 Issues 中反馈问题或建议功能。</dd></div>
+        <div class="hi"><dt>源代码</dt><dd>在 <a href="https://github.com/JieqiangHe/plsig" target="_blank" rel="noopener">GitHub</a> 上开源（帮助 → GitHub 仓库）：可在 Issues 中反馈问题或建议功能。</dd></div>
     </dl></section>
     </div>
   </form></dialog>
@@ -2314,7 +2330,8 @@ const MENUS = [
   ["Data", [["Subcolumns…", "subcolsBtn"], ["Transform…", "transformBtn"]]],
   ["Analysis", [["Choose test…", () => $("testSelect")._btn], ["Run again", "runBtn"], "-", ["Show / fold results", "resToggle"], ["Copy result tables", "copyStats"]]],
   ["Graph", [["Style…", "styleBtn"], ["Width…", () => $("plotW")._btn], ["Height…", () => $("plotH")._btn], ["Colour theme…", () => $("themeSelect")._btn], "-", ["Reset graph", "resetGraph"]]],
-  ["View", [["Light / dark interface", "themeBtn"], ["中文 / English", "langBtn"], "-", ["Reset pane sizes", () => { $("split").dispatchEvent(new Event("dblclick")); $("splitV").dispatchEvent(new Event("dblclick")); }]]],
+  ["View", [[() => document.documentElement.dataset.theme === "light" ? "Dark interface" : "Light interface", "themeBtn"],
+            [() => uiLang() === "zh" ? "English" : "中文", "langBtn", "", true], "-", ["Reset pane sizes", () => { $("split").dispatchEvent(new Event("dblclick")); $("splitV").dispatchEvent(new Event("dblclick")); }]]],
   ["Help", [["Help", "helpBtn"], ["Take the tour", "tourBtn"], ["GitHub repository", "ghLink"]]],
 ];
 (() => {
@@ -2331,7 +2348,8 @@ const MENUS = [
     bar.querySelectorAll("button").forEach(b => b.classList.toggle("open", +b.dataset.m === i));
     pop.innerHTML = MENUS[i][1].map((it, k) => it === "-" ? "<hr>" : (() => {
       const el = target(it[1]), off = el && (el.disabled || el.closest("[hidden], .hidden"));
-      return `<button type="button" role="menuitem" data-k="${k}"${off && el.disabled ? " disabled" : ""}><span>${it[0]}</span><kbd>${it[2] ? (isMac ? "⌘" : "Ctrl+") + it[2] : ""}</kbd></button>`;
+      const label = typeof it[0] === "function" ? it[0]() : it[0];   // it[3]: the label stays as written (a language name)
+      return `<button type="button" role="menuitem" data-k="${k}"${off && el.disabled ? " disabled" : ""}><span${it[3] ? " data-noi18n" : ""}>${label}</span><kbd>${it[2] ? (isMac ? "⌘" : "Ctrl+") + it[2] : ""}</kbd></button>`;
     })()).join("");
     const r = bar.querySelector(`[data-m="${i}"]`).getBoundingClientRect();
     pop.hidden = false; pop.style.left = r.left + "px"; pop.style.top = r.bottom + "px";
@@ -3563,7 +3581,7 @@ const ZH = {
   "Open…": "打开…", "Save session (.jgz)": "保存会话（.jgz）", "New sheet": "新建表格", "Examples…": "示例…", "Copy sheet as TSV": "复制表格（TSV）", "Paste table into sheet": "粘贴表格",
   "Share link": "分享链接", "Export figure…": "导出图…", "Copy figure": "复制图", "Add row": "添加行", "Add column": "添加列", "Clear all data": "清空所有数据",
   "Subcolumns…": "子列…", "Transform…": "数据变换…", "Choose test…": "选择检验…", "Run again": "重新运行", "Show / fold results": "展开 / 折叠结果", "Copy result tables": "复制结果表",
-  "Style…": "样式…", "Width…": "宽度…", "Height…": "高度…", "Colour theme…": "配色…", "Reset graph": "重置图形", "Light / dark interface": "浅色 / 深色界面", "Reset pane sizes": "重置窗格大小",
+  "Style…": "样式…", "Width…": "宽度…", "Height…": "高度…", "Colour theme…": "配色…", "Reset graph": "重置图形", "Dark interface": "深色界面", "Light interface": "浅色界面", "Reset pane sizes": "重置窗格大小",
   "GitHub repository": "GitHub 仓库", "Results: click again to fold the tables (the conclusion stays)": "结果：再点一次折叠表格（结论保留）",
   "Figure style: font, dots, bars, frame, y axis, significance": "图样式：字号、点、柱、边框、Y 轴、显著性",
   "Drag to resize the figure and the results; double-click to reset": "拖动调整图和结果的大小；双击还原", "Resize the figure and the results": "调整图和结果的大小", "Replicates side by side": "重复值并列录入", "Data set": "数据集", "Replicates side by side: each data set gets N subcolumns, as in Prism's grouped table": "重复值并列：每个数据集有 N 个子列，如 Prism 的分组表",
@@ -6074,7 +6092,7 @@ function flash(btn, msg) {
 function escapeHtml(s) { return String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
 
 /* ============================================================
-   INTERFACE THEME — sun/moon button in the ribbon's View group; persisted in localStorage
+   INTERFACE THEME — View menu (the hidden #themeBtn); persisted in localStorage
    ("plsig:theme") and applied pre-paint by the script in <head>.
    The figure always renders on white paper and is not affected.
    ============================================================ */
