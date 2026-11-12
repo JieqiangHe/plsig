@@ -59,9 +59,12 @@ svg { display: block; }
   --err: #f07a70;
   --ns-pill-bg: #383838;  --ns-pill-fg: #cfcfcf;                  /* "ns" pill */
   --plot-shadow: 0 0 0 1px #383838;   /* flat: a hairline edge, no drop shadow */
+  /* RStudio-style shell: panes on a gutter, each with a header strip */
+  --gutter: #141414;  --pane-head: #2b2b2b;  --pane-border: #3a3a3a;  --menubar: #262626;
 }
 [data-theme="light"] {
   color-scheme: light;
+  --gutter: #dfe2e6;  --pane-head: #f3f4f6;  --pane-border: #c9cdd2;  --menubar: #ffffff;
   /* plain white and light greys with a blue accent, as in svguest */
   --bg: #f7f7f7;
   --surface: #ffffff;
@@ -259,7 +262,7 @@ a.tb-btn { text-decoration: none; }
 #clearBtn:hover svg { color: var(--danger-hover-fg) !important; }
 
 /* work area: sheet | graph + results */
-#work { position: relative; min-width: 0; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr) minmax(420px, 42%); }
+#work { position: relative; min-width: 0; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr) minmax(420px, 47%); }
 /* the line between the sheet and the figure: drag it to resize the panes, double-click to reset */
 #split { position: absolute; top: 0; bottom: 0; z-index: 15; width: 9px; margin-left: -4px; cursor: col-resize; touch-action: none; }
 #split::after { content: ""; position: absolute; top: 0; bottom: 0; left: 3px; width: 3px; background: transparent; transition: background .12s; }
@@ -426,7 +429,7 @@ th.hd-on .col-letter { color: var(--accent); font-weight: 600; box-shadow: inset
 #resToggle { display: inline-flex; align-items: center; gap: 6px; margin-left: -4px; padding: 2px 6px 2px 4px; border-radius: 6px; font-weight: 600; color: inherit; }
 #resToggle:hover { background: var(--btn-hover); }
 #resToggle .chev, #report .sec-t .chev { width: 9px; height: 9px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; transition: transform .15s; }
-#vResults.folded #resToggle .chev { transform: rotate(-90deg); }
+#vOut.res-folded #resToggle .chev { transform: rotate(-90deg); }
 #vResults.folded #report, #vResults.folded #copyStats { display: none; }
 #vResults.folded .res-head { margin-bottom: 8px; }
 #report .sec-t { display: flex; align-items: baseline; gap: 5px; cursor: pointer; user-select: none; }
@@ -479,6 +482,98 @@ input::placeholder, textarea::placeholder { color: var(--fg-faint); }
 button { transition: background-color .15s, color .15s, border-color .15s; }
 :focus-visible { outline: 2px solid var(--focus-border); outline-offset: 1px; }
 
+/* ================= RStudio-style shell (user's request, Nov 2026) =================
+   menu bar · one compact toolbar row · panes on a grey gutter, each with a header strip:
+   the sheet on the left; the plot above the results / style on the right, split by #splitV */
+body { grid-template-rows: auto auto minmax(0, 1fr); background: var(--gutter); }
+#menubar { display: flex; align-items: center; height: 26px; padding: 0 4px; background: var(--menubar); border-bottom: 1px solid var(--pane-border); user-select: none; }
+#menubar button { height: 22px; padding: 0 9px; border-radius: 3px; font-size: 12px; color: var(--fg); }
+#menubar button:hover, #menubar button.open { background: var(--btn-hover); color: var(--fg-strong); }
+#mbPop { position: fixed; z-index: 70; min-width: 220px; padding: 3px 0; border: 1px solid var(--pane-border); border-radius: 3px; background: var(--surface); box-shadow: 0 6px 18px rgba(0,0,0,.2); }
+#mbPop button { display: flex; align-items: center; gap: 24px; width: 100%; height: 24px; padding: 0 14px 0 26px; font-size: 12px; color: var(--fg); text-align: left; white-space: nowrap; }
+#mbPop button span { flex: 1; }
+#mbPop button kbd { border: 0; background: none; padding: 0; color: var(--fg-faint); font-size: 11px; }
+#mbPop button:hover:not(:disabled), #mbPop button:focus-visible { outline: none; background: var(--accent); color: #fff; }
+#mbPop button:hover kbd { color: rgba(255,255,255,.8); }
+#mbPop button:disabled { opacity: .45; cursor: default; }
+#mbPop hr { margin: 3px 0; border: 0; border-top: 1px solid var(--card-border); }
+/* toolbar: one row, no captions, thin dividers between groups */
+#ribbon { align-items: center; height: 32px; padding: 0 4px; background: var(--menubar); border-bottom: 1px solid var(--pane-border); }
+#ribbon .rg { flex: none; padding: 0 6px; }
+#ribbon .rg + .rg::before { top: 6px; bottom: 6px; background: var(--pane-border); }
+#ribbon .rg-body, #ribbon .rg-rows { display: flex; flex-direction: row; align-items: center; gap: 3px; }
+#ribbon .rg-end { margin-left: auto; }
+#ribbon .rg .tb-btn, #ribbon .rg .seg, #ribbon .rg .flat { width: auto; }
+#ribbon .pair { gap: 1px; }
+#ribbon .rg-analysis > .menu-btn { width: 236px; }
+#menubar .rg-end { margin-left: auto; display: flex; padding: 0; }
+#menubar .rg-end::before { display: none; }
+#menubar .rg-end .rg-body { display: flex; gap: 1px; }
+#menubar .rg-end .tb-btn { height: 22px; width: 26px; padding: 0; justify-content: center; border: 0; border-radius: 3px; background: transparent; box-shadow: none; color: var(--fg-muted); }
+#menubar .rg-end .tb-btn:hover { background: var(--btn-hover); color: var(--fg-strong); }
+#menubar .rg-end svg { width: 14px; height: 14px; }
+#ribbon .rg-analysis .opts { width: auto; }
+#ribbon .rg-analysis .opts .menu-btn { width: 196px; }
+#ribbon #runBtn { width: 52px; }
+#ribbon #themeSelect + .menu-btn, #ribbon .menu-btn[data-for="themeSelect"] { width: auto; }
+.tb-btn.ic, .tbar .tb-btn.ic { font-size: 0; gap: 0; width: 26px !important; padding: 0 !important; justify-content: center !important; }
+/* buttons in the bars: flat until hovered, small radii */
+.tbar .tb-btn, .tbar .menu-btn, .tbar .flat .tb-btn, .tbar .rg-flat .tb-btn { border-radius: 3px; background: transparent; border-color: transparent; box-shadow: none; }
+.tbar .tb-btn:hover:not(:disabled), .tbar .menu-btn:hover, .tbar .menu-btn.open { background: var(--btn-hover); }
+.tbar .menu-btn { background: var(--seg-bg); }
+.tbar .seg { border-radius: 4px; }
+.tbar .seg button { border-radius: 3px; }
+#runBtn { border-radius: 3px; }
+/* work area: panes on the gutter */
+#work { gap: 4px; padding: 4px; background: var(--gutter); }
+.pane { min-width: 0; min-height: 0; border: 1px solid var(--pane-border); border-radius: 3px; overflow: hidden; background: var(--surface); }
+#vData { border-right: 1px solid var(--pane-border); }
+.pane-head { flex: none; display: flex; align-items: center; gap: 2px; height: 28px; padding: 0 4px 0 0; background: var(--pane-head); border-bottom: 1px solid var(--pane-border); overflow-x: auto; overflow-y: hidden; scrollbar-width: none; }
+.pane-head .ph-fill { flex: 1; }
+.pane-head .tb-btn { height: 22px; font-size: 11.5px; }
+.ptab { display: inline-flex; align-items: center; gap: 5px; flex: none; height: 28px; padding: 0 12px; border-right: 1px solid var(--pane-border); font-size: 12px; color: var(--fg-muted); background: transparent; cursor: pointer; }
+.ptab:hover { color: var(--fg-strong); }
+.ptab.on { background: var(--surface); color: var(--fg-strong); font-weight: 600; height: 29px; margin-bottom: -1px; }
+span.ptab { cursor: default; }
+/* sheet tabs read as the data pane's header */
+#tabs { height: 29px; padding: 0 4px 0 0; align-items: stretch; gap: 0; background: var(--pane-head); border-bottom-color: var(--pane-border); }
+#tabs .tab { height: 28px; border: 0; border-right: 1px solid var(--pane-border); border-radius: 0; background: transparent; padding: 0 6px 0 12px; }
+#tabs .tab.on { height: 29px; background: var(--input-bg); border-color: var(--pane-border); margin-bottom: -1px; }
+#tabs .add { height: 28px; border-radius: 0; }
+#tabs .tab-tool { align-self: center; height: 22px; margin: 0 0 0 4px; border-radius: 3px; background: transparent; }
+.sheet-foot { background: var(--pane-head); border-top-color: var(--pane-border); padding: 4px 6px; }
+#pasteZone, .paste-bar #loadDemoBtn { height: 24px; border-radius: 3px; }
+/* right side: plot over results */
+#vOut { display: flex; flex-direction: column; overflow: hidden; background: transparent; border: 0; }
+#graphPane { flex: 1 1 0; min-height: 120px; display: flex; flex-direction: column; }
+#graphPane #vGraph { flex: 1 1 auto; min-height: 0; overflow: auto; border-bottom: 0; padding: 14px 12px 8px; background: var(--side); }
+#graphHead { gap: 2px; }
+#graphHead .size-btn { width: 74px; }
+#graphHead #styleBtn { gap: 5px; }
+#splitV { flex: none; height: 4px; cursor: row-resize; touch-action: none; position: relative; }
+#splitV::after { content: ""; position: absolute; left: 0; right: 0; top: 1px; height: 2px; background: transparent; transition: background .12s; }
+#splitV:hover::after, #splitV.drag::after, #splitV:focus-visible::after { background: var(--accent); }
+#splitV:focus-visible { outline: none; }
+body.vsplitting, body.vsplitting * { cursor: row-resize !important; user-select: none !important; }
+#resPane { flex: 0 0 var(--res-h, 42%); min-height: 90px; display: flex; flex-direction: column; }
+#resPane #vResults { flex: 1 1 auto; min-height: 0; overflow: auto; padding: 10px 14px 18px; }
+#resPane #styleCard { flex: 1 1 auto; min-height: 0; }
+#resToggle { margin: 0; padding: 0 12px 0 9px; border-radius: 0; font-weight: 400; }
+#resToggle.on { font-weight: 600; }
+#resToggle:hover { background: transparent; }
+#vOut.styling #resToggle { background: transparent; color: var(--fg-muted); font-weight: 400; height: 28px; margin: 0; }
+#vOut.styling #styleTab { background: var(--surface); color: var(--fg-strong); font-weight: 600; height: 29px; margin-bottom: -1px; }
+#vOut.styling #copyStats { display: none; }
+#styleCard #styleClose { display: none; }
+#styleCard .stepper button { width: 22px !important; }
+/* folded results: the bottom pane shrinks to its header and the conclusion; the plot takes the rest */
+#vOut.res-folded #resPane { flex: none; min-height: 0; }
+#vOut.res-folded #vResults { position: static; padding: 6px 10px; }
+#vOut.res-folded #vGraph { justify-content: safe center; }
+#vOut.res-folded #splitV { pointer-events: none; }
+#vOut.res-folded #copyStats { display: none; }
+#vOut.res-folded.styling #resPane { flex: 0 0 var(--res-h, 42%); }
+
 @media (max-width: 880px) {
   body { display: flex; flex-direction: column; height: auto; overflow: auto; }
   #work { display: flex; flex-direction: column; }
@@ -488,6 +583,10 @@ button { transition: background-color .15s, color .15s, border-color .15s; }
   #sheetWrap { min-height: 280px; max-height: 60vh; }
   #vOut { overflow: visible; }
   #vGraph { overflow-x: auto; align-items: flex-start; }
+  #ribbon { height: auto; flex-wrap: wrap; }
+  #ribbon .rg { border-bottom: 0; }
+  #graphPane, #resPane { flex: none; }
+  #splitV { display: none; }
 }
 
 /* help dialog */
@@ -525,25 +624,25 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
 
 <body>
 
-  <!-- ============ RIBBON ============ -->
-  <header id="ribbon">
+  <!-- ============ MENU BAR + TOOLBAR (RStudio-style, Nov 2026) ============ -->
+  <nav id="menubar" aria-label="Menu"></nav>
+  <div id="mbPop" role="menu" hidden></div>
+  <header id="ribbon" class="tbar">
     <div class="rg rg-flat">
       <div class="rg-body rg-rows">
         <span class="pair"><button id="undoBtn" class="tb-btn" title="Undo (⌘/Ctrl+Z)" aria-label="Undo" disabled><svg viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-3"/></svg></button><button id="redoBtn" class="tb-btn" title="Redo (⌘/Ctrl+Shift+Z)" aria-label="Redo" disabled><svg viewBox="0 0 24 24"><path d="m15 14 5-5-5-5"/><path d="M20 9H9a5 5 0 0 0 0 10h3"/></svg></button><button id="clearBtn" class="tb-btn" title="Clear all data (Undo brings it back)" aria-label="Clear all data"><svg viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/></svg></button></span>
-        <span class="pair"><button id="addRowBtn" class="tb-btn" title="Add a row at the bottom (or press Enter on the last row)"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="9" rx="1.5"/><path d="M12 15.5v5M9.5 18h5"/></svg>Row</button><button id="addGroupBtn" class="tb-btn" title="Add a column (group) on the right"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="9" height="16" rx="1.5"/><path d="M18 9.5v5M15.5 12h5"/></svg>Col</button></span>
+        <span class="pair"><button id="addRowBtn" class="tb-btn ic" title="Add a row at the bottom (or press Enter on the last row)"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="9" rx="1.5"/><path d="M12 15.5v5M9.5 18h5"/></svg>Row</button><button id="addGroupBtn" class="tb-btn ic" title="Add a column (group) on the right"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="9" height="16" rx="1.5"/><path d="M18 9.5v5M15.5 12h5"/></svg>Col</button></span>
       </div>
-      <div class="rg-cap">Sheet</div>
     </div>
 
     <div class="rg rg-flat rg-eq">
       <div class="rg-body">
-        <label for="importJH" id="importLabel" class="tb-btn" title="Open a saved .jgz session, an Excel .xlsx file (each worksheet becomes a tab) or a .csv / .txt table"><svg viewBox="0 0 24 24"><path d="M12 15V3m-4 8 4 4 4-4"/><path d="M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/></svg>Open</label>
-        <button id="exportBtn" class="tb-btn" title="Save this session (data + settings) as a .jgz file"><svg viewBox="0 0 24 24"><path d="M12 3v12m-4-8 4-4 4 4"/><path d="M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/></svg>Save</button>
-        <button id="copyData" class="tb-btn" title="Copy the whole sheet as TSV (paste into Excel / Sheets)"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>Copy</button>
-        <button id="pasteBtn" class="tb-btn" title="Paste a table from Excel, Word, a web page, a PDF or a CSV: replaces the sheet"><svg viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="17" rx="2"/><path d="M9 4V3h6v1M9 10h6M9 14h6M9 18h3"/></svg>Paste</button>
+        <label for="importJH" id="importLabel" class="tb-btn ic" title="Open a saved .jgz session, an Excel .xlsx file (each worksheet becomes a tab) or a .csv / .txt table"><svg viewBox="0 0 24 24"><path d="M12 15V3m-4 8 4 4 4-4"/><path d="M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/></svg>Open</label>
+        <button id="exportBtn" class="tb-btn ic" title="Save this session (data + settings) as a .jgz file"><svg viewBox="0 0 24 24"><path d="M12 3v12m-4-8 4-4 4 4"/><path d="M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/></svg>Save</button>
+        <button id="copyData" class="tb-btn ic" title="Copy the whole sheet as TSV (paste into Excel / Sheets)"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>Copy</button>
+        <button id="pasteBtn" class="tb-btn ic" title="Paste a table from Excel, Word, a web page, a PDF or a CSV: replaces the sheet"><svg viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="17" rx="2"/><path d="M9 4V3h6v1M9 10h6M9 14h6M9 18h3"/></svg>Paste</button>
       </div>
       <input id="importJH" type="file" accept=".jgz,.jh,.xlsx,.csv,.tsv,.txt" class="hidden" />
-      <div class="rg-cap">File</div>
     </div>
 
     <div class="rg">
@@ -610,7 +709,6 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
         </div>
         <button id="runBtn" title="Results update as you edit the sheet; click to run again"><svg viewBox="0 0 16 16"><path d="M4 2.5v11a.5.5 0 0 0 .77.42l8.5-5.5a.5.5 0 0 0 0-.84l-8.5-5.5A.5.5 0 0 0 4 2.5Z"/></svg>Run</button>
       </div>
-      <div class="rg-cap">Analysis</div>
     </div>
 
     <div class="rg">
@@ -635,41 +733,7 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
       </div>
       <!-- axis titles are edited by clicking them on the figure; these hold the values -->
       <input id="xLabel" value="Group" hidden /><input id="yLabel" value="Value" hidden />
-      <div class="rg-cap">Graph</div>
     </div>
-
-    <div class="rg rg-eq">
-      <div class="rg-body">
-        <input id="plotW" type="number" min="220" step="20" value="" placeholder="300" title="Width in px (blank = automatic, fitted to the figure)" class="num-field size-src" hidden />
-        <input id="dotSize" type="number" min="2" max="20" step="1" value="6" class="num-field size-src" hidden />
-        <!-- figure style: these hidden fields hold the values, the Style button edits them -->
-        <input id="fontSize" type="number" value="13" hidden />
-        <select id="barWidth" hidden><option value="0.45">Narrow</option><option value="0.6" selected>Normal</option><option value="0.8">Wide</option></select>
-        <select id="pointStyle" hidden><option value="filled" selected>Filled</option><option value="hollow">Hollow</option><option value="none">Hidden</option></select>
-        <select id="frame" hidden><option value="box" selected>Box</option><option value="open">Axes</option></select>
-        <select id="yScale" hidden><option value="linear" selected>Linear</option><option value="log">Log</option></select>
-        <input id="figFmt" hidden /><!-- formatting set by clicking the figure: JSON { bar: {name: colour}, text: {key: {b, i, c, s}} } -->
-        <select id="fillStyle" hidden><option value="colour" selected>Colour</option><option value="pattern">Pattern</option><option value="grey">Grey</option></select>
-        <select id="errDir" hidden><option value="both" selected>Both</option><option value="up">Up</option></select>
-        <select id="sigMarks" hidden><option value="letters" selected>Letters</option><option value="brackets">Brackets</option></select>
-        <select id="sigShow" hidden><option value="auto" selected>Auto</option><option value="sig">Significant</option><option value="all">All</option><option value="first">Vs first</option><option value="pick">Pick</option></select>
-        <input id="sigPick" hidden />
-        <select id="journal" hidden><option value="" selected>None</option><option value="nature">Nature</option><option value="cell">Cell</option><option value="science">Science</option><option value="pnas">PNAS</option></select>
-        <select id="transform" hidden><option value="none" selected>None</option><option value="pct">% of first column</option><option value="log10">log10</option><option value="ln">ln</option></select>
-        <select id="subcols" hidden><option value="1" selected>1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option></select><!-- replicates side by side: subcolumns per data set -->
-        <select id="avgReps" hidden><option value="off" selected>Keep</option><option value="on">Average</option></select>
-        <input id="breakLo" hidden /><input id="breakHi" hidden /><!-- broken y axis: the gap from … to … -->
-        <input id="yMin" hidden /><input id="yMax" hidden /><input id="refY" hidden /><input id="bandLo" hidden /><input id="bandHi" hidden />
-        <span class="flat"><button id="styleBtn" class="tb-btn menu-btn" aria-expanded="false" aria-controls="styleCard" title="Figure style: font, dots, bar width, points, frame"><svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg><span class="lbl">Style</span></button></span>
-        <input id="plotH" type="number" min="220" step="20" value="" placeholder="400" title="Height in px (blank = automatic, fitted to the figure)" class="num-field size-src" hidden />
-        <span class="flat"><button id="resetGraph" class="tb-btn" title="Restore graph to default options, size &amp; view"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>Reset</button></span>
-        <span class="flat"><button id="exportBtnFig" class="tb-btn menu-btn" aria-haspopup="dialog" title="Download the figure (or every sheet as one panel figure) as PNG or SVG, at a journal width and DPI"><svg viewBox="0 0 24 24"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14"/></svg><span class="lbl">Export</span><svg class="chev" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4"/></svg></button></span>
-        <span class="flat"><button id="copyFig" class="tb-btn" title="Copy the figure: PNG for PowerPoint, Word or a chat; SVG for svguest, Illustrator or Figma"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>Copy</button></span>
-      </div>
-      <div class="rg-cap">Size &amp; export</div>
-    </div>
-
-
 
     <div class="rg rg-flat rg-end">
       <div class="rg-body">
@@ -678,14 +742,13 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
         <button id="langBtn" class="tb-btn icon lang" aria-label="Language / 语言">中</button>
         <a id="ghLink" class="tb-btn icon" href="https://github.com/JieqiangHe/plsig" target="_blank" rel="noopener" title="Source code, issues and feedback on GitHub" aria-label="GitHub repository"><svg viewBox="0 0 16 16" class="filled"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></a>
       </div>
-      <div class="rg-cap">View</div>
     </div>
   </header>
 
   <div id="work">
     <div id="split" role="separator" aria-orientation="vertical" aria-label="Resize the sheet and the figure" tabindex="0" title="Drag to resize the sheet and the figure; double-click to reset"></div>
     <!-- ============ DATA SHEET ============ -->
-    <section id="vData">
+    <section id="vData" class="pane">
       <!-- one tab per data sheet; each keeps its own data, test, figure options and undo -->
       <div id="tabs" role="tablist" aria-label="Sheets"></div>
       <div id="sheetWrap">
@@ -709,15 +772,49 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
 
     <!-- ============ OUTPUT: graph + results ============ -->
     <section id="vOut">
+      <div id="graphPane" class="pane">
+        <div class="pane-head tbar" id="graphHead"><span class="ptab on">Plot</span><span class="ph-fill"></span>
+        <span class="flat"><button id="styleBtn" class="tb-btn menu-btn" aria-expanded="false" aria-controls="styleCard" title="Figure style: font, dots, bar width, points, frame"><svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg><span class="lbl">Style</span></button></span>
+        <input id="plotW" type="number" min="220" step="20" value="" placeholder="300" title="Width in px (blank = automatic, fitted to the figure)" class="num-field size-src" hidden />
+        <input id="dotSize" type="number" min="2" max="20" step="1" value="6" class="num-field size-src" hidden />
+        <!-- figure style: these hidden fields hold the values, the Style button edits them -->
+        <input id="fontSize" type="number" value="13" hidden />
+        <select id="barWidth" hidden><option value="0.45">Narrow</option><option value="0.6" selected>Normal</option><option value="0.8">Wide</option></select>
+        <select id="pointStyle" hidden><option value="filled" selected>Filled</option><option value="hollow">Hollow</option><option value="none">Hidden</option></select>
+        <select id="frame" hidden><option value="box" selected>Box</option><option value="open">Axes</option></select>
+        <select id="yScale" hidden><option value="linear" selected>Linear</option><option value="log">Log</option></select>
+        <input id="figFmt" hidden /><!-- formatting set by clicking the figure: JSON { bar: {name: colour}, text: {key: {b, i, c, s}} } -->
+        <select id="fillStyle" hidden><option value="colour" selected>Colour</option><option value="pattern">Pattern</option><option value="grey">Grey</option></select>
+        <select id="errDir" hidden><option value="both" selected>Both</option><option value="up">Up</option></select>
+        <select id="sigMarks" hidden><option value="letters" selected>Letters</option><option value="brackets">Brackets</option></select>
+        <select id="sigShow" hidden><option value="auto" selected>Auto</option><option value="sig">Significant</option><option value="all">All</option><option value="first">Vs first</option><option value="pick">Pick</option></select>
+        <input id="sigPick" hidden />
+        <select id="journal" hidden><option value="" selected>None</option><option value="nature">Nature</option><option value="cell">Cell</option><option value="science">Science</option><option value="pnas">PNAS</option></select>
+        <select id="transform" hidden><option value="none" selected>None</option><option value="pct">% of first column</option><option value="log10">log10</option><option value="ln">ln</option></select>
+        <select id="subcols" hidden><option value="1" selected>1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option></select><!-- replicates side by side: subcolumns per data set -->
+        <select id="avgReps" hidden><option value="off" selected>Keep</option><option value="on">Average</option></select>
+        <input id="breakLo" hidden /><input id="breakHi" hidden /><!-- broken y axis: the gap from … to … -->
+        <input id="yMin" hidden /><input id="yMax" hidden /><input id="refY" hidden /><input id="bandLo" hidden /><input id="bandHi" hidden />
+        <input id="plotH" type="number" min="220" step="20" value="" placeholder="400" title="Height in px (blank = automatic, fitted to the figure)" class="num-field size-src" hidden />
+        <span class="flat"><button id="resetGraph" class="tb-btn ic" title="Restore graph to default options, size &amp; view"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>Reset</button></span>
+        <span class="flat"><button id="exportBtnFig" class="tb-btn menu-btn" aria-haspopup="dialog" title="Download the figure (or every sheet as one panel figure) as PNG or SVG, at a journal width and DPI"><svg viewBox="0 0 24 24"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14"/></svg><span class="lbl">Export</span><svg class="chev" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4"/></svg></button></span>
+        <span class="flat"><button id="copyFig" class="tb-btn ic" title="Copy the figure: PNG for PowerPoint, Word or a chat; SVG for svguest, Illustrator or Figma"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>Copy</button></span>
+        </div>
       <div id="vGraph"><div id="plot" style="height: 400px;"></div><p id="plotHint" hidden><span>Click text or a bar to edit and format it; right-click for analyses and copying.</span> <span>For finer editing, copy as SVG and paste into</span> <a href="https://www.svguest.online" target="_blank" rel="noopener" title="svguest: an in-browser SVG editor">svguest</a></p></div>
+      </div>
+      <div id="splitV" role="separator" aria-orientation="horizontal" aria-label="Resize the figure and the results" tabindex="0" title="Drag to resize the figure and the results; double-click to reset"></div>
+      <div id="resPane" class="pane">
+      <div class="pane-head" id="resHead">
+        <button type="button" id="resToggle" class="ptab on" aria-expanded="true" title="Results: click again to fold the tables (the conclusion stays)"><svg class="chev" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4"/></svg>Results</button>
+        <button type="button" id="styleTab" class="ptab" title="Figure style: font, dots, bars, frame, y axis, significance">Style</button>
+        <span class="ph-fill"></span>
+        <button id="copyStats" class="tb-btn" title="Copy all result tables as TSV"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>Copy table</button>
+      </div>
       <div id="styleCard" hidden><button type="button" id="styleClose" aria-label="Close" title="Close the style card (the results come back)">×</button><div id="styleBody"></div></div>
       <div id="vResults">
-        <div class="res-head">
-          <h2><button type="button" id="resToggle" aria-expanded="true" title="Fold or unfold the result tables (the conclusion stays)"><svg class="chev" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4"/></svg>Results</button></h2>
-          <button id="copyStats" class="tb-btn" title="Copy all result tables as TSV"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>Copy table</button>
-        </div>
         <div id="verdict"></div>
         <div id="report" class="overflow-x-auto scroll-thin"></div>
+      </div>
       </div>
     </section>
   </div>
@@ -2154,7 +2251,7 @@ addEventListener("resize", () => closeMenuPop());
 (() => {
   const work = $("work"), split = $("split"), data = $("vData");
   const apply = (w) => { work.style.gridTemplateColumns = w ? `minmax(0, 1fr) clamp(320px, ${Math.round(w)}px, calc(100% - 360px))` : ""; };
-  const place = () => { split.style.left = data.getBoundingClientRect().width + "px"; };
+  const place = () => { split.style.left = data.offsetLeft + data.offsetWidth + 2 + "px"; };   // in the gutter between the panes
   let saved = 0;
   try { saved = +localStorage.getItem("plsig:split") || 0; } catch (_) { /* none */ }
   apply(saved);
@@ -2180,6 +2277,81 @@ addEventListener("resize", () => closeMenuPop());
   });
 })();
 addEventListener("blur", () => closeMenuPop());
+
+/* Plot / results splitter: the results pane's height in px, kept in this browser (plsig:splitV) */
+(() => {
+  const out = $("vOut"), sp = $("splitV"), res = $("resPane");
+  const apply = (h) => { if (h) out.style.setProperty("--res-h", Math.round(h) + "px"); else out.style.removeProperty("--res-h"); };
+  let saved = 0;
+  try { saved = +localStorage.getItem("plsig:splitV") || 0; } catch (_) { /* none */ }
+  apply(saved);
+  const clampH = (h) => Math.max(90, Math.min(out.getBoundingClientRect().height - 124, h));
+  const keep = (h) => { apply(h); try { h ? localStorage.setItem("plsig:splitV", String(Math.round(h))) : localStorage.removeItem("plsig:splitV"); } catch (_) { /* fine */ } };
+  sp.addEventListener("pointerdown", e => {
+    if (e.button !== 0) return;
+    e.preventDefault(); sp.setPointerCapture(e.pointerId);
+    sp.classList.add("drag"); document.body.classList.add("vsplitting");
+    const bottom = out.getBoundingClientRect().bottom;
+    const move = (ev) => keep(clampH(bottom - ev.clientY - 2));
+    const up = () => { sp.classList.remove("drag"); document.body.classList.remove("vsplitting");
+                       sp.removeEventListener("pointermove", move); sp.removeEventListener("pointerup", up); sp.removeEventListener("pointercancel", up); };
+    sp.addEventListener("pointermove", move); sp.addEventListener("pointerup", up); sp.addEventListener("pointercancel", up);
+  });
+  sp.addEventListener("dblclick", () => keep(0));
+  sp.addEventListener("keydown", e => {
+    if (e.key !== "ArrowUp" && e.key !== "ArrowDown") return;
+    e.preventDefault();
+    keep(clampH(res.getBoundingClientRect().height + (e.key === "ArrowUp" ? 20 : -20) * (e.shiftKey ? 4 : 1)));
+  });
+})();
+
+/* Menu bar (RStudio-style): every item runs a button that exists elsewhere (toolbar, pane headers),
+   so a command has one implementation; items that open a popover anchor it to that button */
+const MENUS = [
+  ["File", [["Open…", "importLabel"], ["Save session (.jgz)", "exportBtn"], "-", ["New sheet", () => addSheet({})], ["Examples…", "loadDemoBtn"], "-",
+            ["Copy sheet as TSV", "copyData"], ["Paste table into sheet", "pasteBtn"], "-", ["Share link", "shareBtn"], ["Export figure…", "exportBtnFig"], ["Copy figure", "copyFig"]]],
+  ["Edit", [["Undo", "undoBtn", "Z"], ["Redo", "redoBtn", "⇧Z"], "-", ["Add row", "addRowBtn"], ["Add column", "addGroupBtn"], "-", ["Clear all data", "clearBtn"]]],
+  ["Data", [["Subcolumns…", "subcolsBtn"], ["Transform…", "transformBtn"]]],
+  ["Analysis", [["Choose test…", () => $("testSelect")._btn], ["Run again", "runBtn"], "-", ["Show / fold results", "resToggle"], ["Copy result tables", "copyStats"]]],
+  ["Graph", [["Style…", "styleBtn"], ["Width…", () => $("plotW")._btn], ["Height…", () => $("plotH")._btn], ["Colour theme…", () => $("themeSelect")._btn], "-", ["Reset graph", "resetGraph"]]],
+  ["View", [["Light / dark interface", "themeBtn"], ["中文 / English", "langBtn"], "-", ["Reset pane sizes", () => { $("split").dispatchEvent(new Event("dblclick")); $("splitV").dispatchEvent(new Event("dblclick")); }]]],
+  ["Help", [["Help", "helpBtn"], ["Take the tour", "tourBtn"], ["GitHub repository", "ghLink"]]],
+];
+(() => {
+  const bar = $("menubar"), pop = $("mbPop");
+  let open = -1;
+  const view = $("ribbon").querySelector(".rg-end");   // theme, help, language, GitHub: at the menu bar's right end
+  bar.innerHTML = MENUS.map(([name], i) => `<button type="button" data-m="${i}" aria-haspopup="menu">${name}</button>`).join("");
+  bar.append(view);
+  const target = (t) => typeof t === "string" ? $(t) : null;
+  const close = () => { open = -1; pop.hidden = true; bar.querySelectorAll("button.open").forEach(b => b.classList.remove("open")); };
+  const show = (i) => {
+    closeMenuPop(); closeMenu();
+    open = i;
+    bar.querySelectorAll("button").forEach(b => b.classList.toggle("open", +b.dataset.m === i));
+    pop.innerHTML = MENUS[i][1].map((it, k) => it === "-" ? "<hr>" : (() => {
+      const el = target(it[1]), off = el && (el.disabled || el.closest("[hidden], .hidden"));
+      return `<button type="button" role="menuitem" data-k="${k}"${off && el.disabled ? " disabled" : ""}><span>${it[0]}</span><kbd>${it[2] ? (isMac ? "⌘" : "Ctrl+") + it[2] : ""}</kbd></button>`;
+    })()).join("");
+    const r = bar.querySelector(`[data-m="${i}"]`).getBoundingClientRect();
+    pop.hidden = false; pop.style.left = r.left + "px"; pop.style.top = r.bottom + "px";
+  };
+  bar.addEventListener("click", e => { const b = e.target.closest("button[data-m]"); if (!b) return; open === +b.dataset.m ? close() : show(+b.dataset.m); });
+  bar.addEventListener("mouseover", e => { const b = e.target.closest("button[data-m]"); if (b && open >= 0 && open !== +b.dataset.m) show(+b.dataset.m); });
+  pop.addEventListener("click", e => {
+    const b = e.target.closest("button[data-k]");
+    if (!b || b.disabled) return;
+    const it = MENUS[open][1][+b.dataset.k];
+    close();
+    setTimeout(() => {   // after this click, so a popover the command opens is not closed by it
+      if (typeof it[1] === "function") { const r = it[1](); if (r && r.click) r.click(); }
+      else { const el = $(it[1]); if (el) el.click(); }
+    }, 0);
+  });
+  addEventListener("mousedown", e => { if (open >= 0 && !pop.contains(e.target) && !bar.contains(e.target)) close(); }, true);
+  addEventListener("keydown", e => { if (e.key === "Escape" && open >= 0) { close(); e.stopPropagation(); } }, true);
+  addEventListener("blur", close);
+})();
 
 /* Welch's correction: an on / off button over the hidden checkbox */
 $("welchBtn").onclick = () => {
@@ -3387,7 +3559,14 @@ const ZH = {
   "Sets 7 pt text and thin lines for the journal's column width.": "按期刊栏宽设置 7 pt 文字和细线。",
   "Significance": "显著性", "Marks": "标记", "Brackets": "括号", "Show": "显示", "Significant": "仅显著", "All": "全部", "Vs first": "与首组", "Pick": "自选",
   "Pick works with brackets: choose Brackets above (one-way tests) or a two-way design.": "自选需要括号标记：在上方选择“括号”（单因素检验），或使用双因素设计。",
-  "Subcolumns": "子列", "Replicates side by side": "重复值并列录入", "Data set": "数据集", "Replicates side by side: each data set gets N subcolumns, as in Prism's grouped table": "重复值并列：每个数据集有 N 个子列，如 Prism 的分组表",
+  "Subcolumns": "子列", "Edit": "编辑", "Data": "数据", "Help": "帮助", "Plot": "图",
+  "Open…": "打开…", "Save session (.jgz)": "保存会话（.jgz）", "New sheet": "新建表格", "Examples…": "示例…", "Copy sheet as TSV": "复制表格（TSV）", "Paste table into sheet": "粘贴表格",
+  "Share link": "分享链接", "Export figure…": "导出图…", "Copy figure": "复制图", "Add row": "添加行", "Add column": "添加列", "Clear all data": "清空所有数据",
+  "Subcolumns…": "子列…", "Transform…": "数据变换…", "Choose test…": "选择检验…", "Run again": "重新运行", "Show / fold results": "展开 / 折叠结果", "Copy result tables": "复制结果表",
+  "Style…": "样式…", "Width…": "宽度…", "Height…": "高度…", "Colour theme…": "配色…", "Reset graph": "重置图形", "Light / dark interface": "浅色 / 深色界面", "Reset pane sizes": "重置窗格大小",
+  "GitHub repository": "GitHub 仓库", "Results: click again to fold the tables (the conclusion stays)": "结果：再点一次折叠表格（结论保留）",
+  "Figure style: font, dots, bars, frame, y axis, significance": "图样式：字号、点、柱、边框、Y 轴、显著性",
+  "Drag to resize the figure and the results; double-click to reset": "拖动调整图和结果的大小；双击还原", "Resize the figure and the results": "调整图和结果的大小", "Replicates side by side": "重复值并列录入", "Data set": "数据集", "Replicates side by side: each data set gets N subcolumns, as in Prism's grouped table": "重复值并列：每个数据集有 N 个子列，如 Prism 的分组表",
   "Like Prism's grouped table: each data set (Scion, Rootstock…) gets N columns for its replicates, and each row title is one level of the row factor (one cluster on the x axis). Two-way ANOVA reads every row × data set as a cell of N values. Changing the number keeps each set's data.": "与 Prism 的分组表相同：每个数据集（如 Scion、Rootstock）有 N 列放重复值，每个行标题是行因素的一个水平（x 轴上的一簇）。双因素方差分析把每个行 × 数据集看作含 N 个值的单元格。修改子列数会保留各数据集的数据。",
   "Drag to move this data set (the bars follow)": "拖动以移动此数据集（柱子随之移动）", "Delete data set": "删除数据集", "data set": "数据集",
   "grouped table, 3 subcolumns, two-way ANOVA": "分组表，3 个子列，双因素方差分析",
@@ -3550,8 +3729,8 @@ const TOUR = [
     zt: "你的数据", zx: "在这里输入或粘贴数值，每组一列。点单元格直接输入；右键有更多操作。上方每个标签是一张独立的表格和图。" },
   { el: () => $("testSelect")._btn, title: "Pick a test", text: "Choose the analysis. Results and the figure update by themselves while you edit.",
     zt: "选择检验", zx: "选择统计分析。编辑数据时结果和图会自动更新。" },
-  { el: () => $("plot"), title: "The figure", text: "Click any text on the figure to edit it. Graph and Style in the ribbon change the chart, colours, error bars, fonts, frame and y axis.",
-    zt: "图", zx: "点击图上的任意文字即可修改。功能区的图形和样式可以调整图表类型、配色、误差线、字号、边框和 Y 轴。" },
+  { el: () => $("plot"), title: "The figure", text: "Click any text on the figure to edit it. The toolbar and the Style tab under the figure change the chart, colours, error bars, fonts, frame and y axis.",
+    zt: "图", zx: "点击图上的任意文字即可修改。工具栏和图下方的样式标签可以调整图表类型、配色、误差线、字号、边框和 Y 轴。" },
   { el: () => $("exportBtnFig"), title: "Export", text: "Download at a journal width and DPI (PNG or SVG), lay every tab out as panels A, B, C…, or Copy to paste into slides.",
     zt: "导出", zx: "按期刊栏宽和 DPI 下载（PNG 或 SVG），把所有标签拼成 A、B、C… 组图，或复制后直接粘贴到幻灯片。" },
   { el: () => $("loadDemoBtn"), title: "Examples", text: "Ready-made data sets show the layout each test expects. Paste a whole table from Excel, Word or a web page into the bar on the left.",
@@ -3880,7 +4059,9 @@ function setResultsFolded(f) {
   $("resToggle").setAttribute("aria-expanded", String(!f));
   try { localStorage.setItem("plsig:resFolded", f ? "1" : "0"); } catch (_) { /* fine */ }
 }
-$("resToggle").onclick = () => setResultsFolded(!$("vResults").classList.contains("folded"));
+/* the bottom pane's tabs: Results (click again to fold the tables) and Style */
+$("resToggle").onclick = () => { if (!styleCard.hidden) closeStyleCard(); else setResultsFolded(!$("vResults").classList.contains("folded")); };
+$("styleTab").onclick = () => { if (styleCard.hidden) openStyleCard(); };
 try { if (localStorage.getItem("plsig:resFolded") === "1") setResultsFolded(true); } catch (_) { /* fine */ }
 $("report").addEventListener("click", e => {
   const t = e.target.closest(".sec-t");
