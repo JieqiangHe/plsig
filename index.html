@@ -789,6 +789,75 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
 #helpDlg dd a { color: var(--accent); text-decoration: none; }
 #helpDlg dd a:hover { text-decoration: underline; }
 #helpDlg kbd { font-size: 10.5px; }
+/* ===== the rest in svguest's style (Nov 2026; from svguest app.html #mHelp, .win, .pri, kbd, scrollbars) ===== */
+:root { --sv-sbt: #8a8a8a; }
+dialog { border: 0; border-radius: 10px; background: var(--sv-side); box-shadow: var(--sv-shm), 0 30px 80px -20px #0005; }
+dialog::backdrop { background: #0000004d; backdrop-filter: none; }
+/* help: header with search; topics as a left column; each card a hairline row (term | text), as svguest's Help */
+#helpDlg { width: min(880px, 96vw); height: min(640px, 90vh); max-height: none; }
+#helpDlg form { height: 100%; max-height: none; }
+#helpDlg header { gap: 12px; padding: 12px 14px 12px 20px; border-bottom: 1px solid var(--sv-line); }
+#helpDlg h3 { flex: none; font-size: 15px; }
+#helpDlg .hq { display: flex; align-items: center; gap: 6px; margin-left: auto; width: min(260px, 40vw); height: 28px; padding: 0 8px; border-radius: 6px; background: var(--sv-btn); box-shadow: inset 0 0 0 1px var(--sv-btnb); }
+#helpDlg .hq:focus-within { box-shadow: inset 0 0 0 1.5px var(--focus-border); }
+#helpDlg .hq svg { width: 14px; height: 14px; flex: none; fill: none; stroke: var(--sv-t3); stroke-width: 1.5; }
+#helpDlg .hq input { flex: 1; min-width: 0; border: 0; background: none; outline: none; padding: 0; font: inherit; font-size: 12.5px; color: var(--fg); }
+#helpDlg header #tourBtn { margin: 0; height: 28px; border: 1px solid var(--sv-btnb); border-radius: 6px; background: var(--sv-btn); }
+#helpDlg header #tourBtn:hover { background: var(--sv-btn) linear-gradient(var(--sv-btnh), var(--sv-btnh)); }
+#helpDlg header button[type=submit] { margin-left: 0; color: var(--fg-muted); }
+#helpDlg header button[type=submit]:hover { background: var(--sv-btnh); }
+#helpDlg .help-body:not([hidden]) { flex: 1; min-height: 0; display: grid; grid-template-columns: 168px minmax(0, 1fr); align-content: start; column-gap: 0; padding: 0; }
+#helpDlg .help-body > * { grid-column: 2; margin-left: 20px !important; margin-right: 20px !important; }
+#helpDlg .help-nav { grid-column: 1; grid-row: 1 / span 20; position: sticky; top: 0; align-self: start; display: flex; flex-direction: column; flex-wrap: nowrap; gap: 0; min-height: 100%; margin: 0 !important; padding: 10px 8px; border-right: 1px solid var(--sv-line); background: var(--sv-side); }
+#helpDlg .help-nav a { display: flex; align-items: center; height: 28px; padding: 0 10px; border-radius: 6px; background: none; color: var(--fg); font-size: 12.5px; }
+#helpDlg .help-nav a:hover { background: var(--sv-btnh); }
+#helpDlg .help-nav a.on { background: var(--sv-on); font-weight: 600; }
+#helpDlg .help-quick { margin-top: 16px !important; gap: 10px; }
+#helpDlg .help-quick li { padding: 10px 12px; border-radius: 8px; background: var(--sv-btn); box-shadow: inset 0 0 0 1px var(--sv-btnb); color: var(--fg); }
+#helpDlg .help-quick b { width: 20px; height: 20px; font-size: 11px; background: var(--focus-border); }
+#helpDlg .hs { scroll-margin-top: 10px; }
+#helpDlg .hs h4 { margin: 18px 0 4px; font-size: 15px; font-weight: 600; letter-spacing: 0; text-transform: none; color: var(--fg); }
+#helpDlg .hs h4 svg { display: none; }
+#helpDlg .hs dl { display: block; }
+#helpDlg .hi { display: grid; grid-template-columns: 9.5em minmax(0, 1fr); gap: 12px; padding: 7px 4px; border: 0; border-bottom: 1px solid var(--sv-h4b); border-radius: 0; background: none; }
+#helpDlg .hi:last-child { border-bottom: 0; }
+#helpDlg .hi[hidden], #helpDlg .hs[hidden] { display: none; }
+#helpDlg dt { margin: 0; font-weight: 400; color: var(--sv-h4); }
+#helpDlg dd { color: var(--fg); line-height: 1.55; }
+#helpDlg .help-body > :last-child { margin-bottom: 20px !important; }
+#helpDlg .help-body.searching .help-quick { display: none; }
+#helpDlg .h-empty { padding: 40px 0; text-align: center; color: var(--sv-t3); }
+#helpDlg .h-empty:empty { display: none; }
+#helpDlg kbd, #tourBox kbd { display: inline-block; min-width: 1.6em; padding: 0 5px; border: 0; border-radius: 4px; background: var(--sv-btn); box-shadow: inset 0 0 0 1px var(--sv-btnb), 0 1px 0 var(--sv-btnb); font: 500 11px/18px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; text-align: center; color: var(--fg); }
+@media (max-width: 640px) { #helpDlg .help-body:not([hidden]) { grid-template-columns: 1fr; } #helpDlg .help-nav { grid-column: 1; grid-row: auto; position: static; flex-direction: row; flex-wrap: wrap; min-height: 0; border-right: 0; } #helpDlg .help-body > * { grid-column: 1; } #helpDlg .hi { grid-template-columns: 1fr; gap: 2px; } }
+/* tour: a floating window; Next / Done is svguest's dark primary button */
+#tourBox { border: 0; border-radius: 10px; background: var(--sv-side); box-shadow: var(--sv-shm); }
+#tourBox b { font-size: 12.5px; color: var(--fg); }
+#tourBox p { color: var(--fg); }
+#tourBox footer span { color: var(--sv-t3); }
+#tourBox footer button { border: 1px solid var(--sv-btnb); background: var(--sv-btn); color: var(--fg); }
+#tourBox footer button:hover { background: var(--sv-btn) linear-gradient(var(--sv-btnh), var(--sv-btnh)); }
+#tourBox footer button.primary, :is(#menuPop, #styleCard) .ex-go { border-color: transparent; background: var(--fg); color: var(--sv-side); font-weight: 600; }
+#tourBox footer button.primary:hover, :is(#menuPop, #styleCard) .ex-go:hover { background: var(--fg); color: var(--sv-side); opacity: .85; filter: none; }
+#tourRing { border-radius: 10px; box-shadow: 0 0 0 1.5px var(--focus-border), 0 0 0 9999px #0000004d; }
+/* popovers (W / H, export, examples, subcolumns, transform): fields and chips as svguest's */
+#menuPop h4 { font-size: 12px; font-weight: 600; letter-spacing: 0; text-transform: none; color: var(--fg); }
+#menuPop .st-row > span { color: var(--sv-h4); }
+#menuPop .st-row .seg { gap: 2px; padding: 2px; border-radius: 7px; background: var(--sv-btnh); }
+#menuPop .st-row .seg button { height: 20px; border-radius: 5px; background: none; color: var(--sv-h4); }
+#menuPop .st-row .seg button:hover { background: none; color: var(--fg); }
+#menuPop .st-row .seg button.on { background: var(--sv-btn); color: var(--fg); box-shadow: var(--sv-sh); font-weight: 500; }
+[data-theme="dark"] #menuPop .st-row .seg button.on, :root:not([data-theme]) #menuPop .st-row .seg button.on { background: #3d3d3d; }
+#menuPop .stepper { border: 1px solid var(--sv-btnb); border-radius: 6px; background: var(--sv-side); }
+#menuPop .stepper button:hover { background: var(--sv-btnh); color: var(--fg); }
+#menuPop .sz-auto, #menuPop .sz-grid button { border: 1px solid var(--sv-btnb); border-radius: 6px; background: var(--sv-side); color: var(--fg); }
+#menuPop .sz-auto:hover, #menuPop .sz-grid button:hover { background: var(--sv-side) linear-gradient(var(--sv-btnh), var(--sv-btnh)); color: var(--fg); }
+#menuPop.sz-pop button.on, #menuPop.sz-pop button.on:hover { background: var(--sv-on); border-color: transparent; color: var(--fg-strong); }
+#menuPop .ex-note { color: var(--sv-t3); }
+/* thin scrollbars in svguest's grey */
+#sheetWrap, #vGraph, #vResults, #styleCard, #menuPop, #helpDlg .help-body, #report { scrollbar-width: thin; scrollbar-color: var(--sv-sbt) transparent; }
+.axis-ed { border-radius: 6px; border-width: 1.5px; box-shadow: none; }
+
 </style>
 </head>
 
@@ -993,7 +1062,7 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
   <div id="ctxMenu" role="menu" hidden></div>
 
   <dialog id="helpDlg"><form method="dialog">
-    <header><h3>Tips</h3><button type="button" id="tourBtn" class="tb-btn">Take the tour</button><button type="submit" value="" aria-label="Close">×</button></header>
+    <header><h3>Tips</h3><label class="hq"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5L14 14"/></svg><input id="helpQ" type="search" placeholder="Search help…" autocomplete="off" spellcheck="false" aria-label="Search help"></label><button type="button" id="tourBtn" class="tb-btn">Take the tour</button><button type="submit" value="" aria-label="Close">×</button></header>
     <div id="helpEn" class="help-body" data-noi18n>
     <ol class="help-quick"><li><b>1</b><span><strong>Paste</strong>Copy a table from Excel and paste it into the bar under the sheet.</span></li><li><b>2</b><span><strong>Pick a test</strong>Choose it in the toolbar; the figure (top right) and the results (below it) update as you type.</span></li><li><b>3</b><span><strong>Edit the figure</strong>Click any text or bar on the figure; right-click for more.</span></li></ol>
     <nav class="help-nav"><a href="#h-window-en">The window</a><a href="#h-data-en">Your data</a><a href="#h-sheet-en">The sheet</a><a href="#h-figure-en">The figure</a><a href="#h-results-en">Results</a><a href="#h-files-en">Files and sharing</a><a href="#h-about-en">About</a></nav>
@@ -3819,6 +3888,7 @@ const ZH = {
   "Default chart, colours, size and style": "恢复默认图表、配色、尺寸和样式", "The sheet, figure and results back to their default sizes": "表格、图和结果恢复默认大小",
   "Tips: data layout, the window, shortcuts, export": "使用说明：数据布局、界面、快捷键、导出", "A short walk through the window": "简短介绍界面各部分",
   "Source code, issues and feedback": "源代码、问题反馈和建议",
+  "Search help…": "搜索帮助…", "Search help": "搜索帮助", "Nothing in the help matches that.": "帮助中没有找到相关内容。",
   "Subcolumns": "子列", "Edit": "编辑", "Data": "数据", "Help": "帮助", "Plot": "图",
   "Open…": "打开…", "Save session (.jgz)": "保存会话（.jgz）", "New sheet": "新建表格", "Examples…": "示例…", "Copy sheet as TSV": "复制表格（TSV）", "Paste table into sheet": "粘贴表格",
   "Share link": "分享链接", "Export figure…": "导出图…", "Copy figure": "复制图", "Add row": "添加行", "Add column": "添加列", "Clear all data": "清空所有数据",
@@ -6358,7 +6428,24 @@ $("helpBtn").onclick = () => $("helpDlg").showModal();
 // section chips scroll within the dialog (no address hash: #s= carries share links)
 document.querySelectorAll("#helpDlg .help-nav a").forEach(l => l.addEventListener("click", e => {
   e.preventDefault(); $(l.getAttribute("href").slice(1)).scrollIntoView({ block: "start" });
+  l.parentElement.querySelectorAll("a").forEach(a => a.classList.toggle("on", a === l));
 }));
+/* search help, as svguest's: keep the cards that hold every word typed (either language), hide empty sections */
+$("helpQ").addEventListener("input", () => {
+  const words = $("helpQ").value.trim().toLowerCase().split(/\s+/).filter(Boolean);
+  document.querySelectorAll("#helpDlg .help-body").forEach(body => {
+    body.classList.toggle("searching", words.length > 0);
+    body.querySelectorAll(".hs").forEach(sec => {
+      let any = false;
+      sec.querySelectorAll(".hi").forEach(hi => { const t = hi.textContent.toLowerCase(), ok = words.every(w => t.includes(w)); hi.hidden = !ok; any = any || ok; });
+      sec.hidden = !any;
+    });
+    let empty = body.querySelector(".h-empty");
+    if (!empty) { empty = document.createElement("p"); empty.className = "h-empty"; body.append(empty); }
+    empty.textContent = words.length && ![...body.querySelectorAll(".hs")].some(x => !x.hidden) ? uiText("Nothing in the help matches that.") : "";
+  });
+});
+$("helpDlg").addEventListener("close", () => { if ($("helpQ").value) { $("helpQ").value = ""; $("helpQ").dispatchEvent(new Event("input")); } });
 $("pasteBtn").onclick = armPaste;
 
 
