@@ -486,17 +486,20 @@ button { transition: background-color .15s, color .15s, border-color .15s; }
    menu bar · one compact toolbar row · panes on a grey gutter, each with a header strip:
    the sheet on the left; the plot above the results / style on the right, split by #splitV */
 body { grid-template-rows: auto auto minmax(0, 1fr); background: var(--gutter); }
-#menubar { display: flex; align-items: center; height: 26px; padding: 0 4px; background: var(--menubar); border-bottom: 1px solid var(--pane-border); user-select: none; }
-#menubar button { height: 22px; padding: 0 9px; border-radius: 3px; font-size: 12px; color: var(--fg); }
-#menubar button:hover, #menubar button.open { background: var(--btn-hover); color: var(--fg-strong); }
-#mbPop { position: fixed; z-index: 70; min-width: 220px; padding: 3px 0; border: 1px solid var(--pane-border); border-radius: 3px; background: var(--surface); box-shadow: 0 6px 18px rgba(0,0,0,.2); }
-#mbPop button { display: flex; align-items: center; gap: 24px; width: 100%; height: 24px; padding: 0 14px 0 26px; font-size: 12px; color: var(--fg); text-align: left; white-space: nowrap; }
+#menubar { display: flex; align-items: center; gap: 2px; height: 30px; padding: 0 4px; background: var(--menubar); border-bottom: 1px solid var(--pane-border); user-select: none; }
+#menubar > button { display: inline-flex; align-items: center; gap: 4px; height: 24px; padding: 0 8px; border-radius: 6px; font-size: 12px; color: var(--fg); }
+#menubar > button b { font-weight: 400; font-size: 9px; opacity: .55; }
+#menubar > button:hover, #menubar > button.open { background: var(--btn-hover); color: var(--fg-strong); }
+/* the drop-down, as svguest's: no border, 8px corners, a soft shadow; ✓ marks the current choice */
+#mbPop { position: fixed; z-index: 70; min-width: 190px; padding: 4px; border: 0; border-radius: 8px; background: var(--surface); box-shadow: 0 0 0 1px rgba(0,0,0,.06), 0 8px 24px rgba(0,0,0,.16); }
+[data-theme="dark"] #mbPop, :root:not([data-theme]) #mbPop { background: #303030; box-shadow: 0 0 0 1px rgba(255,255,255,.08), 0 8px 24px rgba(0,0,0,.5); }
+#mbPop button { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 16px; width: 100%; height: 24px; padding: 0 8px 0 22px; border-radius: 5px; font-size: 12px; color: var(--fg); text-align: left; white-space: nowrap; }
 #mbPop button span { flex: 1; }
-#mbPop button kbd { border: 0; background: none; padding: 0; color: var(--fg-faint); font-size: 11px; }
-#mbPop button:hover:not(:disabled), #mbPop button:focus-visible { outline: none; background: var(--accent); color: #fff; }
-#mbPop button:hover kbd { color: rgba(255,255,255,.8); }
-#mbPop button:disabled { opacity: .45; cursor: default; }
-#mbPop hr { margin: 3px 0; border: 0; border-top: 1px solid var(--card-border); }
+#mbPop button.on::before { content: "✓"; position: absolute; left: 7px; font-size: 11px; }
+#mbPop button kbd { border: 0; background: none; padding: 0; color: inherit; opacity: .6; font: inherit; }
+#mbPop button:hover:not(:disabled), #mbPop button:focus-visible { outline: none; background: var(--btn-hover); color: var(--fg-strong); }
+#mbPop button:disabled { opacity: .4; cursor: default; }
+#mbPop hr { margin: 4px 6px; border: 0; border-top: 1px solid var(--card-border); }
 /* toolbar: one row, no captions, thin dividers between groups */
 #ribbon { align-items: center; height: 32px; padding: 0 4px; background: var(--menubar); border-bottom: 1px solid var(--pane-border); }
 #ribbon .rg { flex: none; padding: 0 6px; }
@@ -2323,36 +2326,90 @@ addEventListener("blur", () => closeMenuPop());
 
 /* Menu bar (RStudio-style): every item runs a button that exists elsewhere (toolbar, pane headers),
    so a command has one implementation; items that open a popover anchor it to that button */
+/* Menu bar, after svguest's (user's request, Nov 2026): "File ▾" titles; a borderless rounded
+   drop-down with a soft shadow; items indented for a ✓ that marks the current choice; a key hint
+   at the right; a tip on every item. Every item runs a button that exists elsewhere (toolbar,
+   pane headers, hidden buttons), so a command has one implementation; items that open a popover
+   anchor it to that button. Item: { t: label (or a function), a: button id (or a function that
+   runs the command / returns the button to click), k: key hint, tip, on: () => checked, raw: keep
+   the label untranslated (a language name) } */
 const MENUS = [
-  ["File", [["Open…", "importLabel"], ["Save session (.jgz)", "exportBtn"], "-", ["New sheet", () => addSheet({})], ["Examples…", "loadDemoBtn"], "-",
-            ["Copy sheet as TSV", "copyData"], ["Paste table into sheet", "pasteBtn"], "-", ["Share link", "shareBtn"], ["Export figure…", "exportBtnFig"], ["Copy figure", "copyFig"]]],
-  ["Edit", [["Undo", "undoBtn", "Z"], ["Redo", "redoBtn", "⇧Z"], "-", ["Add row", "addRowBtn"], ["Add column", "addGroupBtn"], "-", ["Clear all data", "clearBtn"]]],
-  ["Data", [["Subcolumns…", "subcolsBtn"], ["Transform…", "transformBtn"]]],
-  ["Analysis", [["Choose test…", () => $("testSelect")._btn], ["Run again", "runBtn"], "-", ["Show / fold results", "resToggle"], ["Copy result tables", "copyStats"]]],
-  ["Graph", [["Style…", "styleBtn"], ["Width…", () => $("plotW")._btn], ["Height…", () => $("plotH")._btn], ["Colour theme…", () => $("themeSelect")._btn], "-", ["Reset graph", "resetGraph"]]],
-  ["View", [[() => document.documentElement.dataset.theme === "light" ? "Dark interface" : "Light interface", "themeBtn"],
-            [() => uiLang() === "zh" ? "English" : "中文", "langBtn", "", true], "-", ["Reset pane sizes", () => { $("split").dispatchEvent(new Event("dblclick")); $("splitV").dispatchEvent(new Event("dblclick")); }]]],
-  ["Help", [["Help", "helpBtn"], ["Take the tour", "tourBtn"], ["GitHub repository", "ghLink"]]],
+  ["File", [
+    { t: "Open…", a: "importLabel", tip: "Open a .jgz session, an Excel .xlsx file (each worksheet becomes a tab) or a .csv / .txt table" },
+    { t: "Save session (.jgz)", a: "exportBtn", tip: "Save every tab, data and settings, as one .jgz file" },
+    "-",
+    { t: "New sheet", a: () => addSheet({}), tip: "A new, empty tab" },
+    { t: "Examples…", a: "loadDemoBtn", tip: "Example data sets laid out for each kind of test; each opens in a new tab" },
+    "-",
+    { t: "Copy sheet as TSV", a: "copyData", tip: "Copy the whole sheet, to paste into Excel or Sheets" },
+    { t: "Paste table into sheet", a: "pasteBtn", tip: "Replace the sheet with a table from Excel, Word, a web page, a PDF or a CSV" },
+    "-",
+    { t: "Share link", a: "shareBtn", tip: "Copy a link that opens these sheets in any browser; nothing is uploaded" },
+    { t: "Export figure…", a: "exportBtnFig", tip: "PNG or SVG at a journal width and DPI; this figure or every tab as panels" },
+    { t: "Copy figure", a: "copyFig", tip: "PNG for slides and Word, SVG for svguest, Illustrator or Figma" },
+  ]],
+  ["Edit", [
+    { t: "Undo", a: "undoBtn", k: "Z" }, { t: "Redo", a: "redoBtn", k: "⇧Z" },
+    "-",
+    { t: "Add row", a: "addRowBtn", tip: "Add a row at the bottom" }, { t: "Add column", a: "addGroupBtn", tip: "Add a column (or a data set, with subcolumns) on the right" },
+    "-",
+    { t: "Clear all data", a: "clearBtn", tip: "Empty the sheet; Undo brings it back" },
+  ]],
+  ["Data", [
+    { t: "Subcolumns…", a: "subcolsBtn", tip: "Replicates side by side, as in Prism's grouped table", on: () => SUB() > 1 },
+    { t: "Transform…", a: "transformBtn", tip: "% of the first column, log, average replicates: before the analysis", on: () => transformOn() },
+  ]],
+  ["Analysis", [
+    { t: "Choose test…", a: () => $("testSelect")._btn, tip: "The statistical test for this sheet" },
+    { t: "Run again", a: "runBtn", tip: "Results already update as you edit" },
+    "-",
+    { t: "Results", a: () => { closeStyleCard(); setResultsFolded(false); }, tip: "Show the result tables under the figure", on: () => styleCard.hidden && !$("vResults").classList.contains("folded") },
+    { t: "Fold result tables", a: () => { closeStyleCard(); setResultsFolded(true); }, tip: "Keep only the conclusion; the figure takes the room", on: () => $("vResults").classList.contains("folded") },
+    { t: "Copy result tables", a: "copyStats", tip: "Every table as TSV, for Excel" },
+  ]],
+  ["Graph", [
+    { t: "Style…", a: () => { if (styleCard.hidden) openStyleCard(); }, tip: "Font, dots, bars, frame, y axis, significance marks", on: () => !styleCard.hidden },
+    { t: "Width…", a: () => $("plotW")._btn }, { t: "Height…", a: () => $("plotH")._btn },
+    { t: "Colour theme…", a: () => $("themeSelect")._btn },
+    "-",
+    { t: "Reset graph", a: "resetGraph", tip: "Default chart, colours, size and style" },
+  ]],
+  ["View", [
+    { t: "Light interface", a: () => { if (document.documentElement.dataset.theme !== "light") $("themeBtn").click(); }, on: () => document.documentElement.dataset.theme === "light" },
+    { t: "Dark interface", a: () => { if (document.documentElement.dataset.theme === "light") $("themeBtn").click(); }, on: () => document.documentElement.dataset.theme !== "light" },
+    "-",
+    { t: "English", a: () => setLang("en"), on: () => uiLang() === "en", raw: true, tip: "Interface in English (figures are always in English)" },
+    { t: "中文", a: () => setLang("zh"), on: () => uiLang() === "zh", raw: true, tip: "界面使用中文（图始终为英文）" },
+    "-",
+    { t: "Reset pane sizes", a: () => { $("split").dispatchEvent(new Event("dblclick")); $("splitV").dispatchEvent(new Event("dblclick")); }, tip: "The sheet, figure and results back to their default sizes" },
+  ]],
+  ["Help", [
+    { t: "Help", a: "helpBtn", tip: "Tips: data layout, the window, shortcuts, export" },
+    { t: "Take the tour", a: "tourBtn", tip: "A short walk through the window" },
+    "-",
+    { t: "GitHub repository", a: "ghLink", tip: "Source code, issues and feedback" },
+  ]],
 ];
 (() => {
   const bar = $("menubar"), pop = $("mbPop");
   let open = -1;
-  const view = $("ribbon").querySelector(".rg-end");   // theme, help, language, GitHub: at the menu bar's right end
-  bar.innerHTML = MENUS.map(([name], i) => `<button type="button" data-m="${i}" aria-haspopup="menu">${name}</button>`).join("");
+  const view = $("ribbon").querySelector(".rg-end");   // its buttons stay, hidden, for the menus to click
+  bar.innerHTML = MENUS.map(([name], i) => `<button type="button" data-m="${i}" aria-haspopup="menu"><span>${name}</span><b aria-hidden="true">▾</b></button>`).join("");
   bar.append(view);
-  const target = (t) => typeof t === "string" ? $(t) : null;
   const close = () => { open = -1; pop.hidden = true; bar.querySelectorAll("button.open").forEach(b => b.classList.remove("open")); };
   const show = (i) => {
     closeMenuPop(); closeMenu();
     open = i;
-    bar.querySelectorAll("button").forEach(b => b.classList.toggle("open", +b.dataset.m === i));
-    pop.innerHTML = MENUS[i][1].map((it, k) => it === "-" ? "<hr>" : (() => {
-      const el = target(it[1]), off = el && (el.disabled || el.closest("[hidden], .hidden"));
-      const label = typeof it[0] === "function" ? it[0]() : it[0];   // it[3]: the label stays as written (a language name)
-      return `<button type="button" role="menuitem" data-k="${k}"${off && el.disabled ? " disabled" : ""}><span${it[3] ? " data-noi18n" : ""}>${label}</span><kbd>${it[2] ? (isMac ? "⌘" : "Ctrl+") + it[2] : ""}</kbd></button>`;
-    })()).join("");
+    bar.querySelectorAll("button[data-m]").forEach(b => b.classList.toggle("open", +b.dataset.m === i));
+    pop.innerHTML = MENUS[i][1].map((it, k) => {
+      if (it === "-") return "<hr>";
+      const el = typeof it.a === "string" ? $(it.a) : null, label = typeof it.t === "function" ? it.t() : it.t;
+      const tip = it.tip ? ` title="${escapeHtml(it.tip)}"` : "";
+      return `<button type="button" role="menuitem" data-k="${k}"${el && el.disabled ? " disabled" : ""}${it.on && it.on() ? ' class="on"' : ""}${tip}>` +
+        `<span${it.raw ? " data-noi18n" : ""}>${label}</span><kbd>${it.k ? (isMac ? "⌘" : "Ctrl+") + it.k : ""}</kbd></button>`;
+    }).join("");
     const r = bar.querySelector(`[data-m="${i}"]`).getBoundingClientRect();
-    pop.hidden = false; pop.style.left = r.left + "px"; pop.style.top = r.bottom + "px";
+    pop.hidden = false; pop.style.left = r.left + "px"; pop.style.top = r.bottom + 3 + "px";
   };
   bar.addEventListener("click", e => { const b = e.target.closest("button[data-m]"); if (!b) return; open === +b.dataset.m ? close() : show(+b.dataset.m); });
   bar.addEventListener("mouseover", e => { const b = e.target.closest("button[data-m]"); if (b && open >= 0 && open !== +b.dataset.m) show(+b.dataset.m); });
@@ -2362,8 +2419,8 @@ const MENUS = [
     const it = MENUS[open][1][+b.dataset.k];
     close();
     setTimeout(() => {   // after this click, so a popover the command opens is not closed by it
-      if (typeof it[1] === "function") { const r = it[1](); if (r && r.click) r.click(); }
-      else { const el = $(it[1]); if (el) el.click(); }
+      if (typeof it.a === "function") { const r = it.a(); if (r && r.click) r.click(); }
+      else { const el = $(it.a); if (el) el.click(); }
     }, 0);
   });
   addEventListener("mousedown", e => { if (open >= 0 && !pop.contains(e.target) && !bar.contains(e.target)) close(); }, true);
@@ -3577,6 +3634,24 @@ const ZH = {
   "Sets 7 pt text and thin lines for the journal's column width.": "按期刊栏宽设置 7 pt 文字和细线。",
   "Significance": "显著性", "Marks": "标记", "Brackets": "括号", "Show": "显示", "Significant": "仅显著", "All": "全部", "Vs first": "与首组", "Pick": "自选",
   "Pick works with brackets: choose Brackets above (one-way tests) or a two-way design.": "自选需要括号标记：在上方选择“括号”（单因素检验），或使用双因素设计。",
+  "Fold result tables": "折叠结果表格", "Menus": "菜单", "Toolbar": "工具栏", "Paste or try an example": "粘贴或看示例", "Results and style": "结果与样式",
+  "Open a .jgz session, an Excel .xlsx file (each worksheet becomes a tab) or a .csv / .txt table": "打开 .jgz 会话、Excel .xlsx 文件（每个工作表成为一个标签）或 .csv / .txt 表格",
+  "Save every tab, data and settings, as one .jgz file": "把所有标签（数据和设置）保存为一个 .jgz 文件", "A new, empty tab": "新建一个空白标签",
+  "Example data sets laid out for each kind of test; each opens in a new tab": "按每种检验排好的示例数据；在新标签中打开",
+  "Copy the whole sheet, to paste into Excel or Sheets": "复制整张表格，可粘贴到 Excel",
+  "Replace the sheet with a table from Excel, Word, a web page, a PDF or a CSV": "用 Excel、Word、网页、PDF 或 CSV 中的表格替换当前表格",
+  "Copy a link that opens these sheets in any browser; nothing is uploaded": "复制一个能在任何浏览器打开这些表格的链接；不上传数据",
+  "PNG or SVG at a journal width and DPI; this figure or every tab as panels": "按期刊栏宽和 DPI 导出 PNG 或 SVG；当前图或所有标签拼成组图",
+  "PNG for slides and Word, SVG for svguest, Illustrator or Figma": "PNG 用于幻灯片和 Word，SVG 用于 svguest、Illustrator 或 Figma",
+  "Add a row at the bottom": "在底部添加一行", "Add a column (or a data set, with subcolumns) on the right": "在右侧添加一列（有子列时添加一个数据集）",
+  "Empty the sheet; Undo brings it back": "清空表格；撤销可恢复", "Replicates side by side, as in Prism's grouped table": "重复值并列录入，如 Prism 的分组表",
+  "% of the first column, log, average replicates: before the analysis": "分析前变换：占第一列的百分比、取对数、重复取平均",
+  "The statistical test for this sheet": "本表格使用的统计检验", "Results already update as you edit": "编辑时结果已自动更新",
+  "Show the result tables under the figure": "在图下方显示结果表格", "Keep only the conclusion; the figure takes the room": "只保留结论，空间留给图",
+  "Every table as TSV, for Excel": "所有表格复制为 TSV，可粘贴到 Excel", "Font, dots, bars, frame, y axis, significance marks": "字号、点、柱、边框、Y 轴、显著性标记",
+  "Default chart, colours, size and style": "恢复默认图表、配色、尺寸和样式", "The sheet, figure and results back to their default sizes": "表格、图和结果恢复默认大小",
+  "Tips: data layout, the window, shortcuts, export": "使用说明：数据布局、界面、快捷键、导出", "A short walk through the window": "简短介绍界面各部分",
+  "Source code, issues and feedback": "源代码、问题反馈和建议",
   "Subcolumns": "子列", "Edit": "编辑", "Data": "数据", "Help": "帮助", "Plot": "图",
   "Open…": "打开…", "Save session (.jgz)": "保存会话（.jgz）", "New sheet": "新建表格", "Examples…": "示例…", "Copy sheet as TSV": "复制表格（TSV）", "Paste table into sheet": "粘贴表格",
   "Share link": "分享链接", "Export figure…": "导出图…", "Copy figure": "复制图", "Add row": "添加行", "Add column": "添加列", "Clear all data": "清空所有数据",
@@ -3742,17 +3817,19 @@ $("langBtn").onclick = () => setLang(uiLang() === "zh" ? "en" : "zh");
    FIRST-RUN TOUR: a few callouts over the real interface, shown once
    (replay from Help). A ring spotlights each part; Next / Back / Skip.
    ============================================================ */
-const TOUR = [
+const TOUR = [   // follows the RStudio-style window (Nov 2026): menus, toolbar, then the three panes
+  { el: () => $("menubar"), title: "Menus", text: "Every command lives in the menus: File to open, save, share and export; Data for subcolumns and transforms; View for dark mode and 中文; Help for these tips.",
+    zt: "菜单", zx: "所有命令都在菜单里：文件（打开、保存、分享、导出）、数据（子列、数据变换）、视图（深色界面、English / 中文）、帮助（使用说明）。" },
   { el: () => $("sheetWrap"), title: "Your data", text: "Type or paste values here, one column per group. Click a cell and type; right-click for more. Each tab above is its own sheet and figure.",
     zt: "你的数据", zx: "在这里输入或粘贴数值，每组一列。点单元格直接输入；右键有更多操作。上方每个标签是一张独立的表格和图。" },
-  { el: () => $("testSelect")._btn, title: "Pick a test", text: "Choose the analysis. Results and the figure update by themselves while you edit.",
-    zt: "选择检验", zx: "选择统计分析。编辑数据时结果和图会自动更新。" },
-  { el: () => $("plot"), title: "The figure", text: "Click any text on the figure to edit it. The toolbar and the Style tab under the figure change the chart, colours, error bars, fonts, frame and y axis.",
-    zt: "图", zx: "点击图上的任意文字即可修改。工具栏和图下方的样式标签可以调整图表类型、配色、误差线、字号、边框和 Y 轴。" },
-  { el: () => $("exportBtnFig"), title: "Export", text: "Download at a journal width and DPI (PNG or SVG), lay every tab out as panels A, B, C…, or Copy to paste into slides.",
-    zt: "导出", zx: "按期刊栏宽和 DPI 下载（PNG 或 SVG），把所有标签拼成 A、B、C… 组图，或复制后直接粘贴到幻灯片。" },
-  { el: () => $("loadDemoBtn"), title: "Examples", text: "Ready-made data sets show the layout each test expects. Paste a whole table from Excel, Word or a web page into the bar on the left.",
-    zt: "示例", zx: "现成的示例数据展示了每种检验需要的布局。也可以把 Excel、Word 或网页里的整张表粘贴到左边的粘贴栏。" },
+  { el: () => $("pasteZone"), title: "Paste or try an example", text: "Copy a whole table from Excel, Word or a web page, click this bar and paste. Examples, at its right, shows the layout each test expects.",
+    zt: "粘贴或看示例", zx: "从 Excel、Word 或网页复制整张表，点这个粘贴栏再粘贴。右边的示例展示每种检验需要的数据布局。" },
+  { el: () => $("ribbon"), title: "Toolbar", text: "Pick the test here, then the chart type, error bars, colours and significance labels. Results and the figure update by themselves while you edit.",
+    zt: "工具栏", zx: "在这里选择检验，以及图表类型、误差线、配色和显著性标记。编辑数据时结果和图会自动更新。" },
+  { el: () => $("graphPane"), title: "The figure", text: "Click any text or bar on the figure to edit or colour it; right-click for more. The header sets the size, and Export downloads it at a journal width and DPI.",
+    zt: "图", zx: "点击图上的文字或柱子即可修改或换色；右键有更多操作。标题栏可调尺寸，导出可按期刊栏宽和 DPI 下载。" },
+  { el: () => $("resPane"), title: "Results and style", text: "The conclusion, the tables and a methods paragraph you can copy. The Style tab sets fonts, frame, y axis and significance marks. Drag the gap above to resize.",
+    zt: "结果与样式", zx: "结论、各个表格和可直接复制的方法段落。“样式”标签可设置字号、边框、Y 轴和显著性标记。拖动上方的缝隙可调整大小。" },
 ];
 let tourStep = -1;
 const tourBox = document.createElement("div"), tourRing = document.createElement("div");
