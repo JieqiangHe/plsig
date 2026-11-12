@@ -64,12 +64,14 @@ svg { display: block; }
   /* svguest's button tokens (its app.html, dark): field / raised chip, hairline, hover overlay, small shadow, muted icon */
   --sv-btn: #303030;  --sv-btnb: #ffffff1f;  --sv-btnh: #ffffff14;  --sv-sh: 0 1px 2px #0009;  --sv-h4: #a6a6a6;
   --sv-side: #262626;  --sv-line: #ffffff1a;  --sv-h4b: #ffffff14;  --sv-on: #4c8df633;  --sv-t3: #8c8c8c;
+  --sv-shm: 0 0 0 1px #ffffff1f, 0 8px 24px -6px #000c;  --sv-swb: #ffffff4d;
 }
 [data-theme="light"] {
   color-scheme: light;
   --gutter: #dfe2e6;  --pane-head: #f3f4f6;  --pane-border: #c9cdd2;  --menubar: #e9e9e9;
   --sv-btn: #fafafa;  --sv-btnb: #00000021;  --sv-btnh: #00000012;  --sv-sh: 0 1px 2px #0000001f;  --sv-h4: #595959;
   --sv-side: #f2f2f2;  --sv-line: #0000001a;  --sv-h4b: #00000014;  --sv-on: #1a73e81f;  --sv-t3: #6e6e6e;
+  --sv-shm: 0 0 0 1px #0000001a, 0 8px 24px -6px #0000004d;  --sv-swb: #00000047;
   /* plain white and light greys with a blue accent, as in svguest */
   --bg: #f7f7f7;
   --surface: #ffffff;
@@ -715,6 +717,32 @@ td.rowhdr.hd-on, th.hd-on .col-letter { background: var(--sv-on); color: var(--f
 #menuPop button:hover, #menuPop button:focus-visible { background: var(--sv-btnh); color: var(--fg-strong); }
 #menuPop button:hover small, #menuPop button:focus-visible small { color: var(--sv-t3); }
 #menuPop button.on { color: var(--accent); }
+
+/* ===== right-click menu and the figure's format bar in svguest's style (user's request, Nov 2026;
+   from svguest app.html .menu / #mCM / .win / #mFS): menus in the field colour, no border, 8px
+   corners, svguest's menu shadow (--shm), items indented 22px, translucent hover, key hints at .6;
+   the format bar is a floating window in --side with 10px corners; its buttons are svguest's
+   default button, "on" is the soft accent tint; swatches have 3px corners and svguest's hairline ===== */
+#ctxMenu, #mbPop, #menuPop { border: 0; border-radius: 8px; background: var(--sv-btn); box-shadow: var(--sv-shm); }
+[data-theme="dark"] #mbPop, [data-theme="dark"] #menuPop, :root:not([data-theme]) #mbPop { background: var(--sv-btn); box-shadow: var(--sv-shm); }
+#ctxMenu { min-width: 200px; padding: 4px; }
+#ctxMenu button { position: relative; height: 24px; padding: 0 8px 0 22px; gap: 16px; border: 0; border-radius: 5px; background: transparent; color: var(--fg); white-space: nowrap; }
+#ctxMenu button:hover:not(:disabled), #ctxMenu button:focus-visible { outline: none; background: var(--sv-btnh); color: var(--fg); }
+#ctxMenu button:hover:not(:disabled) kbd { color: inherit; }
+#ctxMenu kbd { color: inherit; opacity: .6; font: inherit; }
+#ctxMenu button:disabled { opacity: .45; }
+#ctxMenu hr { border-top-color: var(--sv-line); }
+#mbPop hr, #menuPop hr { border-top-color: var(--sv-line); }
+#fmtBar { gap: 4px; padding: 5px 6px; border: 0; border-radius: 10px; background: var(--sv-side); box-shadow: var(--sv-shm); }
+#fmtBar button { height: 24px; min-width: 24px; padding: 0 6px; border: 1px solid var(--sv-btnb); border-radius: 6px; background: var(--sv-btn); color: var(--fg); }
+#fmtBar button:hover { background: var(--sv-btn) linear-gradient(var(--sv-btnh), var(--sv-btnh)); }
+#fmtBar button.on { background: var(--sv-on); border-color: transparent; color: var(--fg-strong); }
+#fmtBar .sw { width: 18px; min-width: 18px; height: 18px; padding: 0; border: 1px solid var(--sv-swb); border-radius: 3px; background: var(--c); box-shadow: none; }
+#fmtBar .sw:hover { background: var(--c); outline: 2px solid var(--sv-btnh); }
+#fmtBar .sw.on { background: var(--c); border-color: transparent; outline: 1.5px solid var(--focus-border); outline-offset: 1px; }
+#fmtBar .sw.more { border-radius: 3px; }
+#fmtBar .sep { background: var(--sv-line); }
+#fmtBar .lbl { color: var(--sv-t3); }
 
 @media (max-width: 880px) {
   body { display: flex; flex-direction: column; height: auto; overflow: auto; }
