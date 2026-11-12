@@ -652,6 +652,70 @@ table.data-grid thead th { color: var(--sv-h4); }
 #selBox { border-width: 1.5px; background: var(--sv-on); opacity: 1; }
 td.rowhdr.hd-on, th.hd-on .col-letter { background: var(--sv-on); color: var(--fg-strong); box-shadow: none; }
 
+/* ===== results and the style card in svguest's side-panel style (user's request, Nov 2026; from
+   svguest app.html #mSide: sections split by --h4b hairlines with a 12px heading and a chevron at
+   the right; .kv labels in --h4; .f fields; .seg trays in --btnh with a raised chip; plain buttons
+   in --btn with a hairline; a translucent hover, never a blue one) ===== */
+#resPane #vResults, #resPane #styleCard { background: var(--sv-side); }
+#resPane #vResults { padding: 8px 12px 16px; }
+/* the conclusion: a card in the field colour */
+#verdict > div { padding: 8px 11px; border: 1px solid var(--sv-btnb); border-radius: 8px; background: var(--sv-btn); color: var(--fg); font-size: 12.5px; box-shadow: var(--sv-sh); }
+#verdict > .v-yes { border-color: var(--ok-box-border); background: var(--ok-box-bg); color: var(--ok); box-shadow: none; }
+#verdict:not(:empty) + #report { margin-top: 6px; }
+/* sections: a hairline between them, the heading folds the table (chevron at the right, as svguest's) */
+#report > div + div { margin-top: 0; }
+#report .rsec { padding: 0 0 9px; border-bottom: 1px solid var(--sv-h4b); }
+#report .rsec:last-child { border-bottom: 0; }
+#report .h3.sec-t { display: flex; align-items: center; gap: 6px; min-height: 30px; margin: 0; font-size: 12px; font-weight: 600; color: var(--fg); }
+#report .sec-t .chev { order: 9; margin-left: auto; width: 9px; height: 9px; color: var(--sv-t3); }
+#report .rsec.shut { padding-bottom: 0; }
+#report .rsec.shut .sec-t { color: var(--sv-h4); }
+#report .note { color: var(--sv-t3); font-size: 11.5px; }
+/* tables: no header fill, dim headings, hairline rows, translucent hover */
+.stat-table { font-size: 12px; }
+.stat-table th, .stat-table td { padding: 3px 6px; border-bottom: 1px solid var(--sv-h4b); }
+.stat-table thead th { background: transparent; color: var(--sv-t3); font-size: 11px; font-weight: 500; border-bottom-color: var(--sv-line); }
+.stat-table tbody tr:hover td { background: var(--sv-btnh); }
+.stat-table td.key { color: var(--sv-h4); font-weight: 400; }
+.pill { border-radius: 5px; padding: 0 6px; }
+.more > summary { color: var(--sv-h4); }
+#report .methods p { border: 1px solid var(--sv-btnb); border-radius: 8px; background: var(--sv-btn); color: var(--fg); }
+#report .tb-btn, #resPane .ex-go { border: 1px solid var(--sv-btnb); border-radius: 6px; background: var(--sv-btn); box-shadow: none; }
+#report .tb-btn:hover { background: var(--sv-btn) linear-gradient(var(--sv-btnh), var(--sv-btnh)); }
+/* style card */
+#styleCard { padding: 4px 12px 12px; }
+#styleCard .st-cols { gap: 0 20px; }
+#styleCard h4 { display: flex; align-items: center; height: 30px; margin: 0 !important; padding: 0; border-bottom: 1px solid var(--sv-h4b); font-size: 12px; font-weight: 600; letter-spacing: 0; text-transform: none; color: var(--fg); }
+#styleCard h4 ~ h4 { margin-top: 8px !important; }
+#styleCard .st-row { gap: 6px; padding: 3px 0; }
+#styleCard .st-row > span, #styleCard .st-steps .st-lab { width: 46px; color: var(--sv-h4); font-size: 12px; }
+#styleCard .st-steps { grid-template-columns: 46px minmax(0, 1fr) 46px minmax(0, 1fr); column-gap: 6px; }
+/* segments: svguest's tray with a raised chip */
+#styleCard .st-row .seg { gap: 2px; padding: 2px; border-radius: 7px; background: var(--sv-btnh); }
+#styleCard .st-row .seg button { height: 20px; border-radius: 5px; background: none; color: var(--sv-h4); font-weight: 400; }
+#styleCard .st-row .seg button:hover, #styleCard .st-row .seg button:focus-visible { background: none; color: var(--fg); }
+#styleCard .st-row .seg button.on { background: var(--sv-btn); color: var(--fg); box-shadow: var(--sv-sh); font-weight: 500; }
+/* fields: svguest's .f (field colour, hairline, 6px corners, accent border on focus) */
+#styleCard .stepper { height: 24px; border: 1px solid var(--sv-btnb); border-radius: 6px; background: var(--sv-btn); }
+#styleCard .stepper button { height: 22px !important; border-radius: 5px; color: var(--sv-h4); }
+#styleCard .stepper button:hover, #styleCard .stepper button:focus-visible { background: var(--sv-btnh); color: var(--fg); }
+#styleCard .stepper .st-val { height: 22px; border: 0; font-weight: 500; }
+#styleCard .stepper:has(.st-val:focus) { border-color: var(--focus-border); }
+#styleCard .st-mine { padding: 0; }
+#styleCard .st-num { height: 24px; border: 1px solid var(--sv-btnb); border-radius: 6px; background: var(--sv-btn); color: var(--fg); }
+#styleCard .st-num:focus { border-color: var(--focus-border); }
+#styleCard .st-pair i, #styleCard .st-hint, #styleCard .ex-note { color: var(--sv-t3); }
+/* plain buttons: svguest's default button */
+#styleCard .st-clear, #styleCard .st-mine button { height: 24px; border: 1px solid var(--sv-btnb); border-radius: 6px; background: var(--sv-btn); color: var(--fg); font-weight: 400; }
+#styleCard .st-clear:hover, #styleCard .st-mine button:hover { background: var(--sv-btn) linear-gradient(var(--sv-btnh), var(--sv-btnh)); color: var(--fg); }
+#styleCard .st-pick label { color: var(--fg); }
+/* drop-down lists (test, post-hoc, theme, W / H, transform): the same translucent hover as the menus */
+#menuPop { border: 0; border-radius: 8px; background: var(--surface); box-shadow: 0 0 0 1px var(--sv-line), 0 8px 24px rgba(0,0,0,.16); }
+[data-theme="dark"] #menuPop { background: #303030; }
+#menuPop button:hover, #menuPop button:focus-visible { background: var(--sv-btnh); color: var(--fg-strong); }
+#menuPop button:hover small, #menuPop button:focus-visible small { color: var(--sv-t3); }
+#menuPop button.on { color: var(--accent); }
+
 @media (max-width: 880px) {
   body { display: flex; flex-direction: column; height: auto; overflow: auto; }
   #work { display: flex; flex-direction: column; }
