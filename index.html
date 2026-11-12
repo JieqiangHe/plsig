@@ -328,6 +328,11 @@ th.drop-after { box-shadow: inset -3px 0 0 var(--accent); }
 /* a column excluded from the analysis: kept on the sheet, greyed and struck through */
 th.off .grp-name { opacity: .45; text-decoration: line-through; }
 th.off .col-letter { color: var(--fg-faint); }
+/* replicates side by side: the data-set row spans its subcolumns; A:1, A:2 … label each one */
+table.data-grid.sets .set-row th[colspan] { border-right-color: var(--grid-border); }
+table.data-grid.sets .sub-row th { border-right-color: var(--cell-border); }
+table.data-grid.sets .sub-row th:nth-child(n+3) .col-letter { height: 22px; line-height: 22px; border-bottom: 0; }
+table.data-grid.sets .sub-row .title-head { height: 22px; line-height: 22px; }
 td.off .cell-input { opacity: .4; text-decoration: line-through; }
 /* a single value left out (right-click → Exclude values), and a value Grubbs' test flags */
 td.xval .cell-input { color: var(--accent); font-style: italic; text-decoration: line-through; }
@@ -651,6 +656,7 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
         <input id="sigPick" hidden />
         <select id="journal" hidden><option value="" selected>None</option><option value="nature">Nature</option><option value="cell">Cell</option><option value="science">Science</option><option value="pnas">PNAS</option></select>
         <select id="transform" hidden><option value="none" selected>None</option><option value="pct">% of first column</option><option value="log10">log10</option><option value="ln">ln</option></select>
+        <select id="subcols" hidden><option value="1" selected>1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option></select><!-- replicates side by side: subcolumns per data set -->
         <select id="avgReps" hidden><option value="off" selected>Keep</option><option value="on">Average</option></select>
         <input id="breakLo" hidden /><input id="breakHi" hidden /><!-- broken y axis: the gap from … to … -->
         <input id="yMin" hidden /><input id="yMax" hidden /><input id="refY" hidden /><input id="bandLo" hidden /><input id="bandHi" hidden />
@@ -727,6 +733,7 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
     <section class="hs" id="h-data-en"><h4><svg viewBox="0 0 24 24"><path d="M4 5h16v14H4zM4 10h16M10 5v14"/></svg>Your data</h4><dl>
         <div class="hi"><dt>Layout</dt><dd>One column per group. Paired, repeated-measures and Friedman tests match values by row (one subject per row). Correlation uses column A as X and B as Y. Contingency tables hold counts: columns are groups, rows are outcomes (named by the row titles).</dd></div>
         <div class="hi"><dt>Two-way</dt><dd>Columns are the levels of one factor (e.g. Control / Drug); the row title names the level of the other (e.g. Male / Female). Put each replicate on its own row and repeat the row title.</dd></div>
+        <div class="hi"><dt>Subcolumns</dt><dd>Prism's grouped table: <i>Subcolumns</i> (over the sheet) gives each data set N side-by-side columns for its replicates (A:1, A:2, A:3), named once above them. Each row title is one level of the row factor. Two-way ANOVA reads every row × data set as a cell of N values; a pasted header that names each set once over blank cells is read the same way.</dd></div>
         <div class="hi"><dt>Clusters</dt><dd>For bars in clusters with letters over each bar (e.g. Control, P1–P3 × M1–M3), choose <i>One-way ANOVA across grouped cells</i>. The row title names the cluster on the x axis and each column is a bar colour; every row-title × column cell is one group, and cells may stay empty (a Control row fills only its own column).</dd></div>
         <div class="hi"><dt>Curves</dt><dd><i>Dose–response curve (4PL)</i>: column A = dose, the other columns = replicate responses; a four-parameter logistic is fitted on log10(dose) and reports EC50 / IC50 with its 95% CI. <i>Kaplan–Meier survival</i>: column A = time, each other column a group with 1 = event and 0 = censored (blank = not in that group); curves are compared with the log-rank test.</dd></div>
         <div class="hi"><dt>Exclude</dt><dd>Right-click a column (or a block of columns) and choose <i>Exclude from the analysis</i> to keep the data on the sheet but out of the test and the figure. The same menu includes it again.</dd></div>
@@ -771,6 +778,7 @@ dialog::backdrop { background: rgba(10,12,16,.45); backdrop-filter: blur(2px); }
     <section class="hs" id="h-data-zh"><h4><svg viewBox="0 0 24 24"><path d="M4 5h16v14H4zM4 10h16M10 5v14"/></svg>数据</h4><dl>
         <div class="hi"><dt>数据布局</dt><dd>每组一列。配对、重复测量和 Friedman 检验按行匹配（每行一个受试对象）。相关分析以 A 列为 X、B 列为 Y。列联表填计数：列为组，行为结局（由行标题命名）。</dd></div>
         <div class="hi"><dt>双因素</dt><dd>各列是一个因素的水平（如 Control / Drug）；行标题是另一个因素的水平（如 Male / Female）。每个重复单独一行，并重复填写行标题。</dd></div>
+        <div class="hi"><dt>子列</dt><dd>即 Prism 的分组表：表格上方的<i>子列</i>让每个数据集有 N 个并列列放重复值（A:1、A:2、A:3），名称写在上方一次。每个行标题是行因素的一个水平。双因素方差分析把每个行 × 数据集看作含 N 个值的单元格；粘贴时若表头每个数据集只写一次名称、后面留空，也会这样读取。</dd></div>
         <div class="hi"><dt>分组柱图</dt><dd>要做分组柱状图并在每根柱上标字母（如 Control、P1–P3 × M1–M3），选择<i>分组单元格单因素方差分析</i>。行标题是 x 轴上的分组，每列是一种柱子颜色；每个行标题 × 列的单元格是一组，单元格可以留空（Control 行只填自己那一列）。</dd></div>
         <div class="hi"><dt>曲线</dt><dd><i>剂量–反应曲线（4PL）</i>：A 列为剂量，其余列为重复的反应值；以 log10(剂量) 拟合四参数 logistic 模型，给出 EC50 / IC50 及其 95% 置信区间。<i>Kaplan–Meier 生存分析</i>：A 列为时间，其余每列是一组，1 = 事件、0 = 删失（留空 = 不属于该组）；用 log-rank 检验比较生存曲线。</dd></div>
         <div class="hi"><dt>排除列</dt><dd>右键一列（或选中多列），选择<i>从分析中排除</i>：数据保留在表格里，但不参与检验和作图。同一菜单可以重新纳入。</dd></div>
@@ -1798,7 +1806,7 @@ const DEMO = [
 const DEFAULT_ROWS = 10;
 const STORE_KEY = "plsig:v1", OLD_STORE_KEY = "ministat:v1";   // the app was called ministat before
 const SETTING_IDS = ["testSelect", "posthocSelect", "dunnAdj", "mu0", "chartType", "errType", "themeSelect", "sigLabel", "xLabel", "yLabel", "plotW", "plotH", "dotSize", "fontSize", "barWidth", "pointStyle", "frame", "yScale", "yMin", "yMax", "refY", "bandLo", "bandHi",
-                     "errDir", "sigMarks", "sigShow", "sigPick", "journal", "transform", "avgReps", "fillStyle", "figFmt", "breakLo", "breakHi"];
+                     "errDir", "sigMarks", "sigShow", "sigPick", "journal", "transform", "avgReps", "subcols", "fillStyle", "figFmt", "breakLo", "breakHi"];
 const GRAPH_DEFAULTS = { chartType: "bar", errType: "sem", themeSelect: "claude", sigLabel: "stars", xLabel: "Group", yLabel: "Value", plotW: "", plotH: "", dotSize: "6", fontSize: "13", barWidth: "0.6", pointStyle: "filled", frame: "box",
                          yScale: "linear", yMin: "", yMax: "", refY: "", bandLo: "", bandHi: "",
                          errDir: "both", sigMarks: "letters", sigShow: "auto", sigPick: "", journal: "", fillStyle: "colour", figFmt: "", breakLo: "", breakHi: "" };
@@ -2269,7 +2277,7 @@ const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 const groupLabel = (i) => "Group " + (i < 26 ? LETTERS[i] : i + 1);
 function nextGroupName() {
   const used = new Set(grid.map(g => g.name));
-  for (let i = grid.length; ; i++) if (!used.has(groupLabel(i))) return groupLabel(i);
+  for (let i = Math.ceil(grid.length / SUB()); ; i++) if (!used.has(groupLabel(i))) return groupLabel(i);
 }
 const nRows = () => Math.max(titles.length, ...grid.map(g => g.cells.length), 0);
 const isBad = (v) => v.trim() !== "" && !isFinite(S.parseNum(v));
@@ -2290,19 +2298,68 @@ function seedBlank() {
   renderGrid();
 }
 
+/* replicates side by side (Prism's grouped table): with N subcolumns, columns k·N … k·N+N-1 form one
+   data set; the first column's name names it and the others follow it */
+const SUB = () => Math.max(1, +$("subcols").value || 1);
+const setStart = (g) => g - g % SUB();
+const setCols = (g) => { const a = setStart(g); return Array.from({ length: SUB() }, (_, i) => a + i).filter(i => i < grid.length); };
+function normalizeSets() {
+  const N = SUB();
+  if (N < 2) return;
+  while (grid.length % N) grid.push({ name: "", cells: Array(nRows()).fill("") });
+  grid.forEach((c, j) => { if (j % N) c.name = grid[j - j % N].name; });
+}
+/* change the number of subcolumns: each data set keeps its columns, padded or cut to the new count */
+function setSubcols(n) {
+  const N = SUB();
+  if (n === N) return;
+  mutate(() => {
+    const out = [];
+    for (let a = 0; a < grid.length; a += N) {
+      const block = grid.slice(a, a + N);
+      for (let i = 0; i < n; i++) out.push(block[i] ? block[i] : { name: block[0].name, cells: Array(nRows()).fill("") });
+    }
+    grid = out.length ? out : grid;
+    $("subcols").value = String(n);
+    if (n > 1 && N === 1 && !["twoway", "cells"].includes($("testSelect").value)) { $("testSelect").value = "twoway"; syncTestOptions(); syncSegs(); }
+  });
+}
 function renderGrid() {
   const rows = nRows();
+  normalizeSets();
   grid.forEach(g => { while (g.cells.length < rows) g.cells.push(""); });
   while (titles.length < rows) titles.push("");
-  let html = `<thead><tr><th style="width:34px"></th><th class="title-col" style="width:96px"><div class="col-letter">&nbsp;</div><div class="title-head" title="Row titles: the levels of the row factor (two-way ANOVA) or the outcome names (contingency tables)">Row title</div></th>`;
+  const N = SUB();
+  const $t = $("dataTable");
+  $t.style.width = 34 + 96 + 118 * grid.length + "px";   // fixed columns: the table never squeezes when the pane narrows
+  $t.classList.toggle("sets", N > 1);
+  let html = "<thead>";
+  if (N > 1) {   // the data-set row: one header over each set's subcolumns
+    html += `<tr class="set-row"><th style="width:34px"></th><th class="title-col" style="width:96px"><div class="col-letter">&nbsp;</div><div class="title-head">Data set</div></th>`;
+    for (let a = 0; a < grid.length; a += N) {
+      const g = grid[a], k = a / N, allOff = setCols(a).every(i => grid[i].off);
+      html += `<th colspan="${N}" style="width:${118 * N}px" data-g="${a}" data-g1="${a + N - 1}"${allOff ? ' class="off"' : ""}><div class="col-letter">${colLetter(k)}${allOff ? " · excluded" : ""}</div><div class="relative">
+        <span class="dragGrp" draggable="true" data-g="${a}" title="Drag to move this data set (the bars follow)" aria-hidden="true"><svg viewBox="0 0 8 14"><circle cx="2" cy="2" r="1.2"/><circle cx="6" cy="2" r="1.2"/><circle cx="2" cy="7" r="1.2"/><circle cx="6" cy="7" r="1.2"/><circle cx="2" cy="12" r="1.2"/><circle cx="6" cy="12" r="1.2"/></svg></span>
+        <input class="grp-name" data-g="${a}" value="${escapeHtml(g.name)}" aria-label="Name of data set ${k + 1}" />
+        ${grid.length > N ? `<button class="delGrp" data-g="${a}" data-g1="${a + N - 1}" title="Delete data set" aria-label="Delete data set ${escapeHtml(g.name)}">×</button>` : ""}
+      </div></th>`;
+    }
+    html += `</tr><tr class="sub-row"><th style="width:34px"></th><th class="title-col" style="width:96px"><div class="title-head">Row title</div></th>`;
+    grid.forEach((g, gi) => {
+      html += `<th style="width:118px" data-g="${gi}" data-g1="${gi}"${g.off ? ' class="off" title="Excluded from the analysis (right-click to include it again)"' : ""}><div class="col-letter sub">${colLetter(Math.floor(gi / N))}:${gi % N + 1}${g.off ? " · excluded" : ""}</div></th>`;
+    });
+    html += "</tr></thead><tbody>";
+  } else {
+  html += `<tr><th style="width:34px"></th><th class="title-col" style="width:96px"><div class="col-letter">&nbsp;</div><div class="title-head" title="Row titles: the levels of the row factor (two-way ANOVA) or the outcome names (contingency tables)">Row title</div></th>`;
   grid.forEach((g, gi) => {
-    html += `<th style="width:118px"${g.off ? ' class="off" title="Excluded from the analysis (right-click to include it again)"' : ""}><div class="col-letter">${colLetter(gi)}${g.off ? " · excluded" : ""}</div><div class="relative">
+    html += `<th style="width:118px" data-g="${gi}" data-g1="${gi}"${g.off ? ' class="off" title="Excluded from the analysis (right-click to include it again)"' : ""}><div class="col-letter">${colLetter(gi)}${g.off ? " · excluded" : ""}</div><div class="relative">
         <span class="dragGrp" draggable="true" data-g="${gi}" title="Drag to move this column (the bars follow)" aria-hidden="true"><svg viewBox="0 0 8 14"><circle cx="2" cy="2" r="1.2"/><circle cx="6" cy="2" r="1.2"/><circle cx="2" cy="7" r="1.2"/><circle cx="6" cy="7" r="1.2"/><circle cx="2" cy="12" r="1.2"/><circle cx="6" cy="12" r="1.2"/></svg></span>
         <input class="grp-name" data-g="${gi}" value="${escapeHtml(g.name)}" aria-label="Name of group ${gi + 1}" />
         ${grid.length > 1 ? `<button class="delGrp" data-g="${gi}" title="Delete group" aria-label="Delete group ${escapeHtml(g.name)}">×</button>` : ""}
       </div></th>`;
   });
   html += "</tr></thead><tbody>";
+  }
   for (let r = 0; r < rows; r++) {
     html += `<tr><td class="rowhdr" title="Click to select the row; right-click to insert or delete rows">${r + 1}</td>`;
     html += `<td class="title-col"><input class="row-title" data-r="${r}" value="${escapeHtml(titles[r])}" aria-label="Title of row ${r + 1}" /></td>`;
@@ -2313,17 +2370,27 @@ function renderGrid() {
     });
     html += "</tr>";
   }
-  $("dataTable").innerHTML = html + "</tbody>";
+  $t.innerHTML = html + "</tbody>";
+  if (N > 1) {   // the subcolumn row sticks just under the data-set row
+    const h1 = $t.tHead.rows[0].offsetHeight;
+    [...$t.tHead.rows[1].cells].forEach(th => { th.style.top = h1 + "px"; });
+  }
   sizeSheetBackground();
+  const sb = $("subcolsBtn");
+  if (sb) { sb.classList.toggle("on", N > 1); sb.querySelector(".lbl").textContent = subcolsLabel(); }
   if (sel) { sel.ag = clampG(sel.ag); sel.fg = clampG(sel.fg); sel.ar = clampR(sel.ar); sel.fr = clampR(sel.fr); }
   paintSel();
 }
 
+/* the header row with one cell per grid column (the last one; with subcolumns the data-set row sits above it) */
+const headRow = (t = $("dataTable")) => t.tHead.rows[t.tHead.rows.length - 1];
+/* the grid columns a header cell covers: [first, last], or null for the row-number / row-title headers */
+const thSpan = (th) => th && th.dataset.g != null ? [+th.dataset.g, +th.dataset.g1] : null;
 /* spreadsheet column letters: A … Z, AA, AB … */
 function colLetter(i) { let s = ""; for (i++; i > 0; i = Math.floor((i - 1) / 26)) s = String.fromCharCode(65 + (i - 1) % 26) + s; return s; }
 /* the empty gridlines past the data are a CSS background; match them to the real cell sizes */
 function sizeSheetBackground() {
-  const t = $("dataTable"), wrap = $("sheetWrap"), ths = t.tHead && t.tHead.rows[0].cells, row = t.tBodies[0] && t.tBodies[0].rows[0];
+  const t = $("dataTable"), wrap = $("sheetWrap"), ths = t.tHead && headRow(t).cells, row = t.tBodies[0] && t.tBodies[0].rows[0];
   if (!ths || ths.length < 3 || !t.offsetWidth) return;
   wrap.style.setProperty("--rn", ths[0].offsetWidth + "px");
   wrap.style.setProperty("--rw", ths[0].offsetWidth + ths[1].offsetWidth + "px");
@@ -2362,7 +2429,7 @@ function focusCell(g, r, keepRange) {   // g = -1 → the row-title cell
 function scrollCellIntoView(el) {
   const wrap = $("sheetWrap"), td = el.closest("td"), t = $("dataTable");
   const top = t.offsetTop + td.offsetTop, left = t.offsetLeft + td.offsetLeft;
-  const hh = t.tHead.offsetHeight, rw = td.classList.contains("title-col") ? 0 : t.tHead.rows[0].cells[0].offsetWidth + t.tHead.rows[0].cells[1].offsetWidth;
+  const hh = t.tHead.offsetHeight, rw = td.classList.contains("title-col") ? 0 : headRow(t).cells[0].offsetWidth + headRow(t).cells[1].offsetWidth;
   if (top - hh < wrap.scrollTop) wrap.scrollTop = top - hh;
   else if (top + td.offsetHeight > wrap.scrollTop + wrap.clientHeight) wrap.scrollTop = top + td.offsetHeight - wrap.clientHeight;
   if (rw && left - rw < wrap.scrollLeft) wrap.scrollLeft = left - rw;
@@ -2375,8 +2442,9 @@ function paintSel() {
   if (!sel || !t.tBodies[0]) { box.hidden = true; return; }
   const R = selRect();
   for (let r = R.r0; r <= R.r1; r++) { const tr = t.tBodies[0].rows[r]; if (tr) tr.cells[0].classList.add("hd-on"); }
-  const heads = t.tHead.rows[0].cells;
+  const heads = headRow(t).cells;
   for (let g = R.g0; g <= R.g1; g++) { const th = heads[g + 2]; if (th) th.classList.add("hd-on"); }
+  if (t.tHead.rows.length > 1) [...t.tHead.rows[0].cells].forEach(th => { const s = thSpan(th); if (s && s[0] >= R.g0 && s[1] <= R.g1) th.classList.add("hd-on"); });
   const a = cellEl(R.g0, R.r0), b = cellEl(R.g1, R.r1);
   if (!selMulti() || !a || !b) { box.hidden = true; return; }
   const ta = a.closest("td"), tb = b.closest("td");
@@ -2434,8 +2502,12 @@ const insertRows = (at, n = 1) => mutate(() => {
   titles.splice(at, 0, ...Array(n).fill(""));
 });
 const insertCols = (at, n = 1) => mutate(() => {
-  for (let i = 0; i < n; i++) grid.splice(at + i, 0, { name: nextGroupName(), cells: Array(nRows()).fill("") });
+  const N = SUB();   // with subcolumns, n is a whole number of data sets and each set gets one name
+  let nm = "";
+  for (let i = 0; i < n; i++) { if (i % N === 0) nm = nextGroupName(); grid.splice(at + i, 0, { name: nm, cells: Array(nRows()).fill("") }); }
 });
+/* a selection widened to whole data sets (unchanged without subcolumns) */
+const setRange = (R) => { const N = SUB(), g0 = Math.max(0, R.g0); return { g0: g0 - g0 % N, g1: R.g1 - R.g1 % N + N - 1 }; };
 function deleteRows(r0, r1) {
   mutate(() => {
     const k = r1 - r0 + 1;
@@ -2468,7 +2540,7 @@ table.addEventListener("input", e => {
     grid[gi].cells[+t.dataset.r] = t.value;
     t.classList.toggle("bad", isBad(t.value));
   } else if (t.classList.contains("grp-name")) {
-    grid[gi].name = t.value;
+    setCols(gi).forEach(i => { grid[i].name = t.value; });
   } else if (t.classList.contains("row-title")) {
     titles[+t.dataset.r] = t.value;
   }
@@ -2477,7 +2549,7 @@ table.addEventListener("input", e => {
 table.addEventListener("click", e => {
   const b = e.target.closest("button");
   if (!b) return;
-  if (b.classList.contains("delGrp")) deleteCols(+b.dataset.g, +b.dataset.g);
+  if (b.classList.contains("delGrp")) deleteCols(+b.dataset.g, +(b.dataset.g1 ?? b.dataset.g));
 });
 /* mouse: click selects a cell (not a caret position), drag or Shift+click selects a range,
    double-click edits; click a row number / column letter to select the whole row / column */
@@ -2501,10 +2573,10 @@ table.addEventListener("mousedown", e => {
     focusCell(hasTitles() ? -1 : 0, r); extendSel(grid.length - 1, r);
   } else if (letter) {
     e.preventDefault();
-    const g = letter.closest("th").cellIndex - 2;
-    if (g < 0) return;
-    if (e.shiftKey && sel) { sel.fg = g; sel.ar = 0; sel.fr = nRows() - 1; paintSel(); return; }
-    focusCell(g, 0); extendSel(g, nRows() - 1);
+    const sp = thSpan(letter.closest("th"));
+    if (!sp) return;
+    if (e.shiftKey && sel) { sel.fg = sel.fg < sp[0] ? sp[0] : sp[1]; sel.ar = 0; sel.fr = nRows() - 1; paintSel(); return; }
+    focusCell(sp[0], 0); extendSel(sp[1], nRows() - 1);
   }
 });
 table.addEventListener("mouseover", e => {
@@ -2617,12 +2689,12 @@ $("sheetWrap").addEventListener("mousedown", e => {
   if (g >= grid.length + 20 || r >= nRows() + 200) return;
   e.preventDefault();
   mutate(() => {
-    while (grid.length <= g) grid.push({ name: nextGroupName(), cells: [] });
+    while (grid.length <= g) { const nm = nextGroupName(); for (let i = 0; i < SUB(); i++) grid.push({ name: nm, cells: [] }); }
     while (titles.length <= r) titles.push("");
     const need = nRows();
     grid.forEach(gr => { while (gr.cells.length < need) gr.cells.push(""); });
   });
-  if (inHead && g >= 0) { const n = t.querySelector(`.grp-name[data-g="${g}"]`); n.focus(); n.select(); }
+  if (inHead && g >= 0) { const n = t.querySelector(`.grp-name[data-g="${setStart(g)}"]`); if (n) { n.focus(); n.select(); } }
   else focusCell(g, r);
 });
 
@@ -2642,19 +2714,21 @@ table.addEventListener("contextmenu", e => {
     const r = rh.parentElement.rowIndex - 1, R = selRect();
     if (!R || r < R.r0 || r > R.r1 || !selMulti()) { focusCell(hasTitles() ? -1 : 0, r); extendSel(grid.length - 1, r); }
   } else {
-    const g = th.cellIndex - 2;
-    if (g < 0) return;
+    const sp = thSpan(th);
+    if (!sp) return;
     const R = selRect();
-    if (!R || g < R.g0 || g > R.g1 || R.r1 - R.r0 + 1 < nRows()) { focusCell(g, 0); extendSel(g, nRows() - 1); }
+    if (!R || sp[0] < R.g0 || sp[1] > R.g1 || R.r1 - R.r0 + 1 < nRows()) { focusCell(sp[0], 0); extendSel(sp[1], nRows() - 1); }
   }
   const R = selRect(), nr = R.r1 - R.r0 + 1, gs = Math.max(0, R.g0), ng = R.g1 - gs + 1;
-  const rowsWord = nr > 1 ? `${nr} rows` : "row", colsWord = ng > 1 ? `${ng} columns` : "column";
+  const rowsWord = nr > 1 ? `${nr} rows` : "row";
+  const SR = setRange(R), nSets = (SR.g1 - SR.g0 + 1) / SUB();
+  const colsWord = SUB() > 1 ? (nSets > 1 ? `${nSets} data sets` : "data set") : ng > 1 ? `${ng} columns` : "column";
   const items = [
     ["cut", "Cut", kb("X")], ["copy", "Copy", kb("C")], ["paste", "Paste", kb("V")], "-",
     ["rowAbove", `Insert ${rowsWord} above`], ["rowBelow", `Insert ${rowsWord} below`],
     ["colLeft", `Insert ${colsWord} left`], ["colRight", `Insert ${colsWord} right`], "-",
-    ["delRows", `Delete ${rowsWord}`], ["delCols", `Delete ${colsWord}`, "", ng < 1 || ng >= grid.length], "-",
-    ["colMoveL", `Move ${colsWord} left`, "", ng < 1 || gs === 0], ["colMoveR", `Move ${colsWord} right`, "", ng < 1 || R.g1 >= grid.length - 1], "-",
+    ["delRows", `Delete ${rowsWord}`], ["delCols", `Delete ${colsWord}`, "", ng < 1 || SR.g1 - SR.g0 + 1 >= grid.length], "-",
+    ["colMoveL", `Move ${colsWord} left`, "", ng < 1 || SR.g0 === 0], ["colMoveR", `Move ${colsWord} right`, "", ng < 1 || SR.g1 >= grid.length - 1], "-",
     grid.slice(gs, R.g1 + 1).every(c => c.off) ? ["include", `Include ${colsWord} in the analysis`] : ["exclude", `Exclude ${colsWord} from the analysis`, "", ng < 1],
     blockExcluded(R) ? ["valIn", "Include values again"] : ["valOut", nr * ng > 1 ? "Exclude values from the analysis" : "Exclude value from the analysis", "", ng < 1], "-",
     ["fill", "Fill down", kb("D")], ["clear", "Clear contents", "Del"],
@@ -2671,6 +2745,7 @@ ctxMenu.addEventListener("click", async e => {
   if (!b) return;
   closeMenu();
   const R = selRect(), nr = R.r1 - R.r0 + 1, gs = Math.max(0, R.g0), ng = R.g1 - gs + 1;
+  const SR = setRange(R), N = SUB(), sg = SR.g1 - SR.g0 + 1;   // column inserts / deletes / moves work in whole data sets
   switch (b.dataset.act) {
     case "cut": case "copy":
       try { await navigator.clipboard.writeText(selTSV()); } catch (_) { /* clipboard blocked */ }
@@ -2682,10 +2757,10 @@ ctxMenu.addEventListener("click", async e => {
       return;
     case "rowAbove": insertRows(R.r0, nr); break;
     case "rowBelow": insertRows(R.r1 + 1, nr); sel.ar = sel.fr = R.r1 + 1; break;
-    case "colLeft": insertCols(gs, ng); break;
-    case "colRight": insertCols(R.g1 + 1, ng); sel.ag = sel.fg = R.g1 + 1; break;
+    case "colLeft": insertCols(SR.g0, sg); break;
+    case "colRight": insertCols(SR.g1 + 1, sg); sel.ag = sel.fg = SR.g1 + 1; break;
     case "delRows": deleteRows(R.r0, R.r1); sel.fr = sel.ar = Math.min(R.r0, nRows() - 1); sel.fg = sel.ag; break;
-    case "delCols": deleteCols(gs, R.g1); sel.ag = sel.fg = Math.min(gs, grid.length - 1); sel.fr = sel.ar; break;
+    case "delCols": deleteCols(SR.g0, SR.g1); sel.ag = sel.fg = Math.min(gs, grid.length - 1); sel.fr = sel.ar; break;
     case "exclude": case "include": {
       const off = b.dataset.act === "exclude";
       mutate(() => grid.slice(gs, R.g1 + 1).forEach(c => { if (off) c.off = true; else delete c.off; }));
@@ -2701,10 +2776,10 @@ ctxMenu.addEventListener("click", async e => {
       break;
     }
     case "colMoveL": case "colMoveR": {
-      const d = b.dataset.act === "colMoveL" ? -1 : 1;
-      mutate(() => {   // move the whole block one place
-        const block = grid.splice(gs, ng);
-        grid.splice(gs + d, 0, ...block);
+      const d = (b.dataset.act === "colMoveL" ? -1 : 1) * N;
+      mutate(() => {   // move the whole block one place (one data set with subcolumns)
+        const block = grid.splice(SR.g0, sg);
+        grid.splice(SR.g0 + d, 0, ...block);
       });
       sel.ag += d; sel.fg += d;
       break;
@@ -2743,10 +2818,16 @@ table.addEventListener("dragstart", e => {
 });
 const clearDropMarks = () => table.querySelectorAll("th.drop-before, th.drop-after, th.drag-src").forEach(t => t.classList.remove("drop-before", "drop-after", "drag-src"));
 function dropSlot(e) {   // the gap the column would land in: before column `at`
-  const th = e.target.closest && e.target.closest("thead th, td");
+  let th = e.target.closest && e.target.closest("thead th, td");
   if (!th) return null;
-  const g = (th.tagName === "TH" ? th.cellIndex : th.cellIndex) - 2;
+  const g = th.tagName === "TH" ? (thSpan(th) || [-1])[0] : th.cellIndex - 2;
   if (g < 0 || g >= grid.length) return null;
+  const N = SUB();
+  if (N > 1) {   // whole data sets: measure against the set's header
+    th = table.tHead.rows[0].cells[Math.floor(g / N) + 2];
+    const r = th.getBoundingClientRect(), after = e.clientX > r.left + r.width / 2, a = setStart(g);
+    return { g: a, after, at: a + (after ? N : 0), th };
+  }
   const r = th.getBoundingClientRect(), after = e.clientX > r.left + r.width / 2;
   return { g, after, at: g + (after ? 1 : 0) };
 }
@@ -2756,21 +2837,23 @@ table.addEventListener("dragover", e => {
   if (!d) return;
   e.preventDefault(); e.dataTransfer.dropEffect = "move";
   table.querySelectorAll("th.drop-before, th.drop-after").forEach(t => t.classList.remove("drop-before", "drop-after"));
-  const th = table.tHead.rows[0].cells[d.g + 2];
-  if (d.at !== dragCol && d.at !== dragCol + 1) th.classList.add(d.after ? "drop-after" : "drop-before");
+  const th = d.th || headRow(table).cells[d.g + 2], N = SUB();
+  if (d.at !== dragCol && d.at !== dragCol + N) th.classList.add(d.after ? "drop-after" : "drop-before");
 });
 table.addEventListener("drop", e => {
   if (dragCol < 0) return;
   e.preventDefault();
   const d = dropSlot(e), from = dragCol;
   dragCol = -1; clearDropMarks();
-  if (!d || d.at === from || d.at === from + 1) return;
-  moveColumn(from, d.at > from ? d.at - 1 : d.at);
+  const N = SUB();
+  if (!d || d.at === from || d.at === from + N) return;
+  moveColumn(from, d.at > from ? d.at - N : d.at);
 });
 table.addEventListener("dragend", () => { dragCol = -1; clearDropMarks(); });
 function moveColumn(from, to) {
+  const N = SUB();   // with subcolumns, `from` / `to` are the first columns of data sets and the whole set moves
   if (to < 0 || to >= grid.length || to === from) return;
-  mutate(() => { const [c] = grid.splice(from, 1); grid.splice(to, 0, c); });
+  mutate(() => { const c = grid.splice(from, N); grid.splice(to, 0, ...c); });
   if (sel) { sel.ag = sel.fg = to; paintSel(); }
 }
 
@@ -2872,11 +2955,37 @@ function renderTabs() {
     `<div class="tab${i === curSheet ? " on" : ""}" role="tab" aria-selected="${i === curSheet}" data-i="${i}" title="${escapeHtml(sh.name)} — double-click to rename, right-click for more"><span class="nm">${escapeHtml(sh.name)}</span>` +
     (sheets.length > 1 ? `<span class="x" data-x="${i}" role="button" aria-label="Close ${escapeHtml(sh.name)}">×</span>` : "") + `</div>`
   ).join("") + `<button type="button" class="add" title="New sheet" aria-label="New sheet">+</button>` +
-    `<span class="tabs-fill"></span><button type="button" class="tb-btn menu-btn tab-tool${transformOn() ? " on" : ""}" id="transformBtn" aria-haspopup="dialog" title="Transform the data before the analysis: % of the first column, log, average replicates">` +
+    `<span class="tabs-fill"></span><button type="button" class="tb-btn menu-btn tab-tool${SUB() > 1 ? " on" : ""}" id="subcolsBtn" aria-haspopup="dialog" title="Replicates side by side: each data set gets N subcolumns, as in Prism's grouped table">` +
+    `<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 9h18M9 9v10M15 9v10"/></svg><span class="lbl">${subcolsLabel()}</span><svg class="chev" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4"/></svg></button>` +
+    `<button type="button" class="tb-btn menu-btn tab-tool${transformOn() ? " on" : ""}" id="transformBtn" aria-haspopup="dialog" title="Transform the data before the analysis: % of the first column, log, average replicates">` +
     `<svg viewBox="0 0 24 24"><path d="M4 18c4 0 4-12 8-12s4 12 8 12"/></svg><span class="lbl">${transformLabel()}</span><svg class="chev" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4"/></svg></button>` +
     `<button type="button" class="tb-btn tab-tool" id="shareBtn" title="Copy a link that opens these sheets (data and settings) in any browser"><svg viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg><span class="lbl">Share</span></button>`;
   tabsEl.querySelector(".tab.on")?.scrollIntoView({ block: "nearest", inline: "nearest" });
 }
+const subcolsLabel = () => SUB() > 1 ? `Subcolumns: ${SUB()}` : "Subcolumns";
+const subcolsAnchor = { get _btn() { return $("subcolsBtn"); } };
+function subcolsHtml() {
+  return `<h4>Replicates side by side</h4><div class="st-row"><span>Subcolumns</span><div class="seg">${[1, 2, 3, 4, 5, 6].map(n =>
+    `<button type="button" data-sub="${n}"${n === SUB() ? ' class="on"' : ""}>${n}</button>`).join("")}</div></div>` +
+    `<p class="ex-note">Like Prism's grouped table: each data set (Scion, Rootstock…) gets N columns for its replicates, and each row title is one level of the row factor (one cluster on the x axis). Two-way ANOVA reads every row × data set as a cell of N values. Changing the number keeps each set's data.</p>`;
+}
+function openSubcolsPop() {
+  closeMenuPop();
+  menuFor = subcolsAnchor;
+  menuPop.innerHTML = subcolsHtml(); menuPop.hidden = false;
+  const r = $("subcolsBtn").getBoundingClientRect();
+  menuPop.style.minWidth = "360px"; menuPop.style.maxWidth = "420px"; menuPop.style.maxHeight = "";
+  menuPop.style.top = r.bottom + 4 + "px";
+  menuPop.style.left = Math.max(6, Math.min(r.right - menuPop.offsetWidth, innerWidth - menuPop.offsetWidth - 6)) + "px";
+  $("subcolsBtn").classList.add("open");
+  menuPop.querySelector("button").focus({ preventScroll: true });
+}
+menuPop.addEventListener("click", e => {
+  const b = e.target.closest("button[data-sub]");
+  if (!b || menuFor !== subcolsAnchor) return;
+  setSubcols(+b.dataset.sub);
+  closeMenuPop(); renderTabs();
+});
 const transformOn = () => $("transform").value !== "none" || $("avgReps").value === "on";
 function transformLabel() {
   const t = $("transform").value, a = $("avgReps").value === "on";
@@ -2912,6 +3021,7 @@ menuPop.addEventListener("click", e => {
 });
 tabsEl.addEventListener("click", e => {
   if (e.target.closest("#transformBtn")) { menuFor === transformAnchor ? closeMenuPop() : openTransformPop(); return; }
+  if (e.target.closest("#subcolsBtn")) { menuFor === subcolsAnchor ? closeMenuPop() : openSubcolsPop(); return; }
   if (e.target.closest("#shareBtn")) {
     const btn = $("shareBtn");
     shareLink().then(async url => {
@@ -2997,6 +3107,26 @@ function isTitleColumn(matrix, mayHaveHeader) {
   const first = body.map(r => String(r[0] ?? "").trim()).filter(Boolean);
   return first.length > 0 && first.every(c => !isFinite(S.parseNum(c))) && body.some(r => r.length > 1);
 }
+/* a header that names each data set once, over N side-by-side replicates (“Scion, , , Rootstock, , ”,
+   or the name repeated): N subcolumns; 1 otherwise */
+function subcolsInHeader(names, nCols) {
+  const h = Array.from({ length: nCols }, (_, c) => String(names[c] ?? "").trim());
+  for (let N = 2; N <= 6; N++) {
+    if (nCols % N || nCols / N < 1) continue;
+    let ok = true;
+    for (let a = 0; a < nCols && ok; a += N) {
+      if (!h[a]) ok = false;
+      for (let i = 1; i < N && ok; i++) if (h[a + i] && h[a + i] !== h[a]) ok = false;
+    }
+    if (ok && h.some((x, c) => c % N && (!x || x === h[c - c % N]))) {
+      // the smallest N that fits could be a divisor of the real one (Scion, , , , , ): take the largest that fits
+      let best = N;
+      for (let M = N + 1; M <= 6; M++) if (!(nCols % M) && h.every((x, c) => c % M ? (!x || x === h[c - c % M]) : !!x)) best = M;
+      return best;
+    }
+  }
+  return 1;
+}
 function importMatrix(all) {
   all = all.filter(r => r.some(c => String(c).trim() !== ""));
   if (!all.length) return false;
@@ -3007,8 +3137,10 @@ function importMatrix(all) {
     const names = hdr ? rows[0] : [], dataRows = rows.slice(hdr);
     titles = withTitles ? all.slice(hdr).map(r => String(r[0] ?? "").trim()) : [];
     const nCols = Math.max(...rows.map(r => r.length));
+    const N = hdr ? subcolsInHeader(names, nCols) : 1;
     grid = [];
-    for (let c = 0; c < nCols; c++) grid.push({ name: names[c] || groupLabel(c), cells: dataRows.map(r => r[c] ?? "") });
+    for (let c = 0; c < nCols; c++) grid.push({ name: String(names[c - c % N] ?? "").trim() || groupLabel(Math.floor(c / N)), cells: dataRows.map(r => r[c] ?? "") });
+    $("subcols").value = String(N);
     if (!dataRows.length) grid.forEach(g => g.cells.push(""));
   });
   return true;
@@ -3068,7 +3200,7 @@ $("addRowBtn").onclick = () => mutate(() => {
   if (!grid.length) grid.push({ name: groupLabel(0), cells: [] });
   grid.forEach(g => g.cells.push(""));
 });
-$("addGroupBtn").onclick = () => mutate(() => grid.push({ name: nextGroupName(), cells: Array(nRows() || DEFAULT_ROWS).fill("") }));
+$("addGroupBtn").onclick = () => mutate(() => { const nm = nextGroupName(); for (let i = 0; i < SUB(); i++) grid.push({ name: nm, cells: Array(nRows() || DEFAULT_ROWS).fill("") }); });
 $("clearBtn").onclick = () => {
   pushHistory();
   seedBlank();
@@ -3095,6 +3227,10 @@ const EXAMPLES = [
             M1: ["", "", "", 10.3, 10.6, 10.5, 10.6, 10.9, 11.0, 11.8, 12.1, 11.9],
             M2: ["", "", "", 10.4, 10.8, 10.6, 10.5, 10.8, 10.9, 11.9, 12.0, 12.2],
             M3: ["", "", "", 10.2, 10.7, 10.6, 10.6, 11.2, 11.3, 12.0, 12.3, 12.1] } },
+  { name: "Replicates side by side", hint: "grouped table, 3 subcolumns, two-way ANOVA", test: "twoway", posthoc: "bonferroni", xLabel: "", subcols: 3,
+    titles: ["NC+1×motif", "NC+3×motif", "NC+5×motif", "NC+7×motif", "NCU"],
+    sets: { Scion: [[0.71, 2.09, 4.80, 5.69, 2.70], [0.73, 2.14, 4.58, 5.57, 2.91], [0.75, 1.20, 4.74, 5.76, 2.92]],
+            Rootstock: [[1.06, 0.96, 1.25, 1.31, 1.02], [0.91, 1.08, 1.15, 1.37, 1.08], [1.04, 0.97, 1.21, 1.23, 0.91]] } },
   { name: "Correlation", hint: "correlation + regression, A = X", test: "corr",
     cols: { "Dose (mg)": [0, 5, 10, 15, 20, 25, 30, 35, 40], Response: [2.1, 3.4, 4.2, 5.9, 6.3, 7.8, 8.4, 9.9, 10.6] } },
   { name: "Dose–response curve", hint: "4PL fit, IC50, A = dose", test: "dose", yLabel: "Viability (%)",
@@ -3108,10 +3244,12 @@ const EXAMPLES = [
     cols: { Placebo: [8, 22], Drug: [19, 11] } },
 ];
 function openExample(ex) {
-  const names = Object.keys(ex.cols), n = Math.max(...names.map(k => ex.cols[k].length));
-  const g = names.map(k => ({ name: k, cells: Array.from({ length: n }, (_, i) => ex.cols[k][i] == null ? "" : String(ex.cols[k][i])) }));
+  // `sets`: a data set → its subcolumns (replicates side by side); `cols`: one column each
+  const cols = ex.sets ? Object.entries(ex.sets).flatMap(([k, subs]) => subs.map(v => [k, v])) : Object.entries(ex.cols);
+  const n = Math.max(...cols.map(([, v]) => v.length));
+  const g = cols.map(([k, v]) => ({ name: k, cells: Array.from({ length: n }, (_, i) => v[i] == null ? "" : String(v[i])) }));
   const settings = Object.assign(collectSettings(), myStyle, { testSelect: ex.test, xLabel: ex.xLabel ?? GRAPH_DEFAULTS.xLabel, yLabel: ex.yLabel ?? GRAPH_DEFAULTS.yLabel, plotW: "", plotH: "",
-                                 transform: "none", avgReps: "off" },
+                                 transform: "none", avgReps: "off", subcols: String(ex.subcols || 1) },
                                  ex.posthoc ? { posthocSelect: ex.posthoc } : {});
   stashSheet();
   const cur = sheets[curSheet], blank = !cur.grid.some(c => c.cells.some(v => String(v).trim()));
@@ -3249,6 +3387,11 @@ const ZH = {
   "Sets 7 pt text and thin lines for the journal's column width.": "按期刊栏宽设置 7 pt 文字和细线。",
   "Significance": "显著性", "Marks": "标记", "Brackets": "括号", "Show": "显示", "Significant": "仅显著", "All": "全部", "Vs first": "与首组", "Pick": "自选",
   "Pick works with brackets: choose Brackets above (one-way tests) or a two-way design.": "自选需要括号标记：在上方选择“括号”（单因素检验），或使用双因素设计。",
+  "Subcolumns": "子列", "Replicates side by side": "重复值并列录入", "Data set": "数据集", "Replicates side by side: each data set gets N subcolumns, as in Prism's grouped table": "重复值并列：每个数据集有 N 个子列，如 Prism 的分组表",
+  "Like Prism's grouped table: each data set (Scion, Rootstock…) gets N columns for its replicates, and each row title is one level of the row factor (one cluster on the x axis). Two-way ANOVA reads every row × data set as a cell of N values. Changing the number keeps each set's data.": "与 Prism 的分组表相同：每个数据集（如 Scion、Rootstock）有 N 列放重复值，每个行标题是行因素的一个水平（x 轴上的一簇）。双因素方差分析把每个行 × 数据集看作含 N 个值的单元格。修改子列数会保留各数据集的数据。",
+  "Drag to move this data set (the bars follow)": "拖动以移动此数据集（柱子随之移动）", "Delete data set": "删除数据集", "data set": "数据集",
+  "grouped table, 3 subcolumns, two-way ANOVA": "分组表，3 个子列，双因素方差分析",
+  "Subcolumns are read as separate columns by this test: it works on counts, X / Y pairs, doses or times.": "此检验把子列当作独立的列：它处理计数、X / Y 配对、剂量或时间。",
   "Transform": "数据变换", "Transform the data before the analysis": "分析前变换数据", "Values": "数值", "Replicates": "重复", "Keep": "保留", "Average": "取平均",
   "% of first column": "第一列的百分比", "log10": "log10", "ln": "ln",
   "Average: rows that share a row title become one row (their mean). The sheet itself is not changed.": "取平均：行标题相同的行合并为一行（取均值）。表格本身不会改变。",
@@ -3298,6 +3441,8 @@ const ZH_PATTERNS = [
   [/^Is (.+) significantly correlated with (.+)\?$/, "$1 与 $2 是否显著相关？"],
   [/^Is the distribution of outcomes different between the columns\?$/, "各列的结局分布是否不同？"],
   [/^(\d+) of (\d+) columns? differs? significantly from (.+?) \((.+), unadjusted\)\.$/, "$2 列中有 $1 列与 $3 差异显著（$4，未校正）。"],
+  [/^Subcolumns: (\d+)$/, "子列：$1"], [/^Name of data set (\d+)$/, "数据集 $1 的名称"],
+  [/^(Insert|Delete|Move) (\d+ )?data sets?( left| right)?$/, (m, v, n, d) => ({ Insert: "插入", Delete: "删除", Move: "移动" }[v]) + (n ? n.trim() + " 个" : "") + "数据集" + ({ " left": "（左侧）", " right": "（右侧）" }[d] || "")],
   [/^Column statistics for (\d+) columns?\.$/, "共 $1 列的列统计。"],
   [/^Two-way ANOVA: interaction$/, "双因素方差分析：交互作用"],
   [/^([=<>] [\d.]+); row factor$/, "$1；行因素"], [/^([=<>] [\d.]+); column factor$/, "$1；列因素"],
@@ -3504,6 +3649,33 @@ function collectGroups() {
   return { groups, warns, decimalComma };
 }
 
+/* Replicates side by side (subcolumns, as in Prism's grouped table): the subcolumns of a data set
+   become one group whose values keep their rows, so two-way ANOVA and grouped cells read each
+   row title × data set as a cell with N replicates. Matched-row tests (paired, repeated measures)
+   take the mean of each row's subcolumns, so every row stays one subject. XY, survival and counts
+   read the columns as they are. `gis` keeps the sheet column of every value (outlier marks). */
+const ROW_MATCHED = new Set(["paired", "wilcoxon", "rmanova", "friedman"]);
+function mergeSubcols(groups, test, problems) {
+  const N = SUB();
+  if (N < 2) return groups;
+  if (["chisq", "corr", "dose", "survival"].includes(test)) { problems.push("Subcolumns are read as separate columns by this test: it works on counts, X / Y pairs, doses or times."); return groups; }
+  const sets = new Map();
+  groups.forEach(g => {
+    const a = setStart(g.gi);
+    if (!sets.has(a)) sets.set(a, { name: g.name, values: [], rows: [], gis: [], gi: a });
+    const m = sets.get(a);
+    g.values.forEach((v, q) => { m.values.push(v); m.rows.push(g.rows[q]); m.gis.push(g.gi); });
+  });
+  const out = [...sets.values()];
+  if (ROW_MATCHED.has(test)) out.forEach(m => {   // one value per row: the mean of its subcolumns
+    const by = new Map();
+    m.values.forEach((v, q) => { const r = m.rows[q]; if (!by.has(r)) by.set(r, []); by.get(r).push(v); });
+    const rows = [...by.keys()].sort((a, b) => a - b);
+    m.values = rows.map(r => by.get(r).reduce((a, b) => a + b, 0) / by.get(r).length); m.rows = rows; m.gis = null;
+  });
+  return out;
+}
+
 /* Data transforms, applied before every analysis (Transform, over the sheet):
    - average replicates: rows that share a row title become one row (their mean, per column);
    - % of first column: every value as a percentage of the first column's mean;
@@ -3532,7 +3704,7 @@ function transformGroups(groups, test, problems) {
           const b = by.get(key); b.sum += v; b.n++;
         });
         merged += g.values.length - order.length;
-        return Object.assign(g, { values: order.map(k => by.get(k).sum / by.get(k).n), rows: order.map(k => by.get(k).row) });
+        return Object.assign(g, { values: order.map(k => by.get(k).sum / by.get(k).n), rows: order.map(k => by.get(k).row), gis: null });
       });
       if (merged) lastTransform.avg = true;
       else problems.push("Average replicates: no rows share a row title, so nothing was averaged.");
@@ -3548,6 +3720,7 @@ function transformGroups(groups, test, problems) {
       const keep = g.values.map(v => v > 0);
       dropped += keep.filter(x => !x).length;
       g.rows = g.rows.filter((_, q) => keep[q]);
+      if (g.gis) g.gis = g.gis.filter((_, q) => keep[q]);
       g.values = g.values.filter(v => v > 0).map(v => tf === "log10" ? Math.log10(v) : Math.log(v));
     });
     if (dropped) problems.push(`${dropped} value(s) ≤ 0 cannot be log-transformed and were left out.`);
@@ -3569,7 +3742,7 @@ function flagOutliers(test, groups, report) {
     S.grubbs(g.values).forEach(o => {
       const r = g.rows[o.index];
       rows.push([g.name, String(r + 1), fmt(g.values[o.index]), fmt(o.G, 3), fmt(o.crit, 3)]);
-      const gi = Number.isInteger(g.gi) ? g.gi : -1;
+      const gi = g.gis ? g.gis[o.index] : Number.isInteger(g.gi) ? g.gi : -1;
       const td = gi >= 0 && document.querySelector(`#dataTable .cell-input[data-g="${gi}"][data-r="${r}"]`);
       if (td) td.parentElement.classList.add("flag");
     });
@@ -3635,6 +3808,7 @@ function run(quiet) {
   let groups = raw.filter(g => g.values.length > 0);
   const test = $("testSelect").value;
   const problems = [...warns];
+  groups = mergeSubcols(groups, test, problems);
   groups = transformGroups(groups, test, problems).filter(g => g.values.length > 0);
 
   const minGroups = ONE_GROUP.has(test) ? 1 : 2;
@@ -3757,6 +3931,9 @@ function methodsText(test, groups, plot) {
   const parts = [];
   const tf = lastTransform;
   if (lastExcluded) parts.push(L(`${lastExcluded} value${lastExcluded > 1 ? "s were" : " was"} excluded from the analysis.`, `${lastExcluded} 个数值被排除在分析之外。`));
+  if (SUB() > 1 && !["chisq", "corr", "dose", "survival"].includes(test)) parts.push(ROW_MATCHED.has(test)
+    ? L(`Replicate values (${SUB()} per row and data set) were averaged per row before the matched analysis.`, `每行每个数据集的 ${SUB()} 个重复值在配对分析前先取平均。`)
+    : L(`Replicate values were entered as ${SUB()} side-by-side subcolumns per data set and analysed as individual observations.`, `重复值以每个数据集 ${SUB()} 个并列子列录入，并作为独立观测值分析。`));
   if (tf.avg) parts.push(L("Technical replicates (rows sharing a label) were averaged before analysis.", "分析前先对技术重复（行标题相同的行）取平均。"));
   if (tf.kind === "pct") parts.push(L(`Values were expressed as a percentage of the mean of ${tf.ref}.`, `数值以 ${tf.ref} 均值的百分比表示。`));
   if (tf.kind === "log10" || tf.kind === "ln") parts.push(L(`Values were ${tf.kind === "log10" ? "log10" : "natural-log"}-transformed before analysis.`, `分析前对数值进行了${tf.kind === "log10" ? "常用对数（log10）" : "自然对数"}转换。`));
@@ -4967,18 +5144,21 @@ function compareInNewTab(sel, test) {
     if (b.level != null) {   // a cell of a grouped figure: rows with that row title, in that column
       const gi = grid.findIndex((c, i) => (c.name.trim() || groupLabel(i)) === b.col);
       if (gi < 0) return;
-      cols.push({ name: b.label, cells: grid[gi].cells.filter((v, r) => (titles[r] || "").trim() === b.level && String(v).trim() && !(grid[gi].xr || []).includes(r)) });
+      cols.push({ name: b.label, cells: setCols(gi).filter(j => !grid[j].off).flatMap(j => grid[j].cells.filter((v, r) => (titles[r] || "").trim() === b.level && String(v).trim() && !(grid[j].xr || []).includes(r))) });
     } else {
       const gi = grid.findIndex((c, i) => !c.off && (c.name.trim() || groupLabel(i)) === b.series);
       if (gi < 0) return;
-      cols.push({ name: grid[gi].name, cells: grid[gi].cells.map((v, r) => (grid[gi].xr || []).includes(r) ? "" : v) });
+      // a data set with subcolumns: all its values, one after another (row matching is lost)
+      const js = setCols(gi).filter(j => !grid[j].off);
+      cols.push({ name: grid[gi].name, cells: js.length > 1 ? js.flatMap(j => grid[j].cells.filter((v, r) => String(v).trim() && !(grid[j].xr || []).includes(r)))
+                                                             : grid[gi].cells.map((v, r) => (grid[gi].xr || []).includes(r) ? "" : v) });
     }
   });
   if (cols.length < 2) return;
   const n = Math.max(...cols.map(c => c.cells.length));
   cols.forEach(c => { while (c.cells.length < n) c.cells.push(""); });
   const keepTitles = sel.every(b => b.level == null) && test === "paired";
-  const settings = Object.assign(collectSettings(), { testSelect: test, posthocSelect: "tukey", sigPick: "", figFmt: $("figFmt").value });
+  const settings = Object.assign(collectSettings(), { testSelect: test, posthocSelect: "tukey", sigPick: "", figFmt: $("figFmt").value, subcols: "1" });
   figSel.clear();
   addSheet({ name: sel.map(b => b.label).join(" vs ").slice(0, 40), grid: cols, titles: keepTitles ? titles.slice(0, n) : [], settings });
 }
