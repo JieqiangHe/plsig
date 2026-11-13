@@ -136,11 +136,11 @@ body { display: grid; grid-template-rows: auto minmax(0, 1fr); grid-template-col
 .rg-body { flex: 1; display: grid; grid-auto-flow: column; grid-template-rows: 24px 24px; gap: 3px 5px; align-items: center; justify-content: stretch; justify-items: stretch; }
 .rg-rows { grid-auto-flow: row; grid-template-columns: 1fr; }   /* two stacked rows of equal buttons */
 /* everything in the ribbon is 24px high */
-#ribbon .tb-btn, #ribbon .field, #ribbon .unit { height: 24px; }
-#ribbon .unit .num-field { height: 22px; }
-#ribbon .seg button { height: 20px; }
-#ribbon .seg button svg { width: 18px; height: 18px; display: block; margin: auto; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
-#ribbon .seg button svg .f { fill: currentColor; stroke: none; }
+:is(#ribbon, #graphHead, #graphTools, #dataTools) .tb-btn, :is(#ribbon, #graphHead, #graphTools, #dataTools) .field, :is(#ribbon, #graphHead, #graphTools, #dataTools) .unit { height: 24px; }
+:is(#ribbon, #graphHead, #graphTools, #dataTools) .unit .num-field { height: 22px; }
+:is(#ribbon, #graphHead, #graphTools, #dataTools) .seg button { height: 20px; }
+:is(#ribbon, #graphHead, #graphTools, #dataTools) .seg button svg { width: 18px; height: 18px; display: block; margin: auto; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+:is(#ribbon, #graphHead, #graphTools, #dataTools) .seg button svg .f { fill: currentColor; stroke: none; }
 /* colour-theme swatch: the first four colours of the theme */
 .chip { flex: none; display: inline-block; vertical-align: -1px; width: 20px; height: 10px; margin-right: 7px; border-radius: 3px; box-shadow: inset 0 0 0 1px rgba(0,0,0,.12); }
 .strip { flex: none; display: block; width: 72px; height: 10px; border-radius: 3px; box-shadow: inset 0 0 0 1px rgba(0,0,0,.12); }   /* a theme's whole palette, in the menu */
@@ -180,9 +180,9 @@ a.tb-btn { text-decoration: none; }
 .rg-analysis #runBtn { grid-area: 1 / 2; }
 .rg-analysis .opts { grid-area: 2 / 1 / 3 / 3; }
 /* menu buttons (test, post-hoc): flat, the value in bold, a chevron at the right; the list opens in #menuPop */
-#ribbon .menu-btn { justify-content: flex-start; gap: 6px; padding: 0 7px; border-color: transparent; background: var(--seg-bg); box-shadow: none; }
-#ribbon .menu-btn:hover, #ribbon .menu-btn.open { background: var(--btn-hover); }
-#ribbon .menu-btn svg { color: var(--fg-muted); }
+:is(#ribbon, #graphHead, #graphTools, #dataTools) .menu-btn { justify-content: flex-start; gap: 6px; padding: 0 7px; border-color: transparent; background: var(--seg-bg); box-shadow: none; }
+:is(#ribbon, #graphHead, #graphTools, #dataTools) .menu-btn:hover, :is(#ribbon, #graphHead, #graphTools, #dataTools) .menu-btn.open { background: var(--btn-hover); }
+:is(#ribbon, #graphHead, #graphTools, #dataTools) .menu-btn svg { color: var(--fg-muted); }
 .menu-btn .lbl { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; text-align: left; }
 .menu-btn .val { font-weight: 600; color: var(--fg-strong); }
 .menu-btn .k { color: var(--fg-faint); margin-right: 5px; }
@@ -240,17 +240,17 @@ a.tb-btn { text-decoration: none; }
 #menuPop .sz-grid button span { flex: none; }
 #menuPop.sz-pop button.on { background: var(--accent-soft); }
 #menuPop.sz-pop button.on:hover { background: var(--accent); }
-#ribbon .size-btn .val { font-variant-numeric: tabular-nums; }
-#ribbon .size-btn.auto .val { font-weight: 400; color: var(--fg-muted); }
+:is(#ribbon, #graphHead, #graphTools, #dataTools) .size-btn .val { font-variant-numeric: tabular-nums; }
+:is(#ribbon, #graphHead, #graphTools, #dataTools) .size-btn.auto .val { font-weight: 400; color: var(--fg-muted); }
 :is(#menuPop, #styleCard) button:hover, :is(#menuPop, #styleCard) button:focus-visible { outline: none; background: var(--accent); color: #fff; }
 :is(#menuPop, #styleCard) button:hover small, :is(#menuPop, #styleCard) button:focus-visible small { color: rgba(255,255,255,.8); }
 /* on / off button (Welch's correction) */
-#ribbon .toggle { width: auto; padding: 0 8px 0 6px; border-color: transparent; background: transparent; box-shadow: none; }
-#ribbon .toggle:hover { background: var(--btn-hover); }
-#ribbon .toggle svg { color: var(--fg-muted); }
-#ribbon .toggle:not(.on) .ck { display: none; }
-#ribbon .toggle.on { background: var(--accent-soft); color: var(--fg-strong); }
-#ribbon .toggle.on svg { color: var(--accent); }
+:is(#ribbon, #graphHead, #graphTools, #dataTools) .toggle { width: auto; padding: 0 8px 0 6px; border-color: transparent; background: transparent; box-shadow: none; }
+:is(#ribbon, #graphHead, #graphTools, #dataTools) .toggle:hover { background: var(--btn-hover); }
+:is(#ribbon, #graphHead, #graphTools, #dataTools) .toggle svg { color: var(--fg-muted); }
+:is(#ribbon, #graphHead, #graphTools, #dataTools) .toggle:not(.on) .ck { display: none; }
+:is(#ribbon, #graphHead, #graphTools, #dataTools) .toggle.on { background: var(--accent-soft); color: var(--fg-strong); }
+:is(#ribbon, #graphHead, #graphTools, #dataTools) .toggle.on svg { color: var(--accent); }
 /* axis titles on the figure are editable: show it on hover */
 #plot.on-title, #plot.on-title * { cursor: text !important; }
 #vGraph { position: relative; }
@@ -371,11 +371,11 @@ th.hd-on .col-letter { color: var(--accent); font-weight: 600; box-shadow: inset
 #tabs .add { flex: none; display: grid; place-items: center; width: 26px; height: 24px; margin-bottom: 1px; border-radius: 6px; font-size: 16px; color: var(--fg-muted); }
 #tabs .add:hover { background: var(--btn-hover); color: var(--fg-strong); }
 #tabs .tabs-fill { flex: 1; }
-#tabs .tab-tool { flex: none; height: 24px; margin: 0 0 2px 6px; padding: 0 8px; gap: 5px; border-color: transparent; background: var(--seg-bg); box-shadow: none; font-size: 12px; color: var(--fg-muted); }
-#tabs .tab-tool:hover, #tabs .tab-tool.open { background: var(--btn-hover); color: var(--fg-strong); }
-#tabs .tab-tool.on { color: var(--accent); font-weight: 600; }
-#tabs .tab-tool svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; }
-#tabs .tab-tool svg.chev { width: 9px; height: 9px; }
+.tab-tool { flex: none; height: 24px; margin: 0 0 2px 6px; padding: 0 8px; gap: 5px; border-color: transparent; background: var(--seg-bg); box-shadow: none; font-size: 12px; color: var(--fg-muted); }
+.tab-tool:hover, .tab-tool.open { background: var(--btn-hover); color: var(--fg-strong); }
+.tab-tool.on { color: var(--accent); font-weight: 600; }
+.tab-tool svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; }
+.tab-tool svg.chev { width: 9px; height: 9px; }
 /* first-run tour */
 #tourRing { position: fixed; z-index: 70; border-radius: 8px; box-shadow: 0 0 0 2px var(--accent), 0 0 0 9999px rgba(20,20,19,.38); pointer-events: none; transition: all .2s; }
 #tourBox { position: fixed; z-index: 71; width: 280px; padding: 12px 14px 10px; border: 1px solid var(--card-border); border-radius: 8px; background: var(--surface); box-shadow: 0 10px 30px rgba(0,0,0,.25); font-size: 12.5px; color: var(--fg); }
@@ -478,14 +478,14 @@ details > summary::-webkit-details-marker { display: none; }
 select option, select optgroup { background: var(--option-bg); color: var(--fg); }
 input::placeholder, textarea::placeholder { color: var(--fg-faint); }
 /* ribbon fields are soft fills, not outlined form boxes: the outline only appears on hover / focus */
-#ribbon .field, #ribbon .unit { background-color: var(--seg-bg); border-color: transparent; transition: border-color .15s, box-shadow .15s, background-color .15s; }
-#ribbon .field:hover { border-color: var(--input-hover-border); }
-#ribbon .unit { background-color: transparent; cursor: text; }   /* number fields look like flat buttons until hovered / clicked */
-#ribbon .unit:hover { background-color: var(--btn-hover); }
-#ribbon .unit .num-field { cursor: text; }
-#ribbon .field:focus, #ribbon .unit:focus-within { background-color: var(--input-bg); }
+:is(#ribbon, #graphHead, #graphTools, #dataTools) .field, :is(#ribbon, #graphHead, #graphTools, #dataTools) .unit { background-color: var(--seg-bg); border-color: transparent; transition: border-color .15s, box-shadow .15s, background-color .15s; }
+:is(#ribbon, #graphHead, #graphTools, #dataTools) .field:hover { border-color: var(--input-hover-border); }
+:is(#ribbon, #graphHead, #graphTools, #dataTools) .unit { background-color: transparent; cursor: text; }   /* number fields look like flat buttons until hovered / clicked */
+:is(#ribbon, #graphHead, #graphTools, #dataTools) .unit:hover { background-color: var(--btn-hover); }
+:is(#ribbon, #graphHead, #graphTools, #dataTools) .unit .num-field { cursor: text; }
+:is(#ribbon, #graphHead, #graphTools, #dataTools) .field:focus, :is(#ribbon, #graphHead, #graphTools, #dataTools) .unit:focus-within { background-color: var(--input-bg); }
 .tb-btn:active:not(:disabled), .seg button:active, #runBtn:active:not(:disabled) { transform: translateY(1px); }
-#ribbon .field:focus { outline: none; border-color: var(--focus-border); box-shadow: var(--focus-ring); }
+:is(#ribbon, #graphHead, #graphTools, #dataTools) .field:focus { outline: none; border-color: var(--focus-border); box-shadow: var(--focus-ring); }
 button { transition: background-color .15s, color .15s, border-color .15s; }
 :focus-visible { outline: 2px solid var(--focus-border); outline-offset: 1px; }
 
@@ -525,7 +525,7 @@ body { grid-template-rows: auto auto minmax(0, 1fr); background: var(--gutter); 
 #ribbon .rg-analysis .opts { width: auto; }
 #ribbon .rg-analysis .opts .menu-btn { width: 196px; }
 #ribbon #runBtn { width: 52px; }
-#ribbon #themeSelect + .menu-btn, #ribbon .menu-btn[data-for="themeSelect"] { width: auto; }
+#ribbon #themeSelect + .menu-btn, :is(#ribbon, #graphHead, #graphTools, #dataTools) .menu-btn[data-for="themeSelect"] { width: auto; }
 .tb-btn.ic, .tbar .tb-btn.ic { font-size: 0; gap: 0; width: 26px !important; padding: 0 !important; justify-content: center !important; }
 /* buttons in the bars: flat until hovered, small radii */
 .tbar .tb-btn, .tbar .menu-btn, .tbar .flat .tb-btn, .tbar .rg-flat .tb-btn { border-radius: 3px; background: transparent; border-color: transparent; box-shadow: none; }
@@ -550,7 +550,7 @@ span.ptab { cursor: default; }
 #tabs .tab { height: 28px; border: 0; border-right: 1px solid var(--pane-border); border-radius: 0; background: transparent; padding: 0 6px 0 12px; }
 #tabs .tab.on { height: 29px; background: var(--input-bg); border-color: var(--pane-border); margin-bottom: -1px; }
 #tabs .add { height: 28px; border-radius: 0; }
-#tabs .tab-tool { align-self: center; height: 22px; margin: 0 0 0 4px; border-radius: 3px; background: transparent; }
+.tab-tool { align-self: center; height: 22px; margin: 0 0 0 4px; border-radius: 3px; background: transparent; }
 .sheet-foot { background: var(--pane-head); border-top-color: var(--pane-border); padding: 4px 6px; }
 #pasteZone, .paste-bar #loadDemoBtn { height: 24px; border-radius: 3px; }
 /* right side: plot over results */
@@ -592,27 +592,27 @@ body.vsplitting, body.vsplitting * { cursor: row-resize !important; user-select:
 #mbPop button:hover:not(:disabled), #mbPop button:focus-visible { background: var(--sv-btnh); }
 #ribbon { height: 34px; gap: 0; }
 #ribbon .rg + .rg::before { top: 8px; bottom: 8px; background: var(--sv-btnb); }
-:is(#ribbon, #graphHead) .tb-btn, :is(#ribbon, #graphHead) .flat .tb-btn, :is(#ribbon, #graphHead) .rg-flat .tb-btn {
+:is(#ribbon, #graphHead, #graphTools, #dataTools) .tb-btn, :is(#ribbon, #graphHead, #graphTools, #dataTools) .flat .tb-btn, :is(#ribbon, #graphHead, #graphTools, #dataTools) .rg-flat .tb-btn {
   height: 26px; border: 1px solid transparent; border-radius: 7px; background: transparent; box-shadow: none; color: var(--fg); }
-:is(#ribbon, #graphHead) .tb-btn svg { color: var(--sv-h4); }
-:is(#ribbon, #graphHead) .tb-btn:hover:not(:disabled) { background: var(--sv-btnh); }
-:is(#ribbon, #graphHead) .tb-btn:hover:not(:disabled) svg { color: var(--fg-strong); }
-:is(#ribbon, #graphHead) .tb-btn.ic { width: 27px !important; }
+:is(#ribbon, #graphHead, #graphTools, #dataTools) .tb-btn svg { color: var(--sv-h4); }
+:is(#ribbon, #graphHead, #graphTools, #dataTools) .tb-btn:hover:not(:disabled) { background: var(--sv-btnh); }
+:is(#ribbon, #graphHead, #graphTools, #dataTools) .tb-btn:hover:not(:disabled) svg { color: var(--fg-strong); }
+:is(#ribbon, #graphHead, #graphTools, #dataTools) .tb-btn.ic { width: 27px !important; }
 #ribbon .rg-analysis > .menu-btn { width: 226px; }
 /* menu buttons (test, post-hoc, colour theme, W / H) read as fields */
-:is(#ribbon, #graphHead) .menu-btn { height: 26px; border: 1px solid var(--sv-btnb); border-radius: 6px; background: var(--sv-btn); box-shadow: none; }
-:is(#ribbon, #graphHead) .menu-btn:hover, :is(#ribbon, #graphHead) .menu-btn.open { background: var(--sv-btn) linear-gradient(var(--sv-btnh), var(--sv-btnh)); }
+:is(#ribbon, #graphHead, #graphTools, #dataTools) .menu-btn { height: 26px; border: 1px solid var(--sv-btnb); border-radius: 6px; background: var(--sv-btn); box-shadow: none; }
+:is(#ribbon, #graphHead, #graphTools, #dataTools) .menu-btn:hover, :is(#ribbon, #graphHead, #graphTools, #dataTools) .menu-btn.open { background: var(--sv-btn) linear-gradient(var(--sv-btnh), var(--sv-btnh)); }
 #graphHead #styleBtn { border-color: transparent; background: transparent; }
 #graphHead #styleBtn:hover, #graphHead #styleBtn.open { background: var(--sv-btnh); }
 #graphHead .menu-btn, #graphHead .tb-btn { height: 22px; }
 /* segments: no tray; the chosen one is a raised chip */
-:is(#ribbon, #graphHead) .seg { gap: 1px; padding: 0; background: transparent; border-radius: 7px; }
-:is(#ribbon, #graphHead) .seg button { height: 26px; padding: 0 7px; border: 1px solid transparent; border-radius: 6px; color: var(--sv-h4); }
-:is(#ribbon, #graphHead) .seg button:hover { background: var(--sv-btnh); color: var(--fg-strong); }
-:is(#ribbon, #graphHead) .seg button.on { background: var(--sv-btn); border-color: var(--sv-btnb); box-shadow: var(--sv-sh); color: var(--fg-strong); font-weight: 500; }
+:is(#ribbon, #graphHead, #graphTools, #dataTools) .seg { gap: 1px; padding: 0; background: transparent; border-radius: 7px; }
+:is(#ribbon, #graphHead, #graphTools, #dataTools) .seg button { height: 26px; padding: 0 7px; border: 1px solid transparent; border-radius: 6px; color: var(--sv-h4); }
+:is(#ribbon, #graphHead, #graphTools, #dataTools) .seg button:hover { background: var(--sv-btnh); color: var(--fg-strong); }
+:is(#ribbon, #graphHead, #graphTools, #dataTools) .seg button.on { background: var(--sv-btn); border-color: var(--sv-btnb); box-shadow: var(--sv-sh); color: var(--fg-strong); font-weight: 500; }
 /* on / off (Welch): svguest's button.on, a soft accent tint */
-#ribbon .toggle { height: 26px; border-radius: 6px; }
-#ribbon .toggle.on { background: var(--accent-soft); border-color: transparent; }
+:is(#ribbon, #graphHead, #graphTools, #dataTools) .toggle { height: 26px; border-radius: 6px; }
+:is(#ribbon, #graphHead, #graphTools, #dataTools) .toggle.on { background: var(--accent-soft); border-color: transparent; }
 #runBtn { height: 26px; border-radius: 6px; }
 
 /* ===== panes and the sheet in svguest's style (user's request, Nov 2026; from svguest app.html
@@ -633,9 +633,9 @@ span.ptab.on { box-shadow: none; background: transparent; padding-left: 7px; }  
 #tabs .tab .x:hover { background: var(--sv-btnh); color: var(--fg); }
 #tabs .add { width: 26px; height: 26px; border-radius: 6px; color: var(--sv-h4); }
 #tabs .add:hover { background: var(--sv-btnh); color: var(--fg); }
-#tabs .tab-tool { height: 26px; border-radius: 7px; color: var(--sv-h4); }
-#tabs .tab-tool:hover, #tabs .tab-tool.open { background: var(--sv-btnh); color: var(--fg); }
-#tabs .tab-tool.on { color: var(--accent); }
+.tab-tool { height: 26px; border-radius: 7px; color: var(--sv-h4); }
+.tab-tool:hover, .tab-tool.open { background: var(--sv-btnh); color: var(--fg); }
+.tab-tool.on { color: var(--accent); }
 #copyStats { height: 26px; border-radius: 7px; border-color: transparent; background: transparent; box-shadow: none; color: var(--fg); }
 #copyStats svg { color: var(--sv-h4); }
 #copyStats:hover { background: var(--sv-btnh); }
@@ -858,6 +858,93 @@ dialog::backdrop { background: #0000004d; backdrop-filter: none; }
 #sheetWrap, #vGraph, #vResults, #styleCard, #menuPop, #helpDlg .help-body, #report { scrollbar-width: thin; scrollbar-color: var(--sv-sbt) transparent; }
 .axis-ed { border-radius: 6px; border-width: 1.5px; box-shadow: none; }
 
+/* ===== v3 (Nov 2026, user: "a professional statistics program", not a copy of svguest; less rough,
+   better arranged). Each pane owns its tools: the top bar keeps app-level commands (open, save, undo,
+   paste, the test, share); a tool strip under each pane's header (.pane-tools) holds that pane's
+   controls. One control system everywhere: 26px controls, 6px corners, segments in a tray, 16px
+   hairline separators; panes 8px. Results read as a report: white page, rule-style tables. ===== */
+#menubar { height: 30px; padding: 0 6px; }
+#ribbon { height: 40px; padding: 0 6px; gap: 0; overflow: hidden; }
+#ribbon .rg { align-self: stretch; display: flex; flex-direction: row; align-items: center; gap: 2px; padding: 0 8px; }
+#ribbon .rg:first-child { padding-left: 2px; }
+#ribbon .rg + .rg::before { top: 12px; bottom: 12px; }
+#ribbon .rg-end { margin-left: auto; padding-right: 2px; }
+#ribbon .rg-end::before { display: none; }
+#ribbon .tb-btn { gap: 6px; padding: 0 9px; font-size: 12px; }
+#ribbon .tb-btn.ic { padding: 0 !important; }
+#ribbon .rg-analysis { display: flex; gap: 6px; }
+#ribbon .rg-analysis > .menu-btn { width: 250px; }
+#ribbon .rg-analysis .opts .menu-btn { width: 210px; }
+#ribbon #runBtn { width: auto; padding: 0 12px; height: 26px; border-radius: 6px; }
+#ribbon .toggle { padding: 0 9px 0 7px; }
+/* pane tool strips */
+.pane-tools { flex: none; display: flex; align-items: center; gap: 4px; height: 34px; padding: 0 6px; background: var(--surface); border-bottom: 1px solid var(--sv-h4b); overflow-x: auto; overflow-y: hidden; scrollbar-width: none; }
+.pane-tools::-webkit-scrollbar { display: none; }
+.pane-tools .ph-fill { flex: 1; min-width: 4px; }
+.pane-tools .tsep { flex: none; width: 1px; height: 16px; margin: 0 4px; background: var(--sv-line); }
+.pane-tools > *, .pane-head > * { flex: none; }
+.pane-head, #tabs { height: 34px; padding: 0 6px; }
+#graphHead { gap: 4px; }
+:is(#ribbon, #graphHead, #graphTools, #dataTools) :is(.tb-btn, .menu-btn) { height: 26px; border-radius: 6px; }
+:is(#graphHead, #graphTools, #dataTools) .tb-btn.ic { width: 28px !important; }
+.tab-tool { margin: 0; height: 26px; padding: 0 8px; gap: 6px; border: 1px solid transparent; background: transparent; color: var(--fg); font-size: 12px; }
+.tab-tool svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; color: var(--sv-h4); }
+.tab-tool svg.chev { width: 9px; height: 9px; }
+.tab-tool:hover, .tab-tool.open { background: var(--sv-btnh); }
+.tab-tool.on { background: var(--sv-on); color: var(--fg-strong); font-weight: 500; }
+.tab-tool.on svg { color: var(--accent); }
+#dataTools .menu-btn .lbl, #graphTools #styleBtn .lbl { flex: none; }
+#graphTools #styleBtn { gap: 6px; padding: 0 9px; border: 1px solid transparent; background: transparent; }
+#graphTools #styleBtn:hover { background: var(--sv-btnh); }
+#graphTools #styleBtn.open { background: var(--sv-on); }
+#graphHead .size-btn { width: 78px; height: 24px; }
+#graphHead #exportBtnFig { height: 24px; gap: 6px; padding: 0 8px; border-color: transparent; background: transparent; }
+#graphHead #exportBtnFig:hover, #graphHead #exportBtnFig.open { background: var(--sv-btnh); }
+#graphHead .tb-btn.ic { height: 24px; width: 26px !important; }
+#clearBtn:hover svg { color: var(--danger-hover-fg) !important; }
+/* segments: one look everywhere (a tray, the choice raised) */
+:is(#ribbon, #graphHead, #graphTools, #dataTools) .seg { gap: 2px; padding: 2px; border-radius: 7px; background: var(--sv-btnh); }
+:is(#ribbon, #graphHead, #graphTools, #dataTools) .seg button { height: 22px; min-width: 28px; padding: 0 8px; border: 0; border-radius: 5px; font-size: 12px; color: var(--sv-h4); }
+:is(#ribbon, #graphHead, #graphTools, #dataTools) .seg button:hover { background: transparent; color: var(--fg-strong); }
+:is(#ribbon, #graphHead, #graphTools, #dataTools) .seg button.on { background: var(--sv-btn); border: 0; box-shadow: var(--sv-sh); color: var(--fg-strong); font-weight: 500; }
+[data-theme="dark"] :is(#ribbon, #graphHead, #graphTools, #dataTools, #styleCard) .seg button.on, :root:not([data-theme]) :is(#ribbon, #graphHead, #graphTools, #dataTools, #styleCard) .seg button.on { background: #424242; }
+:is(#ribbon, #graphHead, #graphTools, #dataTools) .seg button svg { width: 17px; height: 17px; }
+#graphTools .menu-btn { width: auto; min-width: 0; }
+/* panes */
+#work { gap: 6px; padding: 6px; }
+.pane { border-radius: 8px; }
+#splitV { height: 6px; }
+#graphPane #vGraph { padding: 10px 12px; }
+#plotHint { flex: none; margin: 0; max-width: none; height: 24px; padding: 0 10px; line-height: 24px; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 11px; color: var(--sv-t3); background: var(--sv-side); border-top: 1px solid var(--sv-h4b); }
+#resPane { flex-basis: var(--res-h, 36%); }
+/* sheet foot: a quiet field, not a dashed box */
+.sheet-foot { padding: 6px; background: var(--surface); }
+#pasteZone { height: 28px; border: 1px solid var(--sv-btnb); border-style: solid; border-radius: 6px; background: var(--sv-side); color: var(--sv-t3); }
+#pasteZone:hover { border-color: var(--input-hover-border); color: var(--fg); }
+#pasteZone.armed, #pasteZone.over { border-color: var(--focus-border); background: var(--sv-on); color: var(--fg-strong); }
+.paste-bar #loadDemoBtn { height: 28px; padding: 0 10px; border: 1px solid var(--sv-btnb); border-radius: 6px; background: var(--sv-btn); color: var(--fg); }
+#parseWarn { border-radius: 6px; }
+/* results: a report page */
+#resPane #vResults { background: var(--surface); padding: 12px 16px 20px; }
+#verdict > div, #verdict > .v-yes { padding: 8px 12px; border: 0; border-left: 3px solid var(--sv-t3); border-radius: 4px; background: var(--sv-side); box-shadow: none; color: var(--fg); font-weight: 500; }
+#verdict > .v-yes { border-left-color: var(--ok); background: var(--ok-box-bg); color: var(--fg); }
+#verdict > .v-yes b { color: var(--ok); }
+#verdict:not(:empty) + #report { margin-top: 10px; }
+#report .rsec { padding: 0 0 12px; border-bottom: 0; }
+#report .h3.sec-t { min-height: 28px; font-size: 12.5px; }
+#report .sec-t .chev { order: 0; margin-left: 0; }
+.stat-table { font-size: 12px; border-top: 1.5px solid var(--fg); border-bottom: 1px solid var(--fg-muted); }
+.stat-table th, .stat-table td { padding: 4px 8px; border-bottom: 0; }
+.stat-table thead th { color: var(--fg); font-size: 11.5px; font-weight: 600; border-bottom: 1px solid var(--fg-muted); }
+.stat-table tbody tr + tr td { border-top: 1px solid var(--sv-h4b); }
+.stat-table td.key { color: var(--fg); }
+.stat-table td.num { font-variant-numeric: tabular-nums; }
+details.more .stat-table { border-top-width: 1px; }
+#report .methods p { border-radius: 6px; background: var(--sv-side); border-color: var(--sv-h4b); }
+.pill { border-radius: 4px; font-weight: 600; }
+#copyStats { height: 24px; border-radius: 6px; }
+/* style card on the same white page */
+#resPane #styleCard { background: var(--surface); padding: 6px 16px 14px; }
 </style>
 </head>
 
@@ -867,23 +954,10 @@ dialog::backdrop { background: #0000004d; backdrop-filter: none; }
   <nav id="menubar" aria-label="Menu"></nav>
   <div id="mbPop" role="menu" hidden></div>
   <header id="ribbon" class="tbar">
-    <div class="rg rg-flat">
-      <div class="rg-body rg-rows">
-        <span class="pair"><button id="undoBtn" class="tb-btn" title="Undo (⌘/Ctrl+Z)" aria-label="Undo" disabled><svg viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-3"/></svg></button><button id="redoBtn" class="tb-btn" title="Redo (⌘/Ctrl+Shift+Z)" aria-label="Redo" disabled><svg viewBox="0 0 24 24"><path d="m15 14 5-5-5-5"/><path d="M20 9H9a5 5 0 0 0 0 10h3"/></svg></button><button id="clearBtn" class="tb-btn" title="Clear all data (Undo brings it back)" aria-label="Clear all data"><svg viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/></svg></button></span>
-        <span class="pair"><button id="addRowBtn" class="tb-btn ic" title="Add a row at the bottom (or press Enter on the last row)"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="9" rx="1.5"/><path d="M12 15.5v5M9.5 18h5"/></svg>Row</button><button id="addGroupBtn" class="tb-btn ic" title="Add a column (group) on the right"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="9" height="16" rx="1.5"/><path d="M18 9.5v5M15.5 12h5"/></svg>Col</button></span>
-      </div>
-    </div>
-
-    <div class="rg rg-flat rg-eq">
-      <div class="rg-body">
-        <label for="importJH" id="importLabel" class="tb-btn ic" title="Open a saved .jgz session, an Excel .xlsx file (each worksheet becomes a tab) or a .csv / .txt table"><svg viewBox="0 0 24 24"><path d="M12 15V3m-4 8 4 4 4-4"/><path d="M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/></svg>Open</label>
-        <button id="exportBtn" class="tb-btn ic" title="Save this session (data + settings) as a .jgz file"><svg viewBox="0 0 24 24"><path d="M12 3v12m-4-8 4-4 4 4"/><path d="M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/></svg>Save</button>
-        <button id="copyData" class="tb-btn ic" title="Copy the whole sheet as TSV (paste into Excel / Sheets)"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>Copy</button>
-        <button id="pasteBtn" class="tb-btn ic" title="Paste a table from Excel, Word, a web page, a PDF or a CSV: replaces the sheet"><svg viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="17" rx="2"/><path d="M9 4V3h6v1M9 10h6M9 14h6M9 18h3"/></svg>Paste</button>
-      </div>
-      <input id="importJH" type="file" accept=".jgz,.jh,.xlsx,.csv,.tsv,.txt" class="hidden" />
-    </div>
-
+    <!-- app-level commands only; each pane's own tools sit in that pane (Nov 2026) -->
+    <div class="rg"><label for="importJH" id="importLabel" class="tb-btn" title="Open a saved .jgz session, an Excel .xlsx file (each worksheet becomes a tab) or a .csv / .txt table"><svg viewBox="0 0 24 24"><path d="M12 15V3m-4 8 4 4 4-4"/><path d="M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/></svg>Open</label><button id="exportBtn" class="tb-btn" title="Save this session (data + settings) as a .jgz file"><svg viewBox="0 0 24 24"><path d="M12 3v12m-4-8 4-4 4 4"/><path d="M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/></svg>Save</button><input id="importJH" type="file" accept=".jgz,.jh,.xlsx,.csv,.tsv,.txt" class="hidden" /></div>
+    <div class="rg"><button id="undoBtn" class="tb-btn ic" title="Undo (⌘/Ctrl+Z)" aria-label="Undo" disabled><svg viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-3"/></svg></button><button id="redoBtn" class="tb-btn ic" title="Redo (⌘/Ctrl+Shift+Z)" aria-label="Redo" disabled><svg viewBox="0 0 24 24"><path d="m15 14 5-5-5-5"/><path d="M20 9H9a5 5 0 0 0 0 10h3"/></svg></button></div>
+    <div class="rg"><button id="pasteBtn" class="tb-btn" title="Paste a table from Excel, Word, a web page, a PDF or a CSV: replaces the sheet"><svg viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="17" rx="2"/><path d="M9 4V3h6v1M9 10h6M9 14h6M9 18h3"/></svg>Paste</button></div>
     <div class="rg">
       <div class="rg-body rg-analysis">
         <select id="testSelect" class="field as-menu" data-icon="test" aria-label="Statistical test">
@@ -949,39 +1023,11 @@ dialog::backdrop { background: #0000004d; backdrop-filter: none; }
         <button id="runBtn" title="Results update as you edit the sheet; click to run again"><svg viewBox="0 0 16 16"><path d="M4 2.5v11a.5.5 0 0 0 .77.42l8.5-5.5a.5.5 0 0 0 0-.84l-8.5-5.5A.5.5 0 0 0 4 2.5Z"/></svg>Run</button>
       </div>
     </div>
-
-    <div class="rg">
-      <div class="rg-body">
-        <select id="chartType" class="field as-seg" aria-label="Chart type">
-          <option value="bar" data-short="Bar">Bar + error bars</option>
-          <option value="dot" data-short="Dot">Scatter dot plot (mean ± error)</option>
-          <option value="box" data-short="Box">Box &amp; whisker</option>
-          <option value="violin" data-short="Violin">Violin (with box)</option>
-        </select>
-        <select id="errType" class="field as-seg" aria-label="Error bars">
-          <option value="sd" data-short="SD">Mean ± SD</option>
-          <option value="sem" data-short="SEM" selected>Mean ± SEM</option>
-          <option value="ci" data-short="95% CI">Mean ± 95% CI</option>
-        </select>
-        <select id="themeSelect" class="field as-menu" data-swatch aria-label="Colour theme"></select><!-- options come from THEMES -->
-        <select id="sigLabel" class="field as-seg" aria-label="Significance label">
-          <option value="stars" data-short="***">Asterisks (*)</option>
-          <option value="pval" data-short="P =">p-value</option>
-          <option value="off" data-short="Off">Hide statistics on the figure</option>
-        </select>
-      </div>
-      <!-- axis titles are edited by clicking them on the figure; these hold the values -->
-      <input id="xLabel" value="Group" hidden /><input id="yLabel" value="Value" hidden />
-    </div>
-
-    <div class="rg rg-flat rg-end">
-      <div class="rg-body">
-        <button id="themeBtn" class="tb-btn icon" hidden title="Switch between light and dark interface" aria-label="Switch theme"></button>
-        <button id="helpBtn" class="tb-btn icon" hidden title="Help: data layout, shortcuts, export" aria-label="Help"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.6"/><path d="M12 17h.01"/></svg></button>
-        <button id="langBtn" class="tb-btn icon lang" hidden aria-label="Language / 语言">中</button>
-        <a id="ghLink" class="tb-btn icon" hidden href="https://github.com/JieqiangHe/plsig" target="_blank" rel="noopener" title="Source code, issues and feedback on GitHub" aria-label="GitHub repository"><svg viewBox="0 0 16 16" class="filled"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></a>
-      </div>
-    </div>
+    <div class="rg rg-end"><button type="button" class="tb-btn" id="shareBtn" title="Copy a link that opens these sheets (data and settings) in any browser"><svg viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg><span class="lbl">Share</span></button></div>
+    <!-- run from the menus (View, Help); never shown -->
+    <div hidden><button id="themeBtn" class="tb-btn icon" hidden title="Switch between light and dark interface" aria-label="Switch theme"></button><button id="helpBtn" class="tb-btn icon" hidden title="Help: data layout, shortcuts, export" aria-label="Help"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.6"/><path d="M12 17h.01"/></svg></button><button id="langBtn" class="tb-btn icon lang" hidden aria-label="Language / 语言">中</button><a id="ghLink" class="tb-btn icon" hidden href="https://github.com/JieqiangHe/plsig" target="_blank" rel="noopener" title="Source code, issues and feedback on GitHub" aria-label="GitHub repository"><svg viewBox="0 0 16 16" class="filled"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg></a></div>
+    <!-- axis titles are edited by clicking them on the figure; these hold the values -->
+    <input id="xLabel" value="Group" hidden /><input id="yLabel" value="Value" hidden />
   </header>
 
   <div id="work">
@@ -990,6 +1036,7 @@ dialog::backdrop { background: #0000004d; backdrop-filter: none; }
     <section id="vData" class="pane">
       <!-- one tab per data sheet; each keeps its own data, test, figure options and undo -->
       <div id="tabs" role="tablist" aria-label="Sheets"></div>
+      <div class="pane-tools tbar" id="dataTools"><button type="button" class="tb-btn menu-btn tab-tool" id="subcolsBtn" aria-haspopup="dialog" title="Replicates side by side: each data set gets N subcolumns, as in Prism's grouped table"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 9h18M9 9v10M15 9v10"/></svg><span class="lbl">Subcolumns</span><svg class="chev" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4"/></svg></button><button type="button" class="tb-btn menu-btn tab-tool" id="transformBtn" aria-haspopup="dialog" title="Transform the data before the analysis: % of the first column, log, average replicates"><svg viewBox="0 0 24 24"><path d="M4 18c4 0 4-12 8-12s4 12 8 12"/></svg><span class="lbl">Transform</span><svg class="chev" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4"/></svg></button><i class="tsep"></i><button id="addRowBtn" class="tb-btn" title="Add a row at the bottom (or press Enter on the last row)"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="9" rx="1.5"/><path d="M12 15.5v5M9.5 18h5"/></svg>Row</button><button id="addGroupBtn" class="tb-btn" title="Add a column (group) on the right"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="9" height="16" rx="1.5"/><path d="M18 9.5v5M15.5 12h5"/></svg>Col</button><span class="ph-fill"></span><button id="copyData" class="tb-btn ic" title="Copy the whole sheet as TSV (paste into Excel / Sheets)"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>Copy</button><button id="clearBtn" class="tb-btn ic" title="Clear all data (Undo brings it back)" aria-label="Clear all data"><svg viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/></svg></button></div>
       <div id="sheetWrap">
         <div id="selBox" hidden></div>
         <table class="data-grid" id="dataTable" aria-label="Data grid"></table>
@@ -1013,8 +1060,29 @@ dialog::backdrop { background: #0000004d; backdrop-filter: none; }
     <section id="vOut">
       <div id="graphPane" class="pane">
         <div class="pane-head tbar" id="graphHead"><span class="ptab on">Plot</span><span class="ph-fill"></span>
-        <span class="flat"><button id="styleBtn" class="tb-btn menu-btn" aria-expanded="false" aria-controls="styleCard" title="Figure style: font, dots, bar width, points, frame"><svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg><span class="lbl">Style</span></button></span>
         <input id="plotW" type="number" min="220" step="20" value="" placeholder="300" title="Width in px (blank = automatic, fitted to the figure)" class="num-field size-src" hidden />
+        <input id="plotH" type="number" min="220" step="20" value="" placeholder="400" title="Height in px (blank = automatic, fitted to the figure)" class="num-field size-src" hidden />
+        <button id="resetGraph" class="tb-btn ic" title="Restore graph to default options, size &amp; view"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>Reset</button><button id="copyFig" class="tb-btn ic" title="Copy the figure: PNG for PowerPoint, Word or a chat; SVG for svguest, Illustrator or Figma"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>Copy</button><button id="exportBtnFig" class="tb-btn menu-btn" aria-haspopup="dialog" title="Download the figure (or every sheet as one panel figure) as PNG or SVG, at a journal width and DPI"><svg viewBox="0 0 24 24"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14"/></svg><span class="lbl">Export</span><svg class="chev" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4"/></svg></button>
+        </div>
+        <div class="pane-tools tbar" id="graphTools">
+        <select id="chartType" class="field as-seg" aria-label="Chart type">
+          <option value="bar" data-short="Bar">Bar + error bars</option>
+          <option value="dot" data-short="Dot">Scatter dot plot (mean ± error)</option>
+          <option value="box" data-short="Box">Box &amp; whisker</option>
+          <option value="violin" data-short="Violin">Violin (with box)</option>
+        </select>
+        <select id="errType" class="field as-seg" aria-label="Error bars">
+          <option value="sd" data-short="SD">Mean ± SD</option>
+          <option value="sem" data-short="SEM" selected>Mean ± SEM</option>
+          <option value="ci" data-short="95% CI">Mean ± 95% CI</option>
+        </select>
+        <select id="themeSelect" class="field as-menu" data-swatch aria-label="Colour theme"></select><!-- options come from THEMES -->
+        <select id="sigLabel" class="field as-seg" aria-label="Significance label">
+          <option value="stars" data-short="***">Asterisks (*)</option>
+          <option value="pval" data-short="P =">p-value</option>
+          <option value="off" data-short="Off">Hide statistics on the figure</option>
+        </select>
+        <span class="ph-fill"></span><button id="styleBtn" class="tb-btn menu-btn" aria-expanded="false" aria-controls="styleCard" title="Figure style: font, dots, bar width, points, frame"><svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg><span class="lbl">Style</span></button>
         <input id="dotSize" type="number" min="2" max="20" step="1" value="6" class="num-field size-src" hidden />
         <!-- figure style: these hidden fields hold the values, the Style button edits them -->
         <input id="fontSize" type="number" value="13" hidden />
@@ -1034,12 +1102,9 @@ dialog::backdrop { background: #0000004d; backdrop-filter: none; }
         <select id="avgReps" hidden><option value="off" selected>Keep</option><option value="on">Average</option></select>
         <input id="breakLo" hidden /><input id="breakHi" hidden /><!-- broken y axis: the gap from … to … -->
         <input id="yMin" hidden /><input id="yMax" hidden /><input id="refY" hidden /><input id="bandLo" hidden /><input id="bandHi" hidden />
-        <input id="plotH" type="number" min="220" step="20" value="" placeholder="400" title="Height in px (blank = automatic, fitted to the figure)" class="num-field size-src" hidden />
-        <span class="flat"><button id="resetGraph" class="tb-btn ic" title="Restore graph to default options, size &amp; view"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>Reset</button></span>
-        <span class="flat"><button id="exportBtnFig" class="tb-btn menu-btn" aria-haspopup="dialog" title="Download the figure (or every sheet as one panel figure) as PNG or SVG, at a journal width and DPI"><svg viewBox="0 0 24 24"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14"/></svg><span class="lbl">Export</span><svg class="chev" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4"/></svg></button></span>
-        <span class="flat"><button id="copyFig" class="tb-btn ic" title="Copy the figure: PNG for PowerPoint, Word or a chat; SVG for svguest, Illustrator or Figma"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>Copy</button></span>
         </div>
-      <div id="vGraph"><div id="plot" style="height: 400px;"></div><p id="plotHint" hidden><span>Click text or a bar to edit and format it; right-click for analyses and copying.</span> <span>For finer editing, copy as SVG and paste into</span> <a href="https://www.svguest.online" target="_blank" rel="noopener" title="svguest: an in-browser SVG editor">svguest</a></p></div>
+      <div id="vGraph"><div id="plot" style="height: 400px;"></div></div>
+      <p id="plotHint" hidden><span>Click text or a bar to edit and format it; right-click for analyses and copying.</span> <span>For finer editing, copy as SVG and paste into</span> <a href="https://www.svguest.online" target="_blank" rel="noopener" title="svguest: an in-browser SVG editor">svguest</a></p>
       </div>
       <div id="splitV" role="separator" aria-orientation="horizontal" aria-label="Resize the figure and the results" tabindex="0" title="Drag to resize the figure and the results; double-click to reset"></div>
       <div id="resPane" class="pane">
@@ -1068,9 +1133,9 @@ dialog::backdrop { background: #0000004d; backdrop-filter: none; }
     <nav class="help-nav"><a href="#h-window-en">The window</a><a href="#h-data-en">Your data</a><a href="#h-sheet-en">The sheet</a><a href="#h-figure-en">The figure</a><a href="#h-results-en">Results</a><a href="#h-files-en">Files and sharing</a><a href="#h-about-en">About</a></nav>
     <section class="hs" id="h-window-en"><h4><svg viewBox="0 0 24 24"><path d="M3 4h18v16H3zM3 8h18M11 8v12M11 14h10"/></svg>The window</h4><dl>
         <div class="hi"><dt>Menu bar</dt><dd>Every command is in the menus at the top: <i>File</i> (open, save, examples, paste, share, export), <i>Edit</i> (undo, rows and columns, clear), <i>Data</i> (subcolumns, transform), <i>Analysis</i> (test, results), <i>Graph</i> (style, size, colours), <i>View</i> (dark / light interface, 中文 / English, pane sizes) and <i>Help</i> (these tips, the tour, GitHub).</dd></div>
-        <div class="hi"><dt>Toolbar</dt><dd>The row under the menus holds what you change most: undo / redo / clear, add a row or column, open / save / copy / paste, the test with its option and Run, then the chart type, error bars, colour theme and significance labels. Hover a button for its name.</dd></div>
-        <div class="hi"><dt>Sheet pane</dt><dd>On the left: the sheet tabs, with Subcolumns, Transform and Share at their right; the sheet; and the paste bar with Examples at the foot.</dd></div>
-        <div class="hi"><dt>Plot pane</dt><dd>Top right: the figure. Its header holds Style, the width (W) and height (H), Reset, Export and Copy.</dd></div>
+        <div class="hi"><dt>Toolbar</dt><dd>The row under the menus holds the commands for the whole session: Open, Save, undo / redo, Paste, the test with its option and Run, and Share at the right. Each pane has its own tools in a strip under its header.</dd></div>
+        <div class="hi"><dt>Sheet pane</dt><dd>On the left: the sheet tabs; a tool strip with Subcolumns, Transform, add row / column, copy and clear; the sheet; and the paste bar with Examples at the foot.</dd></div>
+        <div class="hi"><dt>Plot pane</dt><dd>Top right: the figure. Its header holds the width (W) and height (H), Reset, Copy and Export; the strip under it sets the chart type, error bars, colour theme and significance labels, and opens Style.</dd></div>
         <div class="hi"><dt>Results pane</dt><dd>Bottom right, with two tabs: <i>Results</i> (the conclusion, the tables and a methods paragraph) and <i>Style</i> (font, dots, bars, frame, y axis, significance marks). Click Results again to fold the tables and give the figure the room.</dd></div>
         <div class="hi"><dt>Pane sizes</dt><dd>Drag the gap between the sheet and the figure, or between the figure and the results, to resize the panes (or focus it and use the arrow keys). Double-click a gap, or View → Reset pane sizes, to go back. Sizes are kept in this browser.</dd></div>
     </dl></section>
@@ -1121,9 +1186,9 @@ dialog::backdrop { background: #0000004d; backdrop-filter: none; }
     <nav class="help-nav"><a href="#h-window-zh">界面</a><a href="#h-data-zh">数据</a><a href="#h-sheet-zh">表格</a><a href="#h-figure-zh">图形</a><a href="#h-results-zh">结果</a><a href="#h-files-zh">文件与分享</a><a href="#h-about-zh">关于</a></nav>
     <section class="hs" id="h-window-zh"><h4><svg viewBox="0 0 24 24"><path d="M3 4h18v16H3zM3 8h18M11 8v12M11 14h10"/></svg>界面</h4><dl>
         <div class="hi"><dt>菜单栏</dt><dd>所有命令都在顶部菜单里：<i>文件</i>（打开、保存、示例、粘贴、分享、导出）、<i>编辑</i>（撤销、行和列、清空）、<i>数据</i>（子列、数据变换）、<i>分析</i>（检验、结果）、<i>图形</i>（样式、尺寸、配色）、<i>视图</i>（深色 / 浅色界面、English / 中文、窗格大小）和<i>帮助</i>（本说明、新手引导、GitHub）。</dd></div>
-        <div class="hi"><dt>工具栏</dt><dd>菜单下面一行放最常用的：撤销 / 重做 / 清空、加行或加列、打开 / 保存 / 复制 / 粘贴、检验及其选项和运行，然后是图表类型、误差线、配色和显著性标记。鼠标停在按钮上会显示名称。</dd></div>
-        <div class="hi"><dt>表格窗格</dt><dd>左边：表格标签（右侧是子列、数据变换和分享）、表格本身，底部是粘贴栏和示例。</dd></div>
-        <div class="hi"><dt>图窗格</dt><dd>右上：图。标题栏里有样式、宽度（W）和高度（H）、重置、导出和复制。</dd></div>
+        <div class="hi"><dt>工具栏</dt><dd>菜单下面一行是针对整个会话的命令：打开、保存、撤销 / 重做、粘贴、检验及其选项和运行，最右边是分享。每个窗格自己的工具在各自标题栏下面的工具条里。</dd></div>
+        <div class="hi"><dt>表格窗格</dt><dd>左边：表格标签；工具条（子列、数据变换、加行 / 加列、复制、清空）；表格本身；底部是粘贴栏和示例。</dd></div>
+        <div class="hi"><dt>图窗格</dt><dd>右上：图。标题栏里有宽度（W）和高度（H）、重置、复制和导出；下面的工具条可选图表类型、误差线、配色和显著性标记，并打开样式。</dd></div>
         <div class="hi"><dt>结果窗格</dt><dd>右下，有两个标签：<i>结果</i>（结论、各个表格和方法段落）和<i>样式</i>（字号、点、柱、边框、Y 轴、显著性标记）。在结果显示时再点一次"结果"可折叠表格，把空间留给图。</dd></div>
         <div class="hi"><dt>窗格大小</dt><dd>拖动表格和图之间、或图和结果之间的缝隙即可调整窗格大小（也可以选中后用方向键）。双击缝隙，或视图 → 重置窗格大小，即可还原。大小会保存在本浏览器中。</dd></div>
     </dl></section>
@@ -2629,9 +2694,7 @@ const MENUS = [
 (() => {
   const bar = $("menubar"), pop = $("mbPop");
   let open = -1;
-  const view = $("ribbon").querySelector(".rg-end");   // its buttons stay, hidden, for the menus to click
   bar.innerHTML = MENUS.map(([name], i) => `<button type="button" data-m="${i}" aria-haspopup="menu"><span>${name}</span><b aria-hidden="true">▾</b></button>`).join("");
-  bar.append(view);
   const close = () => { open = -1; pop.hidden = true; bar.querySelectorAll("button.open").forEach(b => b.classList.remove("open")); };
   const show = (i) => {
     closeMenuPop(); closeMenu();
@@ -3438,12 +3501,15 @@ function renderTabs() {
     `<div class="tab${i === curSheet ? " on" : ""}" role="tab" aria-selected="${i === curSheet}" data-i="${i}" title="${escapeHtml(sh.name)} — double-click to rename, right-click for more"><span class="nm">${escapeHtml(sh.name)}</span>` +
     (sheets.length > 1 ? `<span class="x" data-x="${i}" role="button" aria-label="Close ${escapeHtml(sh.name)}">×</span>` : "") + `</div>`
   ).join("") + `<button type="button" class="add" title="New sheet" aria-label="New sheet">+</button>` +
-    `<span class="tabs-fill"></span><button type="button" class="tb-btn menu-btn tab-tool${SUB() > 1 ? " on" : ""}" id="subcolsBtn" aria-haspopup="dialog" title="Replicates side by side: each data set gets N subcolumns, as in Prism's grouped table">` +
-    `<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 9h18M9 9v10M15 9v10"/></svg><span class="lbl">${subcolsLabel()}</span><svg class="chev" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4"/></svg></button>` +
-    `<button type="button" class="tb-btn menu-btn tab-tool${transformOn() ? " on" : ""}" id="transformBtn" aria-haspopup="dialog" title="Transform the data before the analysis: % of the first column, log, average replicates">` +
-    `<svg viewBox="0 0 24 24"><path d="M4 18c4 0 4-12 8-12s4 12 8 12"/></svg><span class="lbl">${transformLabel()}</span><svg class="chev" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4"/></svg></button>` +
-    `<button type="button" class="tb-btn tab-tool" id="shareBtn" title="Copy a link that opens these sheets (data and settings) in any browser"><svg viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg><span class="lbl">Share</span></button>`;
+    "";
+  syncTabTools();
   tabsEl.querySelector(".tab.on")?.scrollIntoView({ block: "nearest", inline: "nearest" });
+}
+/* the data pane's tools (static buttons under the tabs) follow the open sheet */
+function syncTabTools() {
+  const sb = $("subcolsBtn"), tb = $("transformBtn");
+  sb.classList.toggle("on", SUB() > 1); sb.querySelector(".lbl").textContent = subcolsLabel();
+  tb.classList.toggle("on", transformOn()); tb.querySelector(".lbl").textContent = transformLabel();
 }
 const subcolsLabel = () => SUB() > 1 ? `Subcolumns: ${SUB()}` : "Subcolumns";
 const subcolsAnchor = { get _btn() { return $("subcolsBtn"); } };
@@ -3502,18 +3568,17 @@ menuPop.addEventListener("click", e => {
   $("transformBtn").classList.toggle("on", transformOn());
   scheduleSave(); run(true);
 });
+$("transformBtn").onclick = () => (menuFor === transformAnchor ? closeMenuPop() : openTransformPop());
+$("subcolsBtn").onclick = () => (menuFor === subcolsAnchor ? closeMenuPop() : openSubcolsPop());
+$("shareBtn").onclick = () => {
+  const btn = $("shareBtn");
+  shareLink().then(async url => {
+    if (url.length > 60000) { flash(btn, "Too big for a link: use Save"); return; }
+    try { await navigator.clipboard.writeText(url); flash(btn, "✓ Link copied"); }
+    catch (_) { prompt("Copy this link:", url); }
+  });
+};
 tabsEl.addEventListener("click", e => {
-  if (e.target.closest("#transformBtn")) { menuFor === transformAnchor ? closeMenuPop() : openTransformPop(); return; }
-  if (e.target.closest("#subcolsBtn")) { menuFor === subcolsAnchor ? closeMenuPop() : openSubcolsPop(); return; }
-  if (e.target.closest("#shareBtn")) {
-    const btn = $("shareBtn");
-    shareLink().then(async url => {
-      if (url.length > 60000) { flash(btn, "Too big for a link: use Save"); return; }
-      try { await navigator.clipboard.writeText(url); flash(btn, "✓ Link copied"); }
-      catch (_) { prompt("Copy this link:", url); }
-    });
-    return;
-  }
   if (e.target.closest("input")) return;
   if (e.target.closest(".add")) { addSheet({}); return; }
   const x = e.target.closest("[data-x]");
@@ -4061,10 +4126,10 @@ const TOUR = [   // follows the RStudio-style window (Nov 2026): menus, toolbar,
     zt: "你的数据", zx: "在这里输入或粘贴数值，每组一列。点单元格直接输入；右键有更多操作。上方每个标签是一张独立的表格和图。" },
   { el: () => $("pasteZone"), title: "Paste or try an example", text: "Copy a whole table from Excel, Word or a web page, click this bar and paste. Examples, at its right, shows the layout each test expects.",
     zt: "粘贴或看示例", zx: "从 Excel、Word 或网页复制整张表，点这个粘贴栏再粘贴。右边的示例展示每种检验需要的数据布局。" },
-  { el: () => $("ribbon"), title: "Toolbar", text: "Pick the test here, then the chart type, error bars, colours and significance labels. Results and the figure update by themselves while you edit.",
-    zt: "工具栏", zx: "在这里选择检验，以及图表类型、误差线、配色和显著性标记。编辑数据时结果和图会自动更新。" },
-  { el: () => $("graphPane"), title: "The figure", text: "Click any text or bar on the figure to edit or colour it; right-click for more. The header sets the size, and Export downloads it at a journal width and DPI.",
-    zt: "图", zx: "点击图上的文字或柱子即可修改或换色；右键有更多操作。标题栏可调尺寸，导出可按期刊栏宽和 DPI 下载。" },
+  { el: () => $("ribbon"), title: "Toolbar", text: "Pick the test here; Open, Save, Paste and Share sit beside it. Results and the figure update by themselves while you edit.",
+    zt: "工具栏", zx: "在这里选择检验；旁边是打开、保存、粘贴和分享。编辑数据时结果和图会自动更新。" },
+  { el: () => $("graphPane"), title: "The figure", text: "Click any text or bar on the figure to edit or colour it; right-click for more. The strip above it sets the chart type, error bars, colours and significance labels; the header sets the size and exports.",
+    zt: "图", zx: "点击图上的文字或柱子即可修改或换色；右键有更多操作。图上方的工具条可选图表类型、误差线、配色和显著性标记；标题栏可调尺寸和导出。" },
   { el: () => $("resPane"), title: "Results and style", text: "The conclusion, the tables and a methods paragraph you can copy. The Style tab sets fonts, frame, y axis and significance marks. Drag the gap above to resize.",
     zt: "结果与样式", zx: "结论、各个表格和可直接复制的方法段落。“样式”标签可设置字号、边框、Y 轴和显著性标记。拖动上方的缝隙可调整大小。" },
 ];
