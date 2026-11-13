@@ -962,6 +962,8 @@ table.data-grid th.pick .col-letter { background: var(--sv-on); color: var(--acc
 table.data-grid td.fac .cell-input { text-align: left; color: var(--fg-strong); font-variant-numeric: normal; }
 table.data-grid td.fac { background: color-mix(in srgb, var(--sv-side) 60%, transparent); }
 .col-letter[data-tag]::after { content: " · " attr(data-tag); color: var(--accent); }
+table.data-grid td.dim .row-title { opacity: .38; }
+table.data-grid td.rowhdr.pick { background: var(--sv-on); color: var(--accent); font-weight: 600; }
 </style>
 </head>
 
@@ -1053,7 +1055,7 @@ table.data-grid td.fac { background: color-mix(in srgb, var(--sv-side) 60%, tran
     <section id="vData" class="pane">
       <!-- one tab per data sheet; each keeps its own data, test, figure options and undo -->
       <div id="tabs" role="tablist" aria-label="Sheets"></div>
-      <div class="pane-tools tbar" id="dataTools"><button type="button" class="tb-btn menu-btn tab-tool" id="subcolsBtn" aria-haspopup="dialog" title="Replicates side by side: each data set gets N subcolumns, as in Prism's grouped table"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 9h18M9 9v10M15 9v10"/></svg><span class="lbl">Subcolumns</span><svg class="chev" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4"/></svg></button><button type="button" class="tb-btn menu-btn tab-tool" id="transformBtn" aria-haspopup="dialog" title="Transform the data before the analysis: % of the first column, log, average replicates"><svg viewBox="0 0 24 24"><path d="M4 18c4 0 4-12 8-12s4 12 8 12"/></svg><span class="lbl">Transform</span><svg class="chev" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4"/></svg></button><i class="tsep"></i><button id="addRowBtn" class="tb-btn" title="Add a row at the bottom (or press Enter on the last row)"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="9" rx="1.5"/><path d="M12 15.5v5M9.5 18h5"/></svg>Row</button><button id="addGroupBtn" class="tb-btn" title="Add a column (group) on the right"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="9" height="16" rx="1.5"/><path d="M18 9.5v5M15.5 12h5"/></svg>Col</button><i class="tsep"></i><button type="button" id="scopeBtn" class="tb-btn" title="Analyze only the columns you have selected on the sheet; the test follows what you selected"><svg viewBox="0 0 24 24"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/><path d="M9 15v-3M12 15V9M15 15v-4"/></svg>Analyze selection</button><span class="ph-fill"></span><button id="copyData" class="tb-btn ic" title="Copy the whole sheet as TSV (paste into Excel / Sheets)"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>Copy</button><button id="clearBtn" class="tb-btn ic" title="Clear all data (Undo brings it back)" aria-label="Clear all data"><svg viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/></svg></button></div>
+      <div class="pane-tools tbar" id="dataTools"><button type="button" class="tb-btn menu-btn tab-tool" id="subcolsBtn" aria-haspopup="dialog" title="Replicates side by side: each data set gets N subcolumns, as in Prism's grouped table"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 9h18M9 9v10M15 9v10"/></svg><span class="lbl">Subcolumns</span><svg class="chev" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4"/></svg></button><button type="button" class="tb-btn menu-btn tab-tool" id="transformBtn" aria-haspopup="dialog" title="Transform the data before the analysis: % of the first column, log, average replicates"><svg viewBox="0 0 24 24"><path d="M4 18c4 0 4-12 8-12s4 12 8 12"/></svg><span class="lbl">Transform</span><svg class="chev" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4"/></svg></button><i class="tsep"></i><button id="addRowBtn" class="tb-btn" title="Add a row at the bottom (or press Enter on the last row)"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="9" rx="1.5"/><path d="M12 15.5v5M9.5 18h5"/></svg>Row</button><button id="addGroupBtn" class="tb-btn" title="Add a column (group) on the right"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="9" height="16" rx="1.5"/><path d="M18 9.5v5M15.5 12h5"/></svg>Col</button><i class="tsep"></i><button type="button" id="scopeBtn" class="tb-btn" title="Analyze only the columns and rows you have selected on the sheet; the test follows what you selected"><svg viewBox="0 0 24 24"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/><path d="M9 15v-3M12 15V9M15 15v-4"/></svg>Analyze selection</button><span class="ph-fill"></span><button id="copyData" class="tb-btn ic" title="Copy the whole sheet as TSV (paste into Excel / Sheets)"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>Copy</button><button id="clearBtn" class="tb-btn ic" title="Clear all data (Undo brings it back)" aria-label="Clear all data"><svg viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/></svg></button></div>
       <div id="scopeBar" hidden></div>
       <div id="sheetWrap">
         <div id="selBox" hidden></div>
@@ -1159,7 +1161,7 @@ table.data-grid td.fac { background: color-mix(in srgb, var(--sv-side) 60%, tran
     </dl></section>
     <section class="hs" id="h-data-en"><h4><svg viewBox="0 0 24 24"><path d="M4 5h16v14H4zM4 10h16M10 5v14"/></svg>Your data</h4><dl>
         <div class="hi"><dt>Layout</dt><dd>One column per group. Paired, repeated-measures and Friedman tests match values by row (one subject per row). Correlation uses column A as X and B as Y. Contingency tables hold counts: columns are groups, rows are outcomes (named by the row titles).</dd></div>
-        <div class="hi"><dt>Analyze selection</dt><dd>Put everything on one sheet, then choose what to analyse: select columns (drag, or Shift-click) and press <i>Analyze selection</i> (or right-click → Analyze only…). Only those columns are tested and drawn; the rest stay on the sheet, dimmed. A bar over the sheet names what is analysed and offers the tests that fit: one click switches. <i>All columns ×</i> goes back.</dd></div>
+        <div class="hi"><dt>Analyze selection</dt><dd>Put everything on one sheet, then choose what to analyse: select columns, rows or a block of cells (drag, or Shift-click; click row numbers for whole rows) and press <i>Analyze selection</i> (or right-click → Analyze only…). Only the selected columns and rows are tested and drawn; the rest stays on the sheet, dimmed. A bar over the sheet names what is analysed and offers the tests that fit: one click switches. <i>Whole sheet ×</i> goes back.</dd></div>
         <div class="hi"><dt>Long tables</dt><dd>One row per measurement works as it is: a column of repeated labels (Treatment, Genotype…) is read as a grouping column, marked <i>groups</i>, and splits the value column into groups. One grouping column gives a t-test or one-way ANOVA; two give a two-way ANOVA. For number codes (dose 0, 10, 20) right-click the column → Use as grouping column.</dd></div>
         <div class="hi"><dt>Two-way</dt><dd>Columns are the levels of one factor (e.g. Control / Drug); the row title names the level of the other (e.g. Male / Female). Put each replicate on its own row and repeat the row title.</dd></div>
         <div class="hi"><dt>Subcolumns</dt><dd>Prism's grouped table: <i>Subcolumns</i> (over the sheet) gives each data set N side-by-side columns for its replicates (A:1, A:2, A:3), named once above them. Each row title is one level of the row factor. Two-way ANOVA reads every row × data set as a cell of N values; a pasted header that names each set once over blank cells is read the same way.</dd></div>
@@ -1214,7 +1216,7 @@ table.data-grid td.fac { background: color-mix(in srgb, var(--sv-side) 60%, tran
     </dl></section>
     <section class="hs" id="h-data-zh"><h4><svg viewBox="0 0 24 24"><path d="M4 5h16v14H4zM4 10h16M10 5v14"/></svg>数据</h4><dl>
         <div class="hi"><dt>数据布局</dt><dd>每组一列。配对、重复测量和 Friedman 检验按行匹配（每行一个受试对象）。相关分析以 A 列为 X、B 列为 Y。列联表填计数：列为组，行为结局（由行标题命名）。</dd></div>
-        <div class="hi"><dt>分析所选</dt><dd>把所有数据放在一张表里，再选要分析的部分：选中若干列（拖动或 Shift 点击），点<i>分析所选</i>（或右键 → 只分析…）。只有这些列参与检验和作图，其余列留在表里并变淡。表格上方的提示条显示正在分析什么，并列出适合的检验，点一下即可切换。<i>所有列 ×</i> 恢复全部。</dd></div>
+        <div class="hi"><dt>分析所选</dt><dd>把所有数据放在一张表里，再选要分析的部分：选中若干列、若干行或一块单元格（拖动或 Shift 点击；点行号选整行），点<i>分析所选</i>（或右键 → 只分析…）。只有选中的列和行参与检验和作图，其余留在表里并变淡。表格上方的提示条显示正在分析什么，并列出适合的检验，点一下即可切换。<i>整张表 ×</i> 恢复全部。</dd></div>
         <div class="hi"><dt>长表</dt><dd>"每行一次测量"的表可以直接用：一列重复出现的标签（处理、基因型…）会被识别为分组列（标记为<i>分组</i>），用来把数值列分成各组。一个分组列对应 t 检验或单因素方差分析，两个分组列对应双因素方差分析。如果分组是数字编码（剂量 0、10、20），右键该列 → 用作分组列。</dd></div>
         <div class="hi"><dt>双因素</dt><dd>各列是一个因素的水平（如 Control / Drug）；行标题是另一个因素的水平（如 Male / Female）。每个重复单独一行，并重复填写行标题。</dd></div>
         <div class="hi"><dt>子列</dt><dd>即 Prism 的分组表：表格上方的<i>子列</i>让每个数据集有 N 个并列列放重复值（A:1、A:2、A:3），名称写在上方一次。每个行标题是行因素的一个水平。双因素方差分析把每个行 × 数据集看作含 N 个值的单元格；粘贴时若表头每个数据集只写一次名称、后面留空，也会这样读取。</dd></div>
@@ -2679,8 +2681,8 @@ const MENUS = [
     { t: "Clear all data", a: "clearBtn", tip: "Empty the sheet; Undo brings it back" },
   ]],
   ["Data", [
-    { t: "Analyze selection", a: "scopeBtn", tip: "Analyze only the columns selected on the sheet", on: () => scoped() },
-    { t: "Analyze all columns", a: () => clearScope(), tip: "Leave the selection: every column is analysed again" },
+    { t: "Analyze selection", a: "scopeBtn", tip: "Analyze only the columns and rows selected on the sheet", on: () => anyScope() },
+    { t: "Analyze the whole sheet", a: () => clearScope(), tip: "Leave the selection: everything is analysed again" },
     "-",
     { t: "Subcolumns…", a: "subcolsBtn", tip: "Replicates side by side, as in Prism's grouped table", on: () => SUB() > 1 },
     { t: "Transform…", a: "transformBtn", tip: "% of the first column, log, average replicates: before the analysis", on: () => transformOn() },
@@ -2778,7 +2780,8 @@ function sanitizeGrid(g) {
   return g.map((c, i) => Object.assign({ name: String(c && c.name != null ? c.name : groupLabel(i)),
                             cells: (c && Array.isArray(c.cells) ? c.cells : []).map(v => String(v ?? "")) },
                           c && c.off ? { off: true } : {},   // off: column left out of the analysis
-                          c && c.pick ? { pick: true } : {},   // pick: when any column has it, only picked columns are analysed
+                          c && c.pick ? { pick: true } : {},
+                          c && Array.isArray(c.pr) && c.pr.length ? { pr: c.pr.filter(Number.isInteger) } : {},   // pr: the rows in scope (the same list on every column)   // pick: when any column has it, only picked columns are analysed
                           c && typeof c.fac === "boolean" ? { fac: c.fac } : {},   // fac: a grouping column (true), or never one (false); unset = decided by its content
                           c && Array.isArray(c.xr) && c.xr.length ? { xr: c.xr.filter(Number.isInteger) } : {}));   // xr: rows of single values left out
 }
@@ -2963,19 +2966,19 @@ function renderGrid() {
 function paintColumnRoles() {
   const t = $("dataTable");
   if (!t.tHead || !t.tBodies[0]) return;
-  const sc = scoped(), heads = headRow(t).cells, tag = uiText("groups");
+  const sc = scoped(), rs = rowScope(), heads = headRow(t).cells, tag = uiText("groups");
   const role = grid.map(c => ({ fac: !c.off && isFactorCol(c), dim: sc && !c.pick && !c.off, pick: sc && !!c.pick }));
   role.forEach((r, gi) => {
     const th = heads[gi + 2]; if (!th) return;
     th.classList.toggle("fac", r.fac); th.classList.toggle("dim", r.dim); th.classList.toggle("pick", r.pick);
     const cl = th.querySelector(".col-letter"); if (cl) { if (r.fac) cl.dataset.tag = tag; else delete cl.dataset.tag; }
   });
-  [...t.tBodies[0].rows].forEach(tr => role.forEach((r, gi) => {
+  [...t.tBodies[0].rows].forEach((tr, ri) => { const out = !!rs && !rs.has(ri); tr.cells[0].classList.toggle("pick", !!rs && !out); tr.cells[1].classList.toggle("dim", out); role.forEach((r, gi) => {
     const td = tr.cells[gi + 2]; if (!td) return;
-    td.classList.toggle("fac", r.fac); td.classList.toggle("dim", r.dim);
+    td.classList.toggle("fac", r.fac); td.classList.toggle("dim", r.dim || out);
     const inp = td.firstElementChild; if (inp) inp.classList.toggle("bad", !r.fac && isBad(inp.value));
-  }));
-  $("scopeBtn").classList.toggle("on", sc);
+  }); });
+  $("scopeBtn").classList.toggle("on", sc || !!rs);
 }
 /* the header row with one cell per grid column (the last one; with subcolumns the data-set row sits above it) */
 const headRow = (t = $("dataTable")) => t.tHead.rows[t.tHead.rows.length - 1];
@@ -3093,7 +3096,7 @@ function pasteText(text) {
   pasteBlock(text, R.g0, R.r0);
 }
 const insertRows = (at, n = 1) => mutate(() => {
-  grid.forEach(g => { g.cells.splice(at, 0, ...Array(n).fill("")); if (g.xr) g.xr = g.xr.map(r => r >= at ? r + n : r); });
+  grid.forEach(g => { g.cells.splice(at, 0, ...Array(n).fill("")); if (g.xr) g.xr = g.xr.map(r => r >= at ? r + n : r); if (g.pr) g.pr = g.pr.map(r => r >= at ? r + n : r); });
   titles.splice(at, 0, ...Array(n).fill(""));
 });
 const insertCols = (at, n = 1) => mutate(() => {
@@ -3106,7 +3109,8 @@ const setRange = (R) => { const N = SUB(), g0 = Math.max(0, R.g0); return { g0: 
 function deleteRows(r0, r1) {
   mutate(() => {
     const k = r1 - r0 + 1;
-    grid.forEach(g => { g.cells.splice(r0, k); if (g.xr) g.xr = g.xr.filter(r => r < r0 || r > r1).map(r => r > r1 ? r - k : r); });
+    grid.forEach(g => { g.cells.splice(r0, k); if (g.xr) g.xr = g.xr.filter(r => r < r0 || r > r1).map(r => r > r1 ? r - k : r);
+      if (g.pr) { g.pr = g.pr.filter(r => r < r0 || r > r1).map(r => r > r1 ? r - k : r); if (!g.pr.length) delete g.pr; } });
     titles.splice(r0, r1 - r0 + 1);
     if (!nRows()) { grid.forEach(g => g.cells.push("")); titles.push(""); }
   });
@@ -3325,8 +3329,8 @@ table.addEventListener("contextmenu", e => {
     ["delRows", `Delete ${rowsWord}`], ["delCols", `Delete ${colsWord}`, "", ng < 1 || SR.g1 - SR.g0 + 1 >= grid.length], "-",
     ["colMoveL", `Move ${colsWord} left`, "", ng < 1 || SR.g0 === 0], ["colMoveR", `Move ${colsWord} right`, "", ng < 1 || SR.g1 >= grid.length - 1], "-",
     grid.slice(gs, R.g1 + 1).every(c => c.off) ? ["include", `Include ${colsWord} in the analysis`] : ["exclude", `Exclude ${colsWord} from the analysis`, "", ng < 1],
-    ["scope", SUB() > 1 ? `Analyze only ${colsWord}` : ng > 1 ? `Analyze only these ${ng} columns` : "Analyze only this column", "", ng < 1],
-    ...(scoped() ? [["scopeAll", "Analyze all columns"]] : []),
+    ["scope", nr > 1 && nr < nRows() ? "Analyze only the selection" : R.g0 <= 0 && R.g1 >= grid.length - 1 ? `Analyze only ${nr > 1 ? "these rows" : "this row"}` : SUB() > 1 ? `Analyze only ${colsWord}` : ng > 1 ? `Analyze only these ${ng} columns` : "Analyze only this column", "", ng < 1],
+    ...(anyScope() ? [["scopeAll", "Analyze the whole sheet"]] : []),
     ...(ng === 1 && SUB() === 1 ? [isFactorCol(grid[gs]) ? ["facOff", "Use as values (not a grouping column)"] : ["facOn", "Use as grouping column"]] : []), "-",
     blockExcluded(R) ? ["valIn", "Include values again"] : ["valOut", nr * ng > 1 ? "Exclude values from the analysis" : "Exclude value from the analysis", "", ng < 1], "-",
     ["fill", "Fill down", kb("D")], ["clear", "Clear contents", "Del"],
@@ -4020,7 +4024,9 @@ const ZH = {
   "Tips: data layout, the window, shortcuts, export": "使用说明：数据布局、界面、快捷键、导出", "A short walk through the window": "简短介绍界面各部分",
   "Source code, issues and feedback": "源代码、问题反馈和建议",
   "Search help…": "搜索帮助…", "Search help": "搜索帮助", "Nothing in the help matches that.": "帮助中没有找到相关内容。",
-  "Analyze selection": "分析所选", "Analyze all columns": "分析所有列", "All columns ×": "所有列 ×", "Analyzing": "正在分析", "Groups by": "分组依据", "values": "数值", "groups": "分组",
+  "Analyze selection": "分析所选", "Analyze the whole sheet": "分析整张表", "Whole sheet ×": "整张表 ×", "rows": "行", "Analyze only the selection": "只分析所选区域", "Analyze only these rows": "只分析这些行", "Analyze only this row": "只分析这一行",
+  "Analyze only the columns and rows you have selected on the sheet; the test follows what you selected": "只分析表格中选中的列和行；检验会根据所选内容自动匹配",
+  "Analyze only the columns and rows selected on the sheet": "只分析表格中选中的列和行", "Leave the selection: everything is analysed again": "取消选择范围：重新分析全部数据", "Analyze the whole sheet again": "重新分析整张表", "Analyzing": "正在分析", "Groups by": "分组依据", "values": "数值", "groups": "分组",
   "Analyze only the columns you have selected on the sheet; the test follows what you selected": "只分析表格中选中的列；检验会根据所选内容自动匹配",
   "Analyze only the columns selected on the sheet": "只分析表格中选中的列", "Leave the selection: every column is analysed again": "取消选择范围：重新分析所有列", "Analyze every column again": "重新分析所有列",
   "Analyze only this column": "只分析这一列", "Use as grouping column": "用作分组列", "Use as values (not a grouping column)": "用作数值（不是分组列）",
@@ -4289,6 +4295,9 @@ document.addEventListener("selectstart", e => {
    factor, not data: its labels split the value column into groups, so a sheet laid out as
    Treatment | Genotype | Value works as it is. See `reshapeLong`. */
 const scoped = () => grid.some(c => c.pick && !c.off);
+/* rows in scope: a Set, or null for every row (kept as the same `pr` list on each column, so it travels with undo, files and row inserts) */
+const rowScope = () => { const c = grid.find(x => Array.isArray(x.pr) && x.pr.length); return c ? new Set(c.pr) : null; };
+const anyScope = () => scoped() || !!rowScope();
 const inScope = (c) => !c.off && (!scoped() || !!c.pick);
 function isFactorCol(c) {
   if (c.fac === true) return true;
@@ -4298,14 +4307,17 @@ function isFactorCol(c) {
 }
 function collectGroups() {
   const bad = [];
-  const sc = scoped();
+  const sc = scoped(), rs = rowScope();
   const groups = grid.map((g, gi) => {
     const values = [], rows = [];
     if (sc && !g.pick) return { off: true, values, rows };
+    // within the scoped rows a grouping column with a single label separates nothing: leave it out
+    if (!g.off && isFactorCol(g) && rs && new Set(g.cells.filter((x, r) => rs.has(r)).map(x => String(x).trim()).filter(Boolean)).size < 2) return { off: true, values, rows };
     if (!g.off && isFactorCol(g)) return { name: g.name.trim() || groupLabel(gi), values, rows, off: false, gi, fac: true, labels: g.cells.map(x => String(x).trim()) };
     g.cells.forEach((c, r) => {
       const t = String(c).trim();
       if (t === "") return;
+      if (rs && !rs.has(r)) return;   // a row outside the scope (Analyze selection)
       const n = S.parseNum(t);
       if (g.xr && g.xr.includes(r)) return;   // a value excluded by right-click → Exclude values
       if (isFinite(n)) { values.push(n); rows.push(r); }
@@ -4401,15 +4413,16 @@ function renameFactorLevel(gi, old, v) {
 }
 /* the bar under the data tools: what is being analysed, the tests that read this shape, and the way back */
 function renderScopeBar() {
-  const bar = $("scopeBar"), sc = scoped(), L = longInfo;
+  const bar = $("scopeBar"), rs = rowScope(), sc = scoped() || !!rs, L = longInfo;
   if (!sc && !L) { bar.hidden = true; bar.innerHTML = ""; return; }
   let h = "";
   if (L) h += `<span class="sb-k">Groups by</span><b data-noi18n>${escapeHtml(L.by.join(" × "))}</b>` + (L.value ? `<span class="sb-k">values</span><b data-noi18n>${escapeHtml(L.value)}</b>` : "");
   else h += `<span class="sb-k">Analyzing</span><b data-noi18n>${escapeHtml([...new Set(grid.filter(inScope).map(c => c.name.trim() || "—"))].join(", "))}</b>`;
+  if (rs) h += `<span class="sb-k">rows</span><b>${rowsText(rs)}</b>`;
   const cur = $("testSelect").value;
   const list = L ? (L.tests || []) : shapeTests(grid.filter(inScope).length / SUB());
   h += `<span class="sb-fill"></span>` + list.map(t => { const o = $("testSelect").querySelector(`option[value="${t}"]`); return o ? `<button type="button" data-st="${t}"${t === cur ? ' class="on"' : ""} title="${escapeHtml(o.textContent)}">${escapeHtml(SHORT_TEST[t] || o.textContent)}</button>` : ""; }).join("");
-  if (sc) h += `<button type="button" class="sb-x" data-st="" title="Analyze every column again">All columns ×</button>`;
+  if (sc) h += `<button type="button" class="sb-x" data-st="" title="Analyze the whole sheet again">Whole sheet ×</button>`;
   bar.innerHTML = h; bar.hidden = false;
 }
 const SHORT_TEST = { desc: "Describe", onet: "One-sample t", onew: "One-sample Wilcoxon", ttest: "t-test", mwu: "Mann–Whitney", paired: "Paired t", wilcoxon: "Wilcoxon", anova: "ANOVA", kruskal: "Kruskal–Wallis",
@@ -4424,16 +4437,29 @@ function shapeTests(n) {
 function analyzeSelection() {
   const R = selRect();
   if (!R || R.g1 < 0) return;
-  const SR = setRange({ g0: Math.max(0, R.g0), g1: R.g1 });
+  const SR = setRange({ g0: Math.max(0, R.g0), g1: R.g1 }), last = nRows() - 1;
+  // columns: the ones the selection touches (every column when it spans them all); rows: the selected
+  // rows when the selection is a block or whole rows, every row for a single cell or whole columns
+  const allCols = SR.g0 === 0 && SR.g1 >= grid.length - 1;
+  const rows = (R.r0 === 0 && R.r1 >= last) || (R.r0 === R.r1 && !allCols) ? null : Array.from({ length: R.r1 - R.r0 + 1 }, (_, k) => R.r0 + k);
+  if (allCols && !rows) { clearScope(); return; }
   mutate(() => {
-    grid.forEach((c, i) => { if (i >= SR.g0 && i <= SR.g1 && !c.off) c.pick = true; else delete c.pick; });
-    const picked = grid.filter(c => c.pick);
-    if (!picked.some(isFactorCol)) { const want = shapeTests(picked.length / SUB()); if (!want.includes($("testSelect").value)) { $("testSelect").value = want[0]; syncTestOptions(); syncSegs(); } }
+    grid.forEach((c, i) => {
+      if (!allCols && i >= SR.g0 && i <= SR.g1 && !c.off) c.pick = true; else delete c.pick;
+      if (rows) c.pr = rows.slice(); else delete c.pr;
+    });
+    const used = grid.filter(inScope);
+    if (!used.some(isFactorCol)) { const want = shapeTests(used.length / SUB()); if (!want.includes($("testSelect").value)) { $("testSelect").value = want[0]; syncTestOptions(); syncSegs(); } }
   });
-  settingsSettled();   // the test change belongs to this undo step
   run(true);
 }
-function clearScope() { if (!scoped()) return; mutate(() => grid.forEach(c => { delete c.pick; })); run(true); }
+function clearScope() { if (!anyScope()) return; mutate(() => grid.forEach(c => { delete c.pick; delete c.pr; })); run(true); }
+/* "1–3, 7": the scoped rows as people count them */
+function rowsText(set) {
+  const a = [...set].sort((x, y) => x - y), out = [];
+  for (let i = 0; i < a.length; i++) { let j = i; while (j + 1 < a.length && a[j + 1] === a[j] + 1) j++; out.push(j > i ? `${a[i] + 1}–${a[j] + 1}` : String(a[i] + 1)); i = j; }
+  return out.join(", ");
+}
 
 /* Data transforms, applied before every analysis (Transform, over the sheet):
    - average replicates: rows that share a row title become one row (their mean, per column);
