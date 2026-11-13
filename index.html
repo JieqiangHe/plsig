@@ -945,6 +945,23 @@ details.more .stat-table { border-top-width: 1px; }
 #copyStats { height: 24px; border-radius: 6px; }
 /* style card on the same white page */
 #resPane #styleCard { background: var(--surface); padding: 6px 16px 14px; }
+/* scope bar: what is being analysed, the tests that read that shape, the way back */
+#scopeBar { flex: none; display: flex; align-items: center; gap: 6px; min-height: 30px; padding: 3px 8px; background: var(--sv-on); border-bottom: 1px solid var(--sv-h4b); font-size: 12px; overflow-x: auto; scrollbar-width: none; white-space: nowrap; }
+#scopeBar[hidden] { display: none; }
+#scopeBar .sb-k { color: var(--sv-h4); }
+#scopeBar b { font-weight: 600; color: var(--fg-strong); max-width: 260px; overflow: hidden; text-overflow: ellipsis; }
+#scopeBar .sb-fill { flex: 1; min-width: 8px; }
+#scopeBar button { flex: none; height: 22px; padding: 0 8px; border: 1px solid var(--sv-btnb); border-radius: 11px; background: var(--sv-btn); color: var(--fg); font-size: 11.5px; }
+#scopeBar button:hover { background: var(--sv-btn) linear-gradient(var(--sv-btnh), var(--sv-btnh)); }
+#scopeBar button.on { background: var(--accent); border-color: transparent; color: #fff; font-weight: 600; }
+#scopeBar button.sb-x { border-color: transparent; background: transparent; color: var(--sv-h4); }
+#scopeBtn.on { background: var(--sv-on); }
+#scopeBtn.on svg { color: var(--accent); }
+table.data-grid td.dim .cell-input, table.data-grid th.dim .grp-name { opacity: .38; }
+table.data-grid th.pick .col-letter { background: var(--sv-on); color: var(--accent); font-weight: 600; }
+table.data-grid td.fac .cell-input { text-align: left; color: var(--fg-strong); font-variant-numeric: normal; }
+table.data-grid td.fac { background: color-mix(in srgb, var(--sv-side) 60%, transparent); }
+.col-letter[data-tag]::after { content: " · " attr(data-tag); color: var(--accent); }
 </style>
 </head>
 
@@ -1036,7 +1053,8 @@ details.more .stat-table { border-top-width: 1px; }
     <section id="vData" class="pane">
       <!-- one tab per data sheet; each keeps its own data, test, figure options and undo -->
       <div id="tabs" role="tablist" aria-label="Sheets"></div>
-      <div class="pane-tools tbar" id="dataTools"><button type="button" class="tb-btn menu-btn tab-tool" id="subcolsBtn" aria-haspopup="dialog" title="Replicates side by side: each data set gets N subcolumns, as in Prism's grouped table"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 9h18M9 9v10M15 9v10"/></svg><span class="lbl">Subcolumns</span><svg class="chev" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4"/></svg></button><button type="button" class="tb-btn menu-btn tab-tool" id="transformBtn" aria-haspopup="dialog" title="Transform the data before the analysis: % of the first column, log, average replicates"><svg viewBox="0 0 24 24"><path d="M4 18c4 0 4-12 8-12s4 12 8 12"/></svg><span class="lbl">Transform</span><svg class="chev" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4"/></svg></button><i class="tsep"></i><button id="addRowBtn" class="tb-btn" title="Add a row at the bottom (or press Enter on the last row)"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="9" rx="1.5"/><path d="M12 15.5v5M9.5 18h5"/></svg>Row</button><button id="addGroupBtn" class="tb-btn" title="Add a column (group) on the right"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="9" height="16" rx="1.5"/><path d="M18 9.5v5M15.5 12h5"/></svg>Col</button><span class="ph-fill"></span><button id="copyData" class="tb-btn ic" title="Copy the whole sheet as TSV (paste into Excel / Sheets)"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>Copy</button><button id="clearBtn" class="tb-btn ic" title="Clear all data (Undo brings it back)" aria-label="Clear all data"><svg viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/></svg></button></div>
+      <div class="pane-tools tbar" id="dataTools"><button type="button" class="tb-btn menu-btn tab-tool" id="subcolsBtn" aria-haspopup="dialog" title="Replicates side by side: each data set gets N subcolumns, as in Prism's grouped table"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 9h18M9 9v10M15 9v10"/></svg><span class="lbl">Subcolumns</span><svg class="chev" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4"/></svg></button><button type="button" class="tb-btn menu-btn tab-tool" id="transformBtn" aria-haspopup="dialog" title="Transform the data before the analysis: % of the first column, log, average replicates"><svg viewBox="0 0 24 24"><path d="M4 18c4 0 4-12 8-12s4 12 8 12"/></svg><span class="lbl">Transform</span><svg class="chev" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4"/></svg></button><i class="tsep"></i><button id="addRowBtn" class="tb-btn" title="Add a row at the bottom (or press Enter on the last row)"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="9" rx="1.5"/><path d="M12 15.5v5M9.5 18h5"/></svg>Row</button><button id="addGroupBtn" class="tb-btn" title="Add a column (group) on the right"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="9" height="16" rx="1.5"/><path d="M18 9.5v5M15.5 12h5"/></svg>Col</button><i class="tsep"></i><button type="button" id="scopeBtn" class="tb-btn" title="Analyze only the columns you have selected on the sheet; the test follows what you selected"><svg viewBox="0 0 24 24"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/><path d="M9 15v-3M12 15V9M15 15v-4"/></svg>Analyze selection</button><span class="ph-fill"></span><button id="copyData" class="tb-btn ic" title="Copy the whole sheet as TSV (paste into Excel / Sheets)"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>Copy</button><button id="clearBtn" class="tb-btn ic" title="Clear all data (Undo brings it back)" aria-label="Clear all data"><svg viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/></svg></button></div>
+      <div id="scopeBar" hidden></div>
       <div id="sheetWrap">
         <div id="selBox" hidden></div>
         <table class="data-grid" id="dataTable" aria-label="Data grid"></table>
@@ -1141,6 +1159,8 @@ details.more .stat-table { border-top-width: 1px; }
     </dl></section>
     <section class="hs" id="h-data-en"><h4><svg viewBox="0 0 24 24"><path d="M4 5h16v14H4zM4 10h16M10 5v14"/></svg>Your data</h4><dl>
         <div class="hi"><dt>Layout</dt><dd>One column per group. Paired, repeated-measures and Friedman tests match values by row (one subject per row). Correlation uses column A as X and B as Y. Contingency tables hold counts: columns are groups, rows are outcomes (named by the row titles).</dd></div>
+        <div class="hi"><dt>Analyze selection</dt><dd>Put everything on one sheet, then choose what to analyse: select columns (drag, or Shift-click) and press <i>Analyze selection</i> (or right-click → Analyze only…). Only those columns are tested and drawn; the rest stay on the sheet, dimmed. A bar over the sheet names what is analysed and offers the tests that fit: one click switches. <i>All columns ×</i> goes back.</dd></div>
+        <div class="hi"><dt>Long tables</dt><dd>One row per measurement works as it is: a column of repeated labels (Treatment, Genotype…) is read as a grouping column, marked <i>groups</i>, and splits the value column into groups. One grouping column gives a t-test or one-way ANOVA; two give a two-way ANOVA. For number codes (dose 0, 10, 20) right-click the column → Use as grouping column.</dd></div>
         <div class="hi"><dt>Two-way</dt><dd>Columns are the levels of one factor (e.g. Control / Drug); the row title names the level of the other (e.g. Male / Female). Put each replicate on its own row and repeat the row title.</dd></div>
         <div class="hi"><dt>Subcolumns</dt><dd>Prism's grouped table: <i>Subcolumns</i> (over the sheet) gives each data set N side-by-side columns for its replicates (A:1, A:2, A:3), named once above them. Each row title is one level of the row factor. Two-way ANOVA reads every row × data set as a cell of N values; a pasted header that names each set once over blank cells is read the same way.</dd></div>
         <div class="hi"><dt>Clusters</dt><dd>For bars in clusters with letters over each bar (e.g. Control, P1–P3 × M1–M3), choose <i>One-way ANOVA across grouped cells</i>. The row title names the cluster on the x axis and each column is a bar colour; every row-title × column cell is one group, and cells may stay empty (a Control row fills only its own column).</dd></div>
@@ -1194,6 +1214,8 @@ details.more .stat-table { border-top-width: 1px; }
     </dl></section>
     <section class="hs" id="h-data-zh"><h4><svg viewBox="0 0 24 24"><path d="M4 5h16v14H4zM4 10h16M10 5v14"/></svg>数据</h4><dl>
         <div class="hi"><dt>数据布局</dt><dd>每组一列。配对、重复测量和 Friedman 检验按行匹配（每行一个受试对象）。相关分析以 A 列为 X、B 列为 Y。列联表填计数：列为组，行为结局（由行标题命名）。</dd></div>
+        <div class="hi"><dt>分析所选</dt><dd>把所有数据放在一张表里，再选要分析的部分：选中若干列（拖动或 Shift 点击），点<i>分析所选</i>（或右键 → 只分析…）。只有这些列参与检验和作图，其余列留在表里并变淡。表格上方的提示条显示正在分析什么，并列出适合的检验，点一下即可切换。<i>所有列 ×</i> 恢复全部。</dd></div>
+        <div class="hi"><dt>长表</dt><dd>"每行一次测量"的表可以直接用：一列重复出现的标签（处理、基因型…）会被识别为分组列（标记为<i>分组</i>），用来把数值列分成各组。一个分组列对应 t 检验或单因素方差分析，两个分组列对应双因素方差分析。如果分组是数字编码（剂量 0、10、20），右键该列 → 用作分组列。</dd></div>
         <div class="hi"><dt>双因素</dt><dd>各列是一个因素的水平（如 Control / Drug）；行标题是另一个因素的水平（如 Male / Female）。每个重复单独一行，并重复填写行标题。</dd></div>
         <div class="hi"><dt>子列</dt><dd>即 Prism 的分组表：表格上方的<i>子列</i>让每个数据集有 N 个并列列放重复值（A:1、A:2、A:3），名称写在上方一次。每个行标题是行因素的一个水平。双因素方差分析把每个行 × 数据集看作含 N 个值的单元格；粘贴时若表头每个数据集只写一次名称、后面留空，也会这样读取。</dd></div>
         <div class="hi"><dt>分组柱图</dt><dd>要做分组柱状图并在每根柱上标字母（如 Control、P1–P3 × M1–M3），选择<i>分组单元格单因素方差分析</i>。行标题是 x 轴上的分组，每列是一种柱子颜色；每个行标题 × 列的单元格是一组，单元格可以留空（Control 行只填自己那一列）。</dd></div>
@@ -2657,6 +2679,9 @@ const MENUS = [
     { t: "Clear all data", a: "clearBtn", tip: "Empty the sheet; Undo brings it back" },
   ]],
   ["Data", [
+    { t: "Analyze selection", a: "scopeBtn", tip: "Analyze only the columns selected on the sheet", on: () => scoped() },
+    { t: "Analyze all columns", a: () => clearScope(), tip: "Leave the selection: every column is analysed again" },
+    "-",
     { t: "Subcolumns…", a: "subcolsBtn", tip: "Replicates side by side, as in Prism's grouped table", on: () => SUB() > 1 },
     { t: "Transform…", a: "transformBtn", tip: "% of the first column, log, average replicates: before the analysis", on: () => transformOn() },
   ]],
@@ -2753,6 +2778,8 @@ function sanitizeGrid(g) {
   return g.map((c, i) => Object.assign({ name: String(c && c.name != null ? c.name : groupLabel(i)),
                             cells: (c && Array.isArray(c.cells) ? c.cells : []).map(v => String(v ?? "")) },
                           c && c.off ? { off: true } : {},   // off: column left out of the analysis
+                          c && c.pick ? { pick: true } : {},   // pick: when any column has it, only picked columns are analysed
+                          c && typeof c.fac === "boolean" ? { fac: c.fac } : {},   // fac: a grouping column (true), or never one (false); unset = decided by its content
                           c && Array.isArray(c.xr) && c.xr.length ? { xr: c.xr.filter(Number.isInteger) } : {}));   // xr: rows of single values left out
 }
 
@@ -2812,7 +2839,8 @@ function updateHistoryButtons() { $("undoBtn").disabled = !undoStack.length; $("
 /* structural edit: snapshot → change → re-render → save */
 function mutate(fn) {
   const hadFocus = document.activeElement && document.activeElement.matches(".cell-input, .row-title");
-  pushHistory(); fn(); renderGrid(); scheduleSave(); scheduleRun();
+  pushHistory(); fn(); settingsSettled();   // a setting changed inside the step belongs to this undo step
+  renderGrid(); scheduleSave(); scheduleRun();
   if (hadFocus && sel) focusCell(sel.ag, sel.ar, true);
 }
 
@@ -2869,6 +2897,7 @@ function setSubcols(n) {
     $("subcols").value = String(n);
     if (n > 1 && N === 1 && !["twoway", "cells"].includes($("testSelect").value)) { $("testSelect").value = "twoway"; syncTestOptions(); syncSegs(); }
   });
+  settingsSettled();
 }
 function renderGrid() {
   const rows = nRows();
@@ -2921,6 +2950,7 @@ function renderGrid() {
     const h1 = $t.tHead.rows[0].offsetHeight;
     [...$t.tHead.rows[1].cells].forEach(th => { th.style.top = h1 + "px"; });
   }
+  paintColumnRoles();
   sizeSheetBackground();
   const sb = $("subcolsBtn");
   if (sb) { sb.classList.toggle("on", N > 1); sb.querySelector(".lbl").textContent = subcolsLabel(); }
@@ -2928,6 +2958,25 @@ function renderGrid() {
   paintSel();
 }
 
+/* mark the columns' roles on the sheet: a grouping column (labels, left-aligned, never "not a number"),
+   and, while a scope is on, the columns in it and the ones left out (dimmed) */
+function paintColumnRoles() {
+  const t = $("dataTable");
+  if (!t.tHead || !t.tBodies[0]) return;
+  const sc = scoped(), heads = headRow(t).cells, tag = uiText("groups");
+  const role = grid.map(c => ({ fac: !c.off && isFactorCol(c), dim: sc && !c.pick && !c.off, pick: sc && !!c.pick }));
+  role.forEach((r, gi) => {
+    const th = heads[gi + 2]; if (!th) return;
+    th.classList.toggle("fac", r.fac); th.classList.toggle("dim", r.dim); th.classList.toggle("pick", r.pick);
+    const cl = th.querySelector(".col-letter"); if (cl) { if (r.fac) cl.dataset.tag = tag; else delete cl.dataset.tag; }
+  });
+  [...t.tBodies[0].rows].forEach(tr => role.forEach((r, gi) => {
+    const td = tr.cells[gi + 2]; if (!td) return;
+    td.classList.toggle("fac", r.fac); td.classList.toggle("dim", r.dim);
+    const inp = td.firstElementChild; if (inp) inp.classList.toggle("bad", !r.fac && isBad(inp.value));
+  }));
+  $("scopeBtn").classList.toggle("on", sc);
+}
 /* the header row with one cell per grid column (the last one; with subcolumns the data-set row sits above it) */
 const headRow = (t = $("dataTable")) => t.tHead.rows[t.tHead.rows.length - 1];
 /* the grid columns a header cell covers: [first, last], or null for the row-number / row-title headers */
@@ -3084,7 +3133,7 @@ table.addEventListener("input", e => {
   const t = e.target, gi = +t.dataset.g;
   if (t.classList.contains("cell-input")) {
     grid[gi].cells[+t.dataset.r] = t.value;
-    t.classList.toggle("bad", isBad(t.value));
+    t.classList.toggle("bad", isBad(t.value) && !isFactorCol(grid[gi]));
   } else if (t.classList.contains("grp-name")) {
     setCols(gi).forEach(i => { grid[i].name = t.value; });
   } else if (t.classList.contains("row-title")) {
@@ -3276,6 +3325,9 @@ table.addEventListener("contextmenu", e => {
     ["delRows", `Delete ${rowsWord}`], ["delCols", `Delete ${colsWord}`, "", ng < 1 || SR.g1 - SR.g0 + 1 >= grid.length], "-",
     ["colMoveL", `Move ${colsWord} left`, "", ng < 1 || SR.g0 === 0], ["colMoveR", `Move ${colsWord} right`, "", ng < 1 || SR.g1 >= grid.length - 1], "-",
     grid.slice(gs, R.g1 + 1).every(c => c.off) ? ["include", `Include ${colsWord} in the analysis`] : ["exclude", `Exclude ${colsWord} from the analysis`, "", ng < 1],
+    ["scope", SUB() > 1 ? `Analyze only ${colsWord}` : ng > 1 ? `Analyze only these ${ng} columns` : "Analyze only this column", "", ng < 1],
+    ...(scoped() ? [["scopeAll", "Analyze all columns"]] : []),
+    ...(ng === 1 && SUB() === 1 ? [isFactorCol(grid[gs]) ? ["facOff", "Use as values (not a grouping column)"] : ["facOn", "Use as grouping column"]] : []), "-",
     blockExcluded(R) ? ["valIn", "Include values again"] : ["valOut", nr * ng > 1 ? "Exclude values from the analysis" : "Exclude value from the analysis", "", ng < 1], "-",
     ["fill", "Fill down", kb("D")], ["clear", "Clear contents", "Del"],
   ];
@@ -3330,6 +3382,9 @@ ctxMenu.addEventListener("click", async e => {
       sel.ag += d; sel.fg += d;
       break;
     }
+    case "scope": analyzeSelection(); return;
+    case "scopeAll": clearScope(); return;
+    case "facOn": case "facOff": mutate(() => { grid[gs].fac = b.dataset.act === "facOn"; }); run(true); break;
     case "fill": fillDown(); break;
     case "clear": clearSel(); break;
   }
@@ -3568,6 +3623,13 @@ menuPop.addEventListener("click", e => {
   $("transformBtn").classList.toggle("on", transformOn());
   scheduleSave(); run(true);
 });
+$("scopeBtn").onclick = () => analyzeSelection();
+$("scopeBar").addEventListener("click", e => {
+  const b = e.target.closest("button[data-st]");
+  if (!b) return;
+  if (!b.dataset.st) { clearScope(); return; }
+  $("testSelect").value = b.dataset.st; $("testSelect").dispatchEvent(new Event("change"));
+});
 $("transformBtn").onclick = () => (menuFor === transformAnchor ? closeMenuPop() : openTransformPop());
 $("subcolsBtn").onclick = () => (menuFor === subcolsAnchor ? closeMenuPop() : openSubcolsPop());
 $("shareBtn").onclick = () => {
@@ -3779,6 +3841,10 @@ const EXAMPLES = [
     titles: ["NC+1×motif", "NC+3×motif", "NC+5×motif", "NC+7×motif", "NCU"],
     sets: { Scion: [[0.71, 2.09, 4.80, 5.69, 2.70], [0.73, 2.14, 4.58, 5.57, 2.91], [0.75, 1.20, 4.74, 5.76, 2.92]],
             Rootstock: [[1.06, 0.96, 1.25, 1.31, 1.02], [0.91, 1.08, 1.15, 1.37, 1.08], [1.04, 0.97, 1.21, 1.23, 0.91]] } },
+  { name: "Long table", hint: "one row per measurement: two grouping columns + a value", test: "twoway", posthoc: "tukey", xLabel: "",
+    cols: { Sex: ["Male", "Male", "Male", "Male", "Female", "Female", "Female", "Female", "Male", "Male", "Male", "Male", "Female", "Female", "Female", "Female"],
+            Treatment: ["Control", "Control", "Control", "Control", "Control", "Control", "Control", "Control", "Drug", "Drug", "Drug", "Drug", "Drug", "Drug", "Drug", "Drug"],
+            Weight: [24.1, 22.8, 25.3, 23.6, 20.2, 21.5, 19.8, 20.9, 30.4, 29.1, 31.8, 30.0, 23.4, 24.8, 22.9, 24.1] } },
   { name: "Correlation", hint: "correlation + regression, A = X", test: "corr",
     cols: { "Dose (mg)": [0, 5, 10, 15, 20, 25, 30, 35, 40], Response: [2.1, 3.4, 4.2, 5.9, 6.3, 7.8, 8.4, 9.9, 10.6] } },
   { name: "Dose–response curve", hint: "4PL fit, IC50, A = dose", test: "dose", yLabel: "Viability (%)",
@@ -3954,6 +4020,13 @@ const ZH = {
   "Tips: data layout, the window, shortcuts, export": "使用说明：数据布局、界面、快捷键、导出", "A short walk through the window": "简短介绍界面各部分",
   "Source code, issues and feedback": "源代码、问题反馈和建议",
   "Search help…": "搜索帮助…", "Search help": "搜索帮助", "Nothing in the help matches that.": "帮助中没有找到相关内容。",
+  "Analyze selection": "分析所选", "Analyze all columns": "分析所有列", "All columns ×": "所有列 ×", "Analyzing": "正在分析", "Groups by": "分组依据", "values": "数值", "groups": "分组",
+  "Analyze only the columns you have selected on the sheet; the test follows what you selected": "只分析表格中选中的列；检验会根据所选内容自动匹配",
+  "Analyze only the columns selected on the sheet": "只分析表格中选中的列", "Leave the selection: every column is analysed again": "取消选择范围：重新分析所有列", "Analyze every column again": "重新分析所有列",
+  "Analyze only this column": "只分析这一列", "Use as grouping column": "用作分组列", "Use as values (not a grouping column)": "用作数值（不是分组列）",
+  "Describe": "描述统计", "One-sample t": "单样本 t", "One-sample Wilcoxon": "单样本 Wilcoxon", "t-test": "t 检验", "Paired t": "配对 t", "ANOVA": "方差分析", "RM ANOVA": "重复测量方差分析", "Two-way ANOVA": "双因素方差分析", "ANOVA across cells": "分组单元格方差分析", "Correlation": "相关",
+  "A grouping column needs a column of numbers beside it.": "分组列旁边需要有一列数值。",
+  "Long table": "长表", "one row per measurement: two grouping columns + a value": "每行一次测量：两个分组列 + 一列数值",
   "Subcolumns": "子列", "Edit": "编辑", "Data": "数据", "Help": "帮助", "Plot": "图",
   "Open…": "打开…", "Save session (.jgz)": "保存会话（.jgz）", "New sheet": "新建表格", "Examples…": "示例…", "Copy sheet as TSV": "复制表格（TSV）", "Paste table into sheet": "粘贴表格",
   "Share link": "分享链接", "Export figure…": "导出图…", "Copy figure": "复制图", "Add row": "添加行", "Add column": "添加列", "Clear all data": "清空所有数据",
@@ -4015,7 +4088,12 @@ const ZH_PATTERNS = [
   [/^Is (.+) significantly correlated with (.+)\?$/, "$1 与 $2 是否显著相关？"],
   [/^Is the distribution of outcomes different between the columns\?$/, "各列的结局分布是否不同？"],
   [/^(\d+) of (\d+) columns? differs? significantly from (.+?) \((.+), unadjusted\)\.$/, "$2 列中有 $1 列与 $3 差异显著（$4，未校正）。"],
-  [/^Subcolumns: (\d+)$/, "子列：$1"], [/^Name of data set (\d+)$/, "数据集 $1 的名称"],
+  [/^Subcolumns: (\d+)$/, "子列：$1"],
+  [/^Analyze only these (\d+) columns$/, "只分析这 $1 列"], [/^Analyze only (.*data sets?)$/, "只分析所选数据集"],
+  [/^Grouping column “(.+)” found: the test was switched to one that reads this layout\.$/, "检测到分组列“$1”：已切换到适合这种布局的检验。"],
+  [/^Several value columns: using “(.+?)”\. To use another, select .+$/, "有多个数值列：当前使用“$1”。要用其他列，请选中分组列和那一列数值，再点“分析所选”。"],
+  [/^(\d+) value\(s\) without a label in the grouping column were skipped\.$/, "$1 个数值在分组列中没有标签，已跳过。"],
+  [/^Using the first two grouping columns \((.+)\)\.$/, "使用前两个分组列（$1）。"], [/^Name of data set (\d+)$/, "数据集 $1 的名称"],
   [/^(Insert|Delete|Move) (\d+ )?data sets?( left| right)?$/, (m, v, n, d) => ({ Insert: "插入", Delete: "删除", Move: "移动" }[v]) + (n ? n.trim() + " 个" : "") + "数据集" + ({ " left": "（左侧）", " right": "（右侧）" }[d] || "")],
   [/^Column statistics for (\d+) columns?\.$/, "共 $1 列的列统计。"],
   [/^Two-way ANOVA: interaction$/, "双因素方差分析：交互作用"],
@@ -4205,10 +4283,26 @@ document.addEventListener("selectstart", e => {
 /* ============================================================
    COLLECTING DATA
    ============================================================ */
+/* ---- "put everything in, pick what to analyse" (Nov 2026) ----
+   Scope: when any column is picked (Analyze selection), only picked columns are analysed.
+   Grouping columns (long format): a column of repeated text labels (or one marked by hand) is a
+   factor, not data: its labels split the value column into groups, so a sheet laid out as
+   Treatment | Genotype | Value works as it is. See `reshapeLong`. */
+const scoped = () => grid.some(c => c.pick && !c.off);
+const inScope = (c) => !c.off && (!scoped() || !!c.pick);
+function isFactorCol(c) {
+  if (c.fac === true) return true;
+  if (c.fac === false) return false;
+  const v = c.cells.map(x => String(x).trim()).filter(Boolean);
+  return v.length >= 2 && v.every(x => !isFinite(S.parseNum(x))) && new Set(v).size < v.length;
+}
 function collectGroups() {
   const bad = [];
+  const sc = scoped();
   const groups = grid.map((g, gi) => {
     const values = [], rows = [];
+    if (sc && !g.pick) return { off: true, values, rows };
+    if (!g.off && isFactorCol(g)) return { name: g.name.trim() || groupLabel(gi), values, rows, off: false, gi, fac: true, labels: g.cells.map(x => String(x).trim()) };
     g.cells.forEach((c, r) => {
       const t = String(c).trim();
       if (t === "") return;
@@ -4252,6 +4346,95 @@ function mergeSubcols(groups, test, problems) {
   return out;
 }
 
+/* Long format → the groups the tests read. One grouping column + one value column: one group per
+   label. Two grouping columns: the first names the row level, the second the columns (two-way /
+   cells), or every combination is a group (one-way tests). One grouping column + several value
+   columns: the labels act as row titles (two-way / cells); other tests use the first value column.
+   `longInfo` tells the rest of the page where labels live (row titles, renaming from the figure). */
+let longInfo = null;
+const rowTitle = (r) => String((longInfo && longInfo.rowLabels ? longInfo.rowLabels[r] : titles[r]) || "").trim();
+function levelsOf(labels, rowsUsed) { const seen = []; rowsUsed.forEach(r => { const l = labels[r]; if (l && !seen.includes(l)) seen.push(l); }); return seen; }
+function suggestTests(facs, nums) {
+  if (!facs.length) return [];
+  if (facs.length >= 2 || nums.length >= 2) return ["twoway", "cells", "anova", "kruskal"];
+  const n = nums[0] ? levelsOf(facs[0].labels, nums[0].rows).length : 0;
+  return n <= 2 ? ["ttest", "mwu", "desc"] : ["anova", "kruskal", "desc"];
+}
+function reshapeLong(facs, nums, test, problems) {
+  longInfo = { by: [facs[0].name] };
+  if (!nums.length) { problems.push("A grouping column needs a column of numbers beside it."); return nums; }
+  const grouped = test === "twoway" || test === "cells";
+  const split = (V, labelOf, fac) => {
+    const by = new Map(); let blank = 0;
+    V.values.forEach((v, q) => {
+      const r = V.rows[q], l = labelOf(r);
+      if (!l) { blank++; return; }
+      if (!by.has(l)) by.set(l, { name: l, values: [], rows: [], gis: [], long: { fac, level: l } });
+      const g = by.get(l); g.values.push(v); g.rows.push(r); g.gis.push(V.gis ? V.gis[q] : V.gi);
+    });
+    if (blank) problems.push(`${blank} value(s) without a label in the grouping column were skipped.`);
+    return [...by.values()];
+  };
+  if (facs.length > 2) problems.push(`Using the first two grouping columns (“${facs[0].name}”, “${facs[1].name}”).`);
+  const A = facs[0], B = facs[1];
+  if (B) {
+    const V = nums[0];
+    if (nums.length > 1) problems.push(`Several value columns: using “${V.name}”. To use another, select the grouping columns and that value column, then Analyze selection.`);
+    if (grouped) {
+      longInfo = { rowLabels: A.labels, rowFac: A.gi, colFac: B.gi, value: V.name, by: [A.name, B.name] };
+      return split(V, r => B.labels[r], B.gi);
+    }
+    longInfo = { value: V.name, by: [A.name, B.name] };
+    return split(V, r => A.labels[r] && B.labels[r] ? `${A.labels[r]} · ${B.labels[r]}` : "", null);
+  }
+  if (nums.length > 1 && grouped) { longInfo = { rowLabels: A.labels, rowFac: A.gi, by: [A.name] }; return nums; }
+  const V = nums[0];
+  if (nums.length > 1) problems.push(`Several value columns: using “${V.name}”. To use another, select the grouping column and that value column, then Analyze selection.`);
+  longInfo = { value: V.name, by: [A.name] };
+  return split(V, r => A.labels[r], A.gi);
+}
+/* rename a label everywhere in its grouping column (from the figure), as one undo step */
+function renameFactorLevel(gi, old, v) {
+  if (!(gi >= 0) || !grid[gi]) return;
+  mutate(() => { grid[gi].cells = grid[gi].cells.map(c => String(c).trim() === old ? v : c); moveFmtKeys(old, v); });
+  settingsSettled();
+}
+/* the bar under the data tools: what is being analysed, the tests that read this shape, and the way back */
+function renderScopeBar() {
+  const bar = $("scopeBar"), sc = scoped(), L = longInfo;
+  if (!sc && !L) { bar.hidden = true; bar.innerHTML = ""; return; }
+  let h = "";
+  if (L) h += `<span class="sb-k">Groups by</span><b data-noi18n>${escapeHtml(L.by.join(" × "))}</b>` + (L.value ? `<span class="sb-k">values</span><b data-noi18n>${escapeHtml(L.value)}</b>` : "");
+  else h += `<span class="sb-k">Analyzing</span><b data-noi18n>${escapeHtml([...new Set(grid.filter(inScope).map(c => c.name.trim() || "—"))].join(", "))}</b>`;
+  const cur = $("testSelect").value;
+  const list = L ? (L.tests || []) : shapeTests(grid.filter(inScope).length / SUB());
+  h += `<span class="sb-fill"></span>` + list.map(t => { const o = $("testSelect").querySelector(`option[value="${t}"]`); return o ? `<button type="button" data-st="${t}"${t === cur ? ' class="on"' : ""} title="${escapeHtml(o.textContent)}">${escapeHtml(SHORT_TEST[t] || o.textContent)}</button>` : ""; }).join("");
+  if (sc) h += `<button type="button" class="sb-x" data-st="" title="Analyze every column again">All columns ×</button>`;
+  bar.innerHTML = h; bar.hidden = false;
+}
+const SHORT_TEST = { desc: "Describe", onet: "One-sample t", onew: "One-sample Wilcoxon", ttest: "t-test", mwu: "Mann–Whitney", paired: "Paired t", wilcoxon: "Wilcoxon", anova: "ANOVA", kruskal: "Kruskal–Wallis",
+                     rmanova: "RM ANOVA", friedman: "Friedman", twoway: "Two-way ANOVA", cells: "ANOVA across cells", corr: "Correlation" };
+/* the tests that read n plain columns, the likeliest first */
+function shapeTests(n) {
+  if (n <= 1) return ["desc", "onet", "onew"];
+  if (n === 2) return ["ttest", "paired", "mwu", "wilcoxon", "corr"];
+  return hasTitles() ? ["anova", "twoway", "kruskal", "rmanova", "friedman"] : ["anova", "kruskal", "rmanova", "friedman"];
+}
+/* Analyze selection: the columns the selection touches become the scope, and the test follows the shape */
+function analyzeSelection() {
+  const R = selRect();
+  if (!R || R.g1 < 0) return;
+  const SR = setRange({ g0: Math.max(0, R.g0), g1: R.g1 });
+  mutate(() => {
+    grid.forEach((c, i) => { if (i >= SR.g0 && i <= SR.g1 && !c.off) c.pick = true; else delete c.pick; });
+    const picked = grid.filter(c => c.pick);
+    if (!picked.some(isFactorCol)) { const want = shapeTests(picked.length / SUB()); if (!want.includes($("testSelect").value)) { $("testSelect").value = want[0]; syncTestOptions(); syncSegs(); } }
+  });
+  settingsSettled();   // the test change belongs to this undo step
+  run(true);
+}
+function clearScope() { if (!scoped()) return; mutate(() => grid.forEach(c => { delete c.pick; })); run(true); }
+
 /* Data transforms, applied before every analysis (Transform, over the sheet):
    - average replicates: rows that share a row title become one row (their mean, per column);
    - % of first column: every value as a percentage of the first column's mean;
@@ -4274,7 +4457,7 @@ function transformGroups(groups, test, problems) {
       out = out.map(g => {
         const by = new Map(), order = [];
         g.values.forEach((v, q) => {
-          const k = (titles[g.rows[q]] || "").trim();
+          const k = rowTitle(g.rows[q]);
           const key = k ? "t:" + k : "r:" + g.rows[q];
           if (!by.has(key)) { by.set(key, { sum: 0, n: 0, row: k ? firstRow.get(k) : g.rows[q] }); order.push(key); }
           const b = by.get(key); b.sum += v; b.n++;
@@ -4381,10 +4564,23 @@ let runTimer = null;
 function scheduleRun() { clearTimeout(runTimer); runTimer = setTimeout(() => run(true), 350); }
 function run(quiet) {
   const { groups: raw, warns, decimalComma } = collectGroups();
-  let groups = raw.filter(g => g.values.length > 0);
-  const test = $("testSelect").value;
+  let groups = raw.filter(g => g.values.length > 0 && !g.fac);
+  let test = $("testSelect").value;
   const problems = [...warns];
   groups = mergeSubcols(groups, test, problems);
+  // long format: grouping columns split the value column; a test that cannot read the shape gives way to one that can
+  const facs = raw.filter(g => g.fac);
+  longInfo = null;
+  if (facs.length && !["chisq", "corr", "dose", "survival"].includes(test)) {
+    const want = suggestTests(facs, groups);
+    if (want.length && !want.includes(test)) {
+      test = want[0]; $("testSelect").value = test; syncTestOptions(); syncSegs(); settingsSettled(); scheduleSave();
+      problems.push(`Grouping column “${facs[0].name}” found: the test was switched to one that reads this layout.`);
+    }
+    groups = reshapeLong(facs, groups, test, problems);
+    longInfo.tests = want;
+  }
+  renderScopeBar(); paintColumnRoles();
   groups = transformGroups(groups, test, problems).filter(g => g.values.length > 0);
 
   const minGroups = ONE_GROUP.has(test) ? 1 : 2;
@@ -4903,7 +5099,7 @@ const ANALYSES = {
     const levels = [], idx = new Map();
     let untitled = 0;
     groups.forEach(g => g.rows.forEach(r => {
-      const t = (titles[r] || "").trim();
+      const t = rowTitle(r);
       if (!t) { untitled++; return; }
       if (!idx.has(t)) { idx.set(t, levels.length); levels.push(t); }
     }));
@@ -4911,7 +5107,7 @@ const ANALYSES = {
     if (levels.length < 2) { problems.push("Two-way ANOVA needs row titles with at least 2 levels (e.g. Male / Female), with the replicates of each level in rows sharing that title."); return null; }
     const cells = levels.map(() => groups.map(() => []));
     groups.forEach((g, j) => g.values.forEach((v, q) => {
-      const t = (titles[g.rows[q]] || "").trim();
+      const t = rowTitle(g.rows[q]);
       if (t) cells[idx.get(t)][j].push(v);
     }));
     const empty = [];
@@ -4960,7 +5156,7 @@ const ANALYSES = {
     const levels = [], idx = new Map();
     let untitled = 0;
     groups.forEach(g => g.rows.forEach(r => {
-      const t = (titles[r] || "").trim();
+      const t = rowTitle(r);
       if (!t) { untitled++; return; }
       if (!idx.has(t)) { idx.set(t, levels.length); levels.push(t); }
     }));
@@ -4968,7 +5164,7 @@ const ANALYSES = {
     if (!levels.length) { problems.push("Give each row a row title: it names the cluster on the x axis (e.g. Control, P1, P2), and the columns are the bars inside each cluster (e.g. M1, M2, M3)."); return null; }
     const cells = levels.map(() => groups.map(() => []));
     groups.forEach((g, j) => g.values.forEach((v, q) => {
-      const t = (titles[g.rows[q]] || "").trim();
+      const t = rowTitle(g.rows[q]);
       if (t) cells[idx.get(t)][j].push(v);
     }));
     const names = groups.map(g => g.name), cellGroups = [], at = [];
@@ -5522,11 +5718,11 @@ function textTargets() {
   const legend = [...document.querySelectorAll("#plot .legendtext")];
   const col = (name) => grid.findIndex((c, i) => !c.off && (c.name.trim() || groupLabel(i)) === name);
   if (spec.groups && spec.mode !== "xy") {
-    ticks.forEach((el, i) => { const g = spec.groups[i]; if (g) out.push({ el, fkey: "xt:" + g.name, value: g.name, placeholder: "Group name", allowEmpty: false, commit: (v) => renameColumn(columnOf(g), v) }); });
+    ticks.forEach((el, i) => { const g = spec.groups[i]; if (g) out.push({ el, fkey: "xt:" + g.name, value: g.name, placeholder: "Group name", allowEmpty: false, commit: (v) => g.long ? renameFactorLevel(g.long.fac, g.long.level, v) : renameColumn(columnOf(g), v) }); });
   } else if (spec.mode === "grouped") {
-    ticks.forEach((el, i) => { const l = spec.levels[i]; if (l != null) out.push({ el, fkey: "xt:" + l, value: l, placeholder: "Row title", allowEmpty: false, commit: (v) => renameLevel(l, v) }); });
+    ticks.forEach((el, i) => { const l = spec.levels[i]; if (l != null) out.push({ el, fkey: "xt:" + l, value: l, placeholder: "Row title", allowEmpty: false, commit: (v) => longInfo && longInfo.rowFac != null ? renameFactorLevel(longInfo.rowFac, l, v) : renameLevel(l, v) }); });
     const shown = spec.names.filter((_, j) => spec.levels.some((_, i) => spec.cells[i][j].length));
-    legend.forEach((el, k) => { const n = shown[k]; if (n != null) out.push({ el, fkey: "lg:" + n, value: n, placeholder: "Column name", allowEmpty: false, commit: (v) => renameColumn(col(n), v) }); });
+    legend.forEach((el, k) => { const n = shown[k]; if (n != null) out.push({ el, fkey: "lg:" + n, value: n, placeholder: "Column name", allowEmpty: false, commit: (v) => longInfo && longInfo.colFac != null ? renameFactorLevel(longInfo.colFac, n, v) : renameColumn(col(n), v) }); });
   } else if (spec.mode === "surv") {
     legend.forEach((el, k) => { const n = spec.curves[k] && spec.curves[k].name; if (n != null) out.push({ el, fkey: "lg:" + n, value: n, placeholder: "Group name", allowEmpty: false, commit: (v) => renameColumn(col(n), v) }); });
   } else if (spec.mode === "counts") {
