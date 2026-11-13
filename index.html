@@ -412,12 +412,12 @@ th.hd-on .col-letter { color: var(--accent); font-weight: 600; box-shadow: inset
 /* output: figure (white paper) + results */
 #vOut { min-height: 0; overflow: auto; background: var(--side); display: flex; flex-direction: column; }
 /* Results folded: the figure takes the whole pane, centred, and the conclusion sits as a strip at the foot */
-#vOut.res-folded #vGraph { flex: 1 0 auto; justify-content: safe center; }
-#vOut.res-folded #vResults { position: sticky; bottom: 0; padding: 8px 18px 10px; }
+#work.res-folded #vGraph { flex: 1 0 auto; justify-content: safe center; }
+#work.res-folded #vResults { position: sticky; bottom: 0; padding: 8px 18px 10px; }
 /* Style card: takes the results' place under the figure (one or the other shows, never both),
    so the figure stays in view while it is styled; the card scrolls on its own */
-#vOut.styling #vGraph { flex: none; }   /* the figure keeps its full height; the card scrolls in what is left */
-#vOut.styling #vResults { display: none; }
+#work.styling #vGraph { flex: none; }   /* the figure keeps its full height; the card scrolls in what is left */
+#work.styling #vResults { display: none; }
 #styleCard { position: relative; flex: 1 1 0; min-height: 200px; overflow-y: auto; padding: 8px 12px 12px; background: var(--surface); }
 #styleCard .st-cols { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
 #styleCard .st-cols > div { min-width: 0; }
@@ -436,7 +436,7 @@ th.hd-on .col-letter { color: var(--accent); font-weight: 600; box-shadow: inset
 #resToggle { display: inline-flex; align-items: center; gap: 6px; margin-left: -4px; padding: 2px 6px 2px 4px; border-radius: 6px; font-weight: 600; color: inherit; }
 #resToggle:hover { background: var(--btn-hover); }
 #resToggle .chev, #report .sec-t .chev { width: 9px; height: 9px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; transition: transform .15s; }
-#vOut.res-folded #resToggle .chev { transform: rotate(-90deg); }
+#work.res-folded #resToggle .chev { transform: rotate(-90deg); }
 #vResults.folded #report, #vResults.folded #copyStats { display: none; }
 #vResults.folded .res-head { margin-bottom: 8px; }
 #report .sec-t { display: flex; align-items: baseline; gap: 5px; cursor: pointer; user-select: none; }
@@ -571,18 +571,18 @@ body.vsplitting, body.vsplitting * { cursor: row-resize !important; user-select:
 #resToggle { margin: 0; padding: 0 12px 0 9px; border-radius: 0; font-weight: 400; }
 #resToggle.on { font-weight: 600; }
 #resToggle:hover { background: transparent; }
-#vOut.styling #resToggle { background: transparent; color: var(--fg-muted); font-weight: 400; height: 28px; margin: 0; }
-#vOut.styling #styleTab { background: var(--surface); color: var(--fg-strong); font-weight: 600; height: 29px; margin-bottom: -1px; }
-#vOut.styling #copyStats { display: none; }
+#work.styling #resToggle { background: transparent; color: var(--fg-muted); font-weight: 400; height: 28px; margin: 0; }
+#work.styling #styleTab { background: var(--surface); color: var(--fg-strong); font-weight: 600; height: 29px; margin-bottom: -1px; }
+#work.styling #copyStats { display: none; }
 #styleCard #styleClose { display: none; }
 #styleCard .stepper button { width: 22px !important; }
 /* folded results: the bottom pane shrinks to its header and the conclusion; the plot takes the rest */
-#vOut.res-folded #resPane { flex: none; min-height: 0; }
-#vOut.res-folded #vResults { position: static; padding: 6px 10px; }
-#vOut.res-folded #vGraph { justify-content: safe center; }
-#vOut.res-folded #splitV { pointer-events: none; }
-#vOut.res-folded #copyStats { display: none; }
-#vOut.res-folded.styling #resPane { flex: 0 0 var(--res-h, 42%); }
+#work.res-folded #resPane { flex: none; min-height: 0; }
+#work.res-folded #vResults { position: static; padding: 6px 10px; }
+#work.res-folded #vGraph { justify-content: safe center; }
+#work.res-folded #splitV { pointer-events: none; }
+#work.res-folded #copyStats { display: none; }
+#work.res-folded.styling #resPane { flex: 0 0 var(--res-h, 42%); }
 
 /* ===== toolbar in svguest's style (user's request, Nov 2026; from svguest app.html #mBar / #mTools):
    the bar is --bar grey; buttons are transparent with 6–7px corners and muted icons, a translucent
@@ -626,8 +626,8 @@ body.vsplitting, body.vsplitting * { cursor: row-resize !important; user-select:
 #tabs .tab, .ptab { height: 26px; margin: 0; padding: 0 6px 0 10px; border: 0; border-radius: 6px; background: transparent; color: var(--sv-h4); font-size: 12px; font-weight: 400; }
 .ptab { padding: 0 10px; }
 #tabs .tab:hover, .ptab:hover { background: var(--sv-btnh); color: var(--fg); }
-#tabs .tab.on, .ptab.on, #vOut.styling #styleTab { height: 26px; margin: 0; background: var(--sv-btn); color: var(--fg-strong); font-weight: 600; box-shadow: var(--sv-sh), inset 0 0 0 1px var(--sv-btnb); }
-#vOut.styling #resToggle { height: 26px; background: transparent; box-shadow: none; color: var(--sv-h4); font-weight: 400; }
+#tabs .tab.on, .ptab.on, #work.styling #styleTab { height: 26px; margin: 0; background: var(--sv-btn); color: var(--fg-strong); font-weight: 600; box-shadow: var(--sv-sh), inset 0 0 0 1px var(--sv-btnb); }
+#work.styling #resToggle { height: 26px; background: transparent; box-shadow: none; color: var(--sv-h4); font-weight: 400; }
 span.ptab.on { box-shadow: none; background: transparent; padding-left: 7px; }   /* "Plot": a title, not a tab to pick */
 #tabs .tab .x { width: 18px; height: 18px; border-radius: 4px; color: var(--sv-t3); }
 #tabs .tab .x:hover { background: var(--sv-btnh); color: var(--fg); }
@@ -970,16 +970,62 @@ table.data-grid td.rowhdr.pick { background: var(--sv-on); color: var(--accent);
 #resTabs { gap: 2px; padding: 2px; border-radius: 7px; background: var(--sv-btnh); }
 #resTabs button { height: 22px; margin: 0; padding: 0 10px; border: 0; border-radius: 5px; background: none; box-shadow: none; font-size: 12px; font-weight: 400; color: var(--sv-h4); }
 #resTabs button:hover { color: var(--fg-strong); background: none; }
-#vOut:not(.styling) #resTabs #resToggle, #vOut.styling #resTabs #styleTab { background: var(--sv-btn); box-shadow: var(--sv-sh); color: var(--fg-strong); font-weight: 500; height: 22px; margin: 0; }
-#vOut.styling #resTabs #resToggle { height: 22px; margin: 0; background: none; box-shadow: none; color: var(--sv-h4); font-weight: 400; }
-[data-theme="dark"] #vOut:not(.styling) #resTabs #resToggle, [data-theme="dark"] #vOut.styling #resTabs #styleTab, :root:not([data-theme]) #vOut:not(.styling) #resTabs #resToggle, :root:not([data-theme]) #vOut.styling #resTabs #styleTab { background: #424242; }
+#work:not(.styling) #resTabs #resToggle, #work.styling #resTabs #styleTab { background: var(--sv-btn); box-shadow: var(--sv-sh); color: var(--fg-strong); font-weight: 500; height: 22px; margin: 0; }
+#work.styling #resTabs #resToggle { height: 22px; margin: 0; background: none; box-shadow: none; color: var(--sv-h4); font-weight: 400; }
+[data-theme="dark"] #work:not(.styling) #resTabs #resToggle, [data-theme="dark"] #work.styling #resTabs #styleTab, :root:not([data-theme]) #work:not(.styling) #resTabs #resToggle, :root:not([data-theme]) #work.styling #resTabs #styleTab { background: #424242; }
 #foldBtn { height: 24px; width: 26px !important; border: 1px solid transparent; border-radius: 6px; background: transparent; box-shadow: none; }
 #foldBtn:hover { background: var(--sv-btnh); }
 #foldBtn svg { color: var(--sv-h4); transition: transform .15s; }
-#vOut.res-folded #foldBtn svg { transform: rotate(180deg); }
-#vOut.styling #foldBtn { display: none; }
+#work.res-folded #foldBtn svg { transform: rotate(180deg); }
+#work.styling #foldBtn { display: none; }
 #verdict > div, #verdict > .v-yes { border: 0; border-left: 0; border-radius: 6px; padding: 8px 12px; background: var(--sv-side); }
 #verdict > .v-yes { background: var(--ok-box-bg); }
+/* pane arrangement: slots hold the panes; a grip in each header drags a pane onto another to swap */
+#work .slot { display: flex; flex-direction: column; min-width: 0; min-height: 0; }
+#work .slot > .pane { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
+#vOut > .slot-b { flex: 1 1 0; min-height: 120px; }
+#vOut > .slot-c { flex: 0 0 var(--res-h, 36%); min-height: 90px; }
+#work.res-folded[data-res="c"] .slot-c { flex: none; min-height: 0; }
+#work.res-folded[data-res="b"] .slot-b { flex: none; min-height: 0; }
+#work.res-folded[data-res="b"] .slot-c { flex: 1 1 0; }
+#work.res-folded #resPane { flex: 1 1 auto; }
+#work.res-folded.styling[data-res="c"] .slot-c { flex: 0 0 var(--res-h, 36%); }
+#work.res-folded.styling[data-res="b"] .slot-b { flex: 1 1 0; }
+#dataHead { padding: 0; gap: 0; }
+#dataHead #tabs { flex: 1 1 auto; min-width: 0; border-bottom: 0; background: transparent; padding-left: 0; }
+.pane-head > .grip { flex: none; display: grid; place-items: center; align-self: stretch; width: 16px; margin: 0 0 0 2px; cursor: grab; color: var(--sv-t3); opacity: .45; }
+.pane-head > .grip:hover { opacity: 1; color: var(--fg); }
+.pane-head > .grip svg { width: 7px; height: 12px; fill: currentColor; }
+#graphHead .ptab, #resHead #resTabs { margin-left: 0; }
+#graphHead span.ptab.on { padding-left: 4px; }
+.pane.drag-src { opacity: .55; }
+#work.pane-dragging .pane { position: relative; }
+#work.pane-dragging .pane:not(.drag-src)::after { content: ""; position: absolute; inset: 0; z-index: 40; border-radius: 8px; background: transparent; }
+.pane.drop-here::after { background: var(--sv-on) !important; box-shadow: inset 0 0 0 2px var(--focus-border); }
+@media (max-width: 880px) { #work .slot, #vOut > .slot-b, #vOut > .slot-c { flex: none; } .pane-head > .grip { display: none; } }
+/* advice under the conclusion: why the test may not fit, and the one that does, one click away */
+#advice { display: flex; flex-direction: column; gap: 6px; }
+#advice:not(:empty) { margin-top: 6px; }
+#advice > div { display: flex; align-items: center; gap: 10px; padding: 7px 8px 7px 12px; border-radius: 6px; background: var(--warn-bg); color: var(--fg); font-size: 12px; line-height: 1.45; }
+#advice > div span { flex: 1; min-width: 0; }
+#advice button { flex: none; height: 24px; padding: 0 10px; border: 1px solid var(--sv-btnb); border-radius: 6px; background: var(--sv-btn); color: var(--fg-strong); font-size: 12px; font-weight: 500; white-space: nowrap; }
+#advice button:hover { background: var(--sv-btn) linear-gradient(var(--sv-btnh), var(--sv-btnh)); }
+#work.res-folded #advice { display: none; }
+#advice:not(:empty) + #report { margin-top: 10px; }
+/* no figure yet: three steps instead of a blank page */
+#vGraph.empty #plot { display: none; }
+#plotEmpty { display: none; }
+#vGraph.empty { justify-content: safe center; }
+#vGraph.empty #plotEmpty { display: block; max-width: 340px; padding: 8px; color: var(--sv-h4); font-size: 12.5px; line-height: 1.5; }
+#plotEmpty b { display: block; margin-bottom: 10px; font-size: 14px; font-weight: 600; color: var(--fg-strong); }
+#plotEmpty ol { margin: 0 0 14px; padding: 0; list-style: none; display: grid; gap: 8px; }
+#plotEmpty li { display: flex; gap: 10px; align-items: flex-start; }
+#plotEmpty li span { flex: none; display: grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; background: var(--sv-btnh); color: var(--fg); font-size: 11px; font-weight: 600; }
+#plotEmpty .tb-btn { height: 28px; padding: 0 12px; border: 1px solid var(--sv-btnb); border-radius: 6px; background: var(--sv-btn); color: var(--fg-strong); font-weight: 500; }
+/* other names of a test, under its name in the menu */
+#menuPop button:has(.aka) { height: auto; min-height: 26px; padding-top: 4px; padding-bottom: 4px; align-items: flex-start; white-space: normal; }
+#menuPop .aka { display: block; margin-top: 1px; font-style: normal; font-size: 11px; font-weight: 400; line-height: 1.35; color: var(--sv-t3); }
+#menuPop button:has(.aka) small { padding-top: 1px; white-space: nowrap; }
 </style>
 </head>
 
@@ -990,7 +1036,7 @@ table.data-grid td.rowhdr.pick { background: var(--sv-on); color: var(--accent);
   <div id="mbPop" role="menu" hidden></div>
   <header id="ribbon" class="tbar">
     <!-- app-level commands only; each pane's own tools sit in that pane (Nov 2026) -->
-    <div class="rg"><label for="importJH" id="importLabel" class="tb-btn" title="Open a saved .jgz session, an Excel .xlsx file (each worksheet becomes a tab) or a .csv / .txt table"><svg viewBox="0 0 24 24"><path d="M12 15V3m-4 8 4 4 4-4"/><path d="M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/></svg>Open</label><button id="exportBtn" class="tb-btn" title="Save this session (data + settings) as a .jgz file"><svg viewBox="0 0 24 24"><path d="M12 3v12m-4-8 4-4 4 4"/><path d="M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/></svg>Save</button><input id="importJH" type="file" accept=".jgz,.jh,.xlsx,.csv,.tsv,.txt" class="hidden" /></div>
+    <div class="rg"><label for="importJH" id="importLabel" class="tb-btn" title="Open a saved .jgz session, an Excel .xlsx file (each worksheet becomes a tab) or a .csv / .txt table"><svg viewBox="0 0 24 24"><path d="M3 7.5a2 2 0 0 1 2-2h4l2 2.5h8a2 2 0 0 1 2 2V17a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Open</label><button id="exportBtn" class="tb-btn" title="Save this session (data + settings) as a .jgz file"><svg viewBox="0 0 24 24"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14"/></svg>Save</button><input id="importJH" type="file" accept=".jgz,.jh,.xlsx,.csv,.tsv,.txt" class="hidden" /></div>
     <div class="rg"><button id="undoBtn" class="tb-btn ic" title="Undo (⌘/Ctrl+Z)" aria-label="Undo" disabled><svg viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-3"/></svg></button><button id="redoBtn" class="tb-btn ic" title="Redo (⌘/Ctrl+Shift+Z)" aria-label="Redo" disabled><svg viewBox="0 0 24 24"><path d="m15 14 5-5-5-5"/><path d="M20 9H9a5 5 0 0 0 0 10h3"/></svg></button></div>
     <div class="rg"><button id="pasteBtn" class="tb-btn" title="Paste a table from Excel, Word, a web page, a PDF or a CSV: replaces the sheet"><svg viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="17" rx="2"/><path d="M9 4V3h6v1M9 10h6M9 14h6M9 18h3"/></svg>Paste</button></div>
     <div class="rg">
@@ -1068,9 +1114,10 @@ table.data-grid td.rowhdr.pick { background: var(--sv-on); color: var(--accent);
   <div id="work">
     <div id="split" role="separator" aria-orientation="vertical" aria-label="Resize the sheet and the figure" tabindex="0" title="Drag to resize the sheet and the figure; double-click to reset"></div>
     <!-- ============ DATA SHEET ============ -->
-    <section id="vData" class="pane">
+    <div class="slot slot-a" data-slot="a">
+    <section id="vData" class="pane" data-pane="d">
       <!-- one tab per data sheet; each keeps its own data, test, figure options and undo -->
-      <div id="tabs" role="tablist" aria-label="Sheets"></div>
+      <div class="pane-head" id="dataHead"><span class="grip" draggable="true" title="Drag onto another pane to swap their places" aria-hidden="true"><svg viewBox="0 0 8 14"><circle cx="2" cy="2" r="1.2"/><circle cx="6" cy="2" r="1.2"/><circle cx="2" cy="7" r="1.2"/><circle cx="6" cy="7" r="1.2"/><circle cx="2" cy="12" r="1.2"/><circle cx="6" cy="12" r="1.2"/></svg></span><div id="tabs" role="tablist" aria-label="Sheets"></div></div>
       <div class="pane-tools tbar" id="dataTools"><button type="button" class="tb-btn menu-btn tab-tool" id="subcolsBtn" aria-haspopup="dialog" title="Replicates side by side: each data set gets N subcolumns, as in Prism's grouped table"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="M3 9h18M9 9v10M15 9v10"/></svg><span class="lbl">Subcolumns</span><svg class="chev" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4"/></svg></button><button type="button" class="tb-btn menu-btn tab-tool" id="transformBtn" aria-haspopup="dialog" title="Transform the data before the analysis: % of the first column, log, average replicates"><svg viewBox="0 0 24 24"><path d="M4 18c4 0 4-12 8-12s4 12 8 12"/></svg><span class="lbl">Transform</span><svg class="chev" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4"/></svg></button><i class="tsep"></i><button id="addRowBtn" class="tb-btn" title="Add a row at the bottom (or press Enter on the last row)"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="9" rx="1.5"/><path d="M12 15.5v5M9.5 18h5"/></svg>Row</button><button id="addGroupBtn" class="tb-btn" title="Add a column (group) on the right"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="9" height="16" rx="1.5"/><path d="M18 9.5v5M15.5 12h5"/></svg>Col</button><i class="tsep"></i><button type="button" id="scopeBtn" class="tb-btn" title="Analyze only the columns and rows you have selected on the sheet; the test follows what you selected"><svg viewBox="0 0 24 24"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/><path d="M9 15v-3M12 15V9M15 15v-4"/></svg>Analyze selection</button><span class="ph-fill"></span><button id="copyData" class="tb-btn ic" title="Copy the whole sheet as TSV (paste into Excel / Sheets)"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>Copy</button><button id="clearBtn" class="tb-btn ic" title="Clear all data (Undo brings it back)" aria-label="Clear all data"><svg viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/></svg></button></div>
       <div id="scopeBar" hidden></div>
       <div id="sheetWrap">
@@ -1091,14 +1138,16 @@ table.data-grid td.rowhdr.pick { background: var(--sv-on); color: var(--accent);
         </div>
       </div>
     </section>
+    </div>
 
     <!-- ============ OUTPUT: graph + results ============ -->
     <section id="vOut">
-      <div id="graphPane" class="pane">
-        <div class="pane-head tbar" id="graphHead"><span class="ptab on">Plot</span><span class="ph-fill"></span>
+      <div class="slot slot-b" data-slot="b">
+      <div id="graphPane" class="pane" data-pane="p">
+        <div class="pane-head tbar" id="graphHead"><span class="grip" draggable="true" title="Drag onto another pane to swap their places" aria-hidden="true"><svg viewBox="0 0 8 14"><circle cx="2" cy="2" r="1.2"/><circle cx="6" cy="2" r="1.2"/><circle cx="2" cy="7" r="1.2"/><circle cx="6" cy="7" r="1.2"/><circle cx="2" cy="12" r="1.2"/><circle cx="6" cy="12" r="1.2"/></svg></span><span class="ptab on">Plot</span><span class="ph-fill"></span>
         <input id="plotW" type="number" min="220" step="20" value="" placeholder="300" title="Width in px (blank = automatic, fitted to the figure)" class="num-field size-src" hidden />
         <input id="plotH" type="number" min="220" step="20" value="" placeholder="400" title="Height in px (blank = automatic, fitted to the figure)" class="num-field size-src" hidden />
-        <button id="resetGraph" class="tb-btn ic" title="Restore graph to default options, size &amp; view"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>Reset</button><button id="copyFig" class="tb-btn ic" title="Copy the figure: PNG for PowerPoint, Word or a chat; SVG for svguest, Illustrator or Figma"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>Copy</button><button id="exportBtnFig" class="tb-btn menu-btn" aria-haspopup="dialog" title="Download the figure (or every sheet as one panel figure) as PNG or SVG, at a journal width and DPI"><svg viewBox="0 0 24 24"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14"/></svg><span class="lbl">Export</span><svg class="chev" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4"/></svg></button>
+        <button id="resetGraph" class="tb-btn ic" title="Restore graph to default options, size &amp; view"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>Reset</button><button id="copyFig" class="tb-btn ic" title="Copy the figure: PNG for PowerPoint, Word or a chat; SVG for svguest, Illustrator or Figma"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>Copy</button><button id="exportBtnFig" class="tb-btn menu-btn" aria-haspopup="dialog" title="Download the figure (or every sheet as one panel figure) as PNG or SVG, at a journal width and DPI"><svg viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9"/><path d="M18 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4"/></svg><span class="lbl">Export</span><svg class="chev" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4"/></svg></button>
         </div>
         <div class="pane-tools tbar" id="graphTools">
         <select id="chartType" class="field as-seg" aria-label="Chart type">
@@ -1118,7 +1167,7 @@ table.data-grid td.rowhdr.pick { background: var(--sv-on); color: var(--accent);
           <option value="pval" data-short="P =">p-value</option>
           <option value="off" data-short="Off">Hide statistics on the figure</option>
         </select>
-        <span class="ph-fill"></span><button id="styleBtn" class="tb-btn menu-btn" aria-expanded="false" aria-controls="styleCard" title="Figure style: font, dots, bar width, points, frame"><svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg><span class="lbl">Style</span></button>
+        <span class="ph-fill"></span><button id="styleBtn" class="tb-btn menu-btn" aria-expanded="false" aria-controls="styleCard" title="Figure style: font, dots, bar width, points, frame"><svg viewBox="0 0 24 24"><path d="M4 7h9M19 7h1M4 17h1M11 17h9"/><circle cx="16" cy="7" r="2.5"/><circle cx="8" cy="17" r="2.5"/></svg><span class="lbl">Style</span></button>
         <input id="dotSize" type="number" min="2" max="20" step="1" value="6" class="num-field size-src" hidden />
         <!-- figure style: these hidden fields hold the values, the Style button edits them -->
         <input id="fontSize" type="number" value="13" hidden />
@@ -1139,12 +1188,17 @@ table.data-grid td.rowhdr.pick { background: var(--sv-on); color: var(--accent);
         <input id="breakLo" hidden /><input id="breakHi" hidden /><!-- broken y axis: the gap from … to … -->
         <input id="yMin" hidden /><input id="yMax" hidden /><input id="refY" hidden /><input id="bandLo" hidden /><input id="bandHi" hidden />
         </div>
-      <div id="vGraph"><div id="plot" style="height: 400px;"></div></div>
+      <div id="vGraph" class="empty"><div id="plot" style="height: 400px;"></div>
+        <div id="plotEmpty"><b>No figure yet</b>
+          <ol><li><span>1</span>Type values into the sheet, or paste a table from Excel into the bar under it.</li><li><span>2</span>Pick a test in the bar at the top; the figure and the results appear by themselves.</li><li><span>3</span>Click any text or bar on the figure to change it.</li></ol>
+          <button type="button" id="emptyExamples" class="tb-btn">See an example</button></div></div>
       <p id="plotHint" hidden><span>Click text or a bar to edit and format it; right-click for analyses and copying.</span> <span>For finer editing, copy as SVG and paste into</span> <a href="https://www.svguest.online" target="_blank" rel="noopener" title="svguest: an in-browser SVG editor">svguest</a></p>
       </div>
+      </div>
       <div id="splitV" role="separator" aria-orientation="horizontal" aria-label="Resize the figure and the results" tabindex="0" title="Drag to resize the figure and the results; double-click to reset"></div>
-      <div id="resPane" class="pane">
-      <div class="pane-head" id="resHead">
+      <div class="slot slot-c" data-slot="c">
+      <div id="resPane" class="pane" data-pane="r">
+      <div class="pane-head" id="resHead"><span class="grip" draggable="true" title="Drag onto another pane to swap their places" aria-hidden="true"><svg viewBox="0 0 8 14"><circle cx="2" cy="2" r="1.2"/><circle cx="6" cy="2" r="1.2"/><circle cx="2" cy="7" r="1.2"/><circle cx="6" cy="7" r="1.2"/><circle cx="2" cy="12" r="1.2"/><circle cx="6" cy="12" r="1.2"/></svg></span>
         <div class="seg" id="resTabs" role="tablist"><button type="button" id="resToggle" class="on" role="tab" title="The conclusion, the result tables and the methods paragraph">Results</button><button type="button" id="styleTab" role="tab" title="Figure style: font, dots, bars, frame, y axis, significance">Figure style</button></div>
         <span class="ph-fill"></span>
         <button id="copyStats" class="tb-btn" title="Copy all result tables as TSV"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>Copy table</button>
@@ -1153,7 +1207,9 @@ table.data-grid td.rowhdr.pick { background: var(--sv-on); color: var(--accent);
       <div id="styleCard" hidden><button type="button" id="styleClose" aria-label="Close" title="Close the style card (the results come back)">×</button><div id="styleBody"></div></div>
       <div id="vResults">
         <div id="verdict"></div>
+        <div id="advice"></div>
         <div id="report" class="overflow-x-auto scroll-thin"></div>
+      </div>
       </div>
       </div>
     </section>
@@ -1168,12 +1224,13 @@ table.data-grid td.rowhdr.pick { background: var(--sv-on); color: var(--accent);
     <ol class="help-quick"><li><b>1</b><span><strong>Paste</strong>Copy a table from Excel and paste it into the bar under the sheet.</span></li><li><b>2</b><span><strong>Pick a test</strong>Choose it in the toolbar; the figure (top right) and the results (below it) update as you type.</span></li><li><b>3</b><span><strong>Edit the figure</strong>Click any text or bar on the figure; right-click for more.</span></li></ol>
     <nav class="help-nav"><a href="#h-window-en">The window</a><a href="#h-data-en">Your data</a><a href="#h-sheet-en">The sheet</a><a href="#h-figure-en">The figure</a><a href="#h-results-en">Results</a><a href="#h-files-en">Files and sharing</a><a href="#h-about-en">About</a></nav>
     <section class="hs" id="h-window-en"><h4><svg viewBox="0 0 24 24"><path d="M3 4h18v16H3zM3 8h18M11 8v12M11 14h10"/></svg>The window</h4><dl>
-        <div class="hi"><dt>Menu bar</dt><dd>Every command is in the menus at the top: <i>File</i> (open, save, examples, paste, share, export), <i>Edit</i> (undo, rows and columns, clear), <i>Data</i> (subcolumns, transform), <i>Analysis</i> (test, results), <i>Graph</i> (style, size, colours), <i>View</i> (dark / light interface, 中文 / English, pane sizes) and <i>Help</i> (these tips, the tour, GitHub).</dd></div>
+        <div class="hi"><dt>Menu bar</dt><dd>Every command is in the menus at the top: <i>File</i> (open, save, examples, paste, share, export), <i>Edit</i> (undo, rows and columns, clear), <i>Data</i> (subcolumns, transform), <i>Analysis</i> (test, results), <i>Graph</i> (style, size, colours), <i>View</i> (dark / light interface, 中文 / English, layout) and <i>Help</i> (these tips, the tour, GitHub).</dd></div>
         <div class="hi"><dt>Toolbar</dt><dd>The row under the menus holds the commands for the whole session: Open, Save, undo / redo, Paste, the test with its option and Run, and Share at the right. Each pane has its own tools in a strip under its header.</dd></div>
         <div class="hi"><dt>Sheet pane</dt><dd>On the left: the sheet tabs; a tool strip with Subcolumns, Transform, add row / column, copy and clear; the sheet; and the paste bar with Examples at the foot.</dd></div>
         <div class="hi"><dt>Plot pane</dt><dd>Top right: the figure. Its header holds the width (W) and height (H), Reset, Copy and Export; the strip under it sets the chart type, error bars, colour theme and significance labels, and opens Style.</dd></div>
         <div class="hi"><dt>Results pane</dt><dd>Bottom right, with two tabs: <i>Results</i> (the conclusion, the tables and a methods paragraph) and <i>Figure style</i> (font, dots, bars, frame, y axis, significance marks). The arrow at the right of its header folds the tables and gives the figure the room.</dd></div>
-        <div class="hi"><dt>Pane sizes</dt><dd>Drag the gap between the sheet and the figure, or between the figure and the results, to resize the panes (or focus it and use the arrow keys). Double-click a gap, or View → Reset pane sizes, to go back. Sizes are kept in this browser.</dd></div>
+        <div class="hi"><dt>Pane sizes</dt><dd>Drag the gap between the sheet and the figure, or between the figure and the results, to resize the panes (or focus it and use the arrow keys). Double-click a gap to reset it. Sizes are kept in this browser.</dd></div>
+        <div class="hi"><dt>Move panes</dt><dd>Drag a pane by the dotted grip at the left of its header and drop it on another pane: the two swap places (the sheet below the figure, the results on the left…). The arrangement is kept in this browser; View → Reset layout puts everything back.</dd></div>
     </dl></section>
     <section class="hs" id="h-data-en"><h4><svg viewBox="0 0 24 24"><path d="M4 5h16v14H4zM4 10h16M10 5v14"/></svg>Your data</h4><dl>
         <div class="hi"><dt>Layout</dt><dd>One column per group. Paired, repeated-measures and Friedman tests match values by row (one subject per row). Correlation uses column A as X and B as Y. Contingency tables hold counts: columns are groups, rows are outcomes (named by the row titles).</dd></div>
@@ -1223,12 +1280,13 @@ table.data-grid td.rowhdr.pick { background: var(--sv-on); color: var(--accent);
     <ol class="help-quick"><li><b>1</b><span><strong>粘贴</strong>从 Excel 复制表格，粘贴到表格下方的粘贴栏。</span></li><li><b>2</b><span><strong>选择检验</strong>在工具栏里选择；右上的图和下方的结果随输入自动更新。</span></li><li><b>3</b><span><strong>编辑图形</strong>点击图上的文字或柱子即可修改；右键有更多操作。</span></li></ol>
     <nav class="help-nav"><a href="#h-window-zh">界面</a><a href="#h-data-zh">数据</a><a href="#h-sheet-zh">表格</a><a href="#h-figure-zh">图形</a><a href="#h-results-zh">结果</a><a href="#h-files-zh">文件与分享</a><a href="#h-about-zh">关于</a></nav>
     <section class="hs" id="h-window-zh"><h4><svg viewBox="0 0 24 24"><path d="M3 4h18v16H3zM3 8h18M11 8v12M11 14h10"/></svg>界面</h4><dl>
-        <div class="hi"><dt>菜单栏</dt><dd>所有命令都在顶部菜单里：<i>文件</i>（打开、保存、示例、粘贴、分享、导出）、<i>编辑</i>（撤销、行和列、清空）、<i>数据</i>（子列、数据变换）、<i>分析</i>（检验、结果）、<i>图形</i>（样式、尺寸、配色）、<i>视图</i>（深色 / 浅色界面、English / 中文、窗格大小）和<i>帮助</i>（本说明、新手引导、GitHub）。</dd></div>
+        <div class="hi"><dt>菜单栏</dt><dd>所有命令都在顶部菜单里：<i>文件</i>（打开、保存、示例、粘贴、分享、导出）、<i>编辑</i>（撤销、行和列、清空）、<i>数据</i>（子列、数据变换）、<i>分析</i>（检验、结果）、<i>图形</i>（样式、尺寸、配色）、<i>视图</i>（深色 / 浅色界面、English / 中文、布局）和<i>帮助</i>（本说明、新手引导、GitHub）。</dd></div>
         <div class="hi"><dt>工具栏</dt><dd>菜单下面一行是针对整个会话的命令：打开、保存、撤销 / 重做、粘贴、检验及其选项和运行，最右边是分享。每个窗格自己的工具在各自标题栏下面的工具条里。</dd></div>
         <div class="hi"><dt>表格窗格</dt><dd>左边：表格标签；工具条（子列、数据变换、加行 / 加列、复制、清空）；表格本身；底部是粘贴栏和示例。</dd></div>
         <div class="hi"><dt>图窗格</dt><dd>右上：图。标题栏里有宽度（W）和高度（H）、重置、复制和导出；下面的工具条可选图表类型、误差线、配色和显著性标记，并打开样式。</dd></div>
         <div class="hi"><dt>结果窗格</dt><dd>右下，有两个标签：<i>结果</i>（结论、各个表格和方法段落）和<i>样式</i>（字号、点、柱、边框、Y 轴、显著性标记）。标题栏最右边的箭头可折叠表格，把空间留给图。</dd></div>
-        <div class="hi"><dt>窗格大小</dt><dd>拖动表格和图之间、或图和结果之间的缝隙即可调整窗格大小（也可以选中后用方向键）。双击缝隙，或视图 → 重置窗格大小，即可还原。大小会保存在本浏览器中。</dd></div>
+        <div class="hi"><dt>窗格大小</dt><dd>拖动表格和图之间、或图和结果之间的缝隙即可调整窗格大小（也可以选中后用方向键）。双击缝隙即可还原。大小会保存在本浏览器中。</dd></div>
+        <div class="hi"><dt>移动窗格</dt><dd>按住窗格标题栏最左边的点状把手拖动，放到另一个窗格上，两者就交换位置（比如把表格放到图下面，把结果放到左边）。排列方式保存在本浏览器中；视图 → 重置布局恢复默认。</dd></div>
     </dl></section>
     <section class="hs" id="h-data-zh"><h4><svg viewBox="0 0 24 24"><path d="M4 5h16v14H4zM4 10h16M10 5v14"/></svg>数据</h4><dl>
         <div class="hi"><dt>数据布局</dt><dd>每组一列。配对、重复测量和 Friedman 检验按行匹配（每行一个受试对象）。相关分析以 A 列为 X、B 列为 Y。列联表填计数：列为组，行为结局（由行标题命名）。</dd></div>
@@ -2345,16 +2403,45 @@ document.querySelectorAll("select.as-menu").forEach(sel => {
   b.onkeydown = e => { if (e.key === "ArrowDown" || e.key === "ArrowUp") { e.preventDefault(); openMenuPop(sel); } };
   sel._btn = b; sel.hidden = true; sel.after(b);
 });
+/* Other names the same test goes by (user's request, Nov 2026): textbooks, SPSS, Prism and R each
+   have their own, and people look for the one they were taught. Shown under the name in the test
+   menu and in the button's tip; [English, Chinese]. */
+const TEST_AKA = {
+  desc: ["summary statistics; column statistics", "汇总统计；列统计"],
+  onet: ["single-sample t-test", "单样本 t 检验"],
+  onew: ["one-sample signed-rank test", "单样本符号秩检验"],
+  ttest: ["independent-samples t-test; two-sample t-test; Student's t (Welch off)", "独立样本 t 检验；两样本 t 检验；Student t 检验（关闭 Welch 时）"],
+  mwu: ["Wilcoxon rank-sum test; Mann–Whitney–Wilcoxon", "Wilcoxon 秩和检验"],
+  paired: ["dependent-samples t-test; matched-pairs t-test", "配对样本 t 检验；相关样本 t 检验"],
+  wilcoxon: ["Wilcoxon matched-pairs test; paired signed-rank test", "Wilcoxon 配对符号秩检验"],
+  anova: ["single-factor ANOVA; F-test across groups", "单因素方差分析；单向方差分析"],
+  kruskal: ["Kruskal–Wallis H test; one-way ANOVA on ranks", "Kruskal–Wallis H 检验；秩和方差分析"],
+  rmanova: ["within-subjects ANOVA; one-way RM ANOVA", "被试内方差分析；单因素重复测量方差分析"],
+  friedman: ["Friedman rank test; repeated-measures ANOVA on ranks", "Friedman 秩检验；重复测量的秩方差分析"],
+  twoway: ["two-factor ANOVA; factorial ANOVA", "两因素方差分析；析因设计方差分析"],
+  cells: ["one-way ANOVA on every treatment combination; letters = compact letter display", "把每个处理组合当作一组的单因素方差分析；字母标记法"],
+  corr: ["Pearson's r; Spearman's ρ (rank correlation); simple linear regression", "Pearson 相关系数 r；Spearman 秩相关 ρ；简单线性回归"],
+  dose: ["four-parameter logistic; sigmoidal curve; Hill equation", "四参数 logistic；S 形曲线；Hill 方程"],
+  survival: ["product-limit estimator; Mantel–Cox test", "乘积极限法；Mantel–Cox 检验"],
+  chisq: ["χ² test of independence; contingency table test", "χ² 独立性检验；列联表检验；卡方检验"],
+  tukey: ["Tukey–Kramer; honestly significant difference", "Tukey–Kramer；真实显著差异法"],
+  holm: ["Holm–Bonferroni; step-down Bonferroni", "Holm–Bonferroni；逐步 Bonferroni"],
+  bonferroni: ["Bonferroni–Dunn correction", "Bonferroni–Dunn 校正"],
+  dunnett: ["many-to-one comparisons against a control", "多个处理组与一个对照组比较"],
+};
+const akaText = (v) => TEST_AKA[v] ? TEST_AKA[v][uiLang() === "zh" ? 1 : 0] : "";
+const akaHtml = (sel, v) => ["testSelect", "posthocSelect"].includes(sel.id) && TEST_AKA[v] ? `<em class="aka" data-noi18n>${escapeHtml((uiLang() === "zh" ? "又称：" : "also: ") + akaText(v))}</em>` : "";
 function openMenuPop(sel) {
   closeMenuPop();
   menuFor = sel;
   const sw = "swatch" in sel.dataset;
-  const item = (o) => `<button type="button" role="option" data-v="${escapeHtml(o.value)}" aria-selected="${o.selected}"${o.selected ? ' class="on"' : ""}${o.title ? ` title="${escapeHtml(o.title)}"` : ""}><span>${escapeHtml(o.text)}</span>${o.dataset.hint ? `<small>${escapeHtml(o.dataset.hint)}</small>` : ""}${sw ? swatch(o.value, 8, "strip") : ""}</button>`;
+  const item = (o) => `<button type="button" role="option" data-v="${escapeHtml(o.value)}" aria-selected="${o.selected}"${o.selected ? ' class="on"' : ""}${o.title ? ` title="${escapeHtml(o.title)}"` : ""}><span>${escapeHtml(o.text)}${akaHtml(sel, o.value)}</span>${o.dataset.hint ? `<small>${escapeHtml(o.dataset.hint)}</small>` : ""}${sw ? swatch(o.value, 8, "strip") : ""}</button>`;
   menuPop.innerHTML = (sel.querySelector("optgroup") ? "" : `<h4>${escapeHtml(sel.getAttribute("aria-label"))}</h4>`) +
     [...sel.children].map(ch => ch.tagName === "OPTGROUP" ? `<h4>${escapeHtml(ch.label)}</h4>` + [...ch.children].map(item).join("") : item(ch)).join("");
   menuPop.hidden = false;
   const r = sel._btn.getBoundingClientRect();
   menuPop.style.minWidth = Math.max(220, r.width) + "px";
+  if (["testSelect", "posthocSelect"].includes(sel.id)) menuPop.style.maxWidth = "440px";   // room for the other names
   menuPop.style.maxHeight = innerHeight - r.bottom - 12 + "px";
   menuPop.style.top = r.bottom + 4 + "px";
   menuPop.style.left = Math.max(6, Math.min(r.left, innerWidth - menuPop.offsetWidth - 6)) + "px";
@@ -2499,13 +2586,13 @@ const styleCard = $("styleCard"), styleBody = $("styleBody");
 function openStyleCard() {
   closeMenuPop();
   styleBody.innerHTML = styleHtml();
-  styleCard.hidden = false; $("vOut").classList.add("styling");
+  styleCard.hidden = false; $("work").classList.add("styling");
   $("styleBtn").classList.add("open"); $("styleBtn").setAttribute("aria-expanded", "true");
   styleCard.querySelector("#styleBody button").focus({ preventScroll: true });
 }
 function closeStyleCard(refocus) {
   if (styleCard.hidden) return;
-  styleCard.hidden = true; $("vOut").classList.remove("styling");
+  styleCard.hidden = true; $("work").classList.remove("styling");
   $("styleBtn").classList.remove("open"); $("styleBtn").setAttribute("aria-expanded", "false");
   if (refocus) $("styleBtn").focus();
 }
@@ -2609,7 +2696,7 @@ addEventListener("resize", () => closeMenuPop());
 /* Pane splitter: the right pane's width in px, kept in this browser (plsig:split). The grid
    clamps it, so a narrower window never squeezes either pane below a usable width. */
 (() => {
-  const work = $("work"), split = $("split"), data = $("vData");
+  const work = $("work"), split = $("split"), data = work.querySelector(".slot-a");
   const apply = (w) => { work.style.gridTemplateColumns = w ? `minmax(0, 1fr) clamp(320px, ${Math.round(w)}px, calc(100% - 360px))` : ""; };
   const place = () => { split.style.left = data.offsetLeft + data.offsetWidth + 2 + "px"; };   // in the gutter between the panes
   let saved = 0;
@@ -2640,7 +2727,7 @@ addEventListener("blur", () => closeMenuPop());
 
 /* Plot / results splitter: the results pane's height in px, kept in this browser (plsig:splitV) */
 (() => {
-  const out = $("vOut"), sp = $("splitV"), res = $("resPane");
+  const out = $("vOut"), sp = $("splitV"), res = out.querySelector(".slot-c");
   const apply = (h) => { if (h) out.style.setProperty("--res-h", Math.round(h) + "px"); else out.style.removeProperty("--res-h"); };
   let saved = 0;
   try { saved = +localStorage.getItem("plsig:splitV") || 0; } catch (_) { /* none */ }
@@ -2667,6 +2754,52 @@ addEventListener("blur", () => closeMenuPop());
 
 /* Menu bar (RStudio-style): every item runs a button that exists elsewhere (toolbar, pane headers),
    so a command has one implementation; items that open a popover anchor it to that button */
+/* Pane arrangement (user's request, Nov 2026, after Rex's draggable panes): three slots (a = left,
+   b = right top, c = right bottom) hold the three panes (d = data, p = plot, r = results). Drag a
+   pane by the grip in its header onto another pane and the two swap slots. Kept in plsig:layout as
+   the panes in slot order ("dpr" = default); View → Reset layout puts everything back. */
+const LAYOUT_DEFAULT = "dpr";
+function applyLayout(order) {
+  if (!/^[dpr]{3}$/.test(order) || new Set(order).size !== 3) order = LAYOUT_DEFAULT;
+  const work = $("work"), pane = { d: $("vData"), p: $("graphPane"), r: $("resPane") };
+  ["a", "b", "c"].forEach((sl, i) => { work.querySelector(".slot-" + sl).append(pane[order[i]]); });
+  work.dataset.layout = order; work.dataset.res = "abc"[order.indexOf("r")];
+  try { order === LAYOUT_DEFAULT ? localStorage.removeItem("plsig:layout") : localStorage.setItem("plsig:layout", order); } catch (_) { /* fine */ }
+  try { closeMenuPop(); hideFmtBar(); sizeSheetBackground(); paintSel(); } catch (_) { /* before the page is set up */ }
+}
+(() => {
+  const work = $("work");
+  let from = null;
+  const clear = () => { work.querySelectorAll(".pane.drop-here, .pane.drag-src").forEach(p => p.classList.remove("drop-here", "drag-src")); work.classList.remove("pane-dragging"); };
+  work.addEventListener("dragstart", e => {
+    const g = e.target.closest && e.target.closest(".pane-head > .grip");
+    if (!g) return;
+    from = g.closest(".pane");
+    e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/plain", "pane");
+    try { e.dataTransfer.setDragImage(g.parentElement, 12, 12); } catch (_) { /* default image */ }
+    requestAnimationFrame(() => { from.classList.add("drag-src"); work.classList.add("pane-dragging"); });
+  });
+  work.addEventListener("dragover", e => {
+    if (!from) return;
+    const to = e.target.closest && e.target.closest(".pane");
+    work.querySelectorAll(".pane.drop-here").forEach(p => { if (p !== to) p.classList.remove("drop-here"); });
+    if (!to || to === from) return;
+    e.preventDefault(); e.dataTransfer.dropEffect = "move"; to.classList.add("drop-here");
+  });
+  work.addEventListener("drop", e => {
+    if (!from) return;
+    const to = e.target.closest && e.target.closest(".pane");
+    if (to && to !== from) {
+      e.preventDefault();
+      const o = (work.dataset.layout || LAYOUT_DEFAULT).split(""), a = o.indexOf(from.dataset.pane), b = o.indexOf(to.dataset.pane);
+      [o[a], o[b]] = [o[b], o[a]];
+      applyLayout(o.join(""));
+    }
+    from = null; clear();
+  });
+  work.addEventListener("dragend", () => { from = null; clear(); });
+})();
+
 /* Menu bar, after svguest's (user's request, Nov 2026): "File ▾" titles; a borderless rounded
    drop-down with a soft shadow; items indented for a ✓ that marks the current choice; a key hint
    at the right; a tip on every item. Every item runs a button that exists elsewhere (toolbar,
@@ -2725,7 +2858,7 @@ const MENUS = [
     { t: "English", a: () => setLang("en"), on: () => uiLang() === "en", raw: true, tip: "Interface in English (figures are always in English)" },
     { t: "中文", a: () => setLang("zh"), on: () => uiLang() === "zh", raw: true, tip: "界面使用中文（图始终为英文）" },
     "-",
-    { t: "Reset pane sizes", a: () => { $("split").dispatchEvent(new Event("dblclick")); $("splitV").dispatchEvent(new Event("dblclick")); }, tip: "The sheet, figure and results back to their default sizes" },
+    { t: "Reset layout", a: () => { applyLayout(LAYOUT_DEFAULT); $("split").dispatchEvent(new Event("dblclick")); $("splitV").dispatchEvent(new Event("dblclick")); }, tip: "The sheet, figure and results back to their default places and sizes" },
   ]],
   ["Help", [
     { t: "Help", a: "helpBtn", tip: "Tips: data layout, the window, shortcuts, export" },
@@ -3643,6 +3776,11 @@ menuPop.addEventListener("click", e => {
   $("transformBtn").classList.toggle("on", transformOn());
   scheduleSave(); run(true);
 });
+$("advice").addEventListener("click", e => {
+  const b = e.target.closest("button[data-adv]");
+  if (b) { $("testSelect").value = b.dataset.adv; $("testSelect").dispatchEvent(new Event("change")); }
+});
+$("emptyExamples").onclick = () => $("loadDemoBtn").click();
 $("scopeBtn").onclick = () => analyzeSelection();
 $("scopeBar").addEventListener("click", e => {
   const b = e.target.closest("button[data-st]");
@@ -4051,6 +4189,11 @@ const ZH = {
   "Long table": "长表", "one row per measurement: two grouping columns + a value": "每行一次测量：两个分组列 + 一列数值",
   "Figure style": "图样式", "The conclusion, the result tables and the methods paragraph": "结论、结果表格和方法段落",
   "Fold the result tables (the conclusion stays) and give the figure the room; click again to unfold": "折叠结果表格（保留结论），把空间留给图；再点一次展开", "Fold or unfold the results": "折叠或展开结果",
+  "Reset layout": "重置布局", "The sheet, figure and results back to their default places and sizes": "表格、图和结果恢复默认位置和大小", "Drag onto another pane to swap their places": "拖到另一个窗格上，交换两者的位置",
+  "Use": "改用", "No figure yet": "还没有图", "See an example": "看一个示例", "Kruskal–Wallis": "Kruskal–Wallis", "Mann–Whitney": "Mann–Whitney", "Wilcoxon": "Wilcoxon", "Friedman": "Friedman",
+  "Type values into the sheet, or paste a table from Excel into the bar under it.": "在表格里输入数值，或把 Excel 里的表格粘贴到表格下方的粘贴栏。",
+  "Pick a test in the bar at the top; the figure and the results appear by themselves.": "在顶部工具栏选择检验；图和结果会自动出现。",
+  "Click any text or bar on the figure to change it.": "点击图上的文字或柱子即可修改。",
   "Subcolumns": "子列", "Edit": "编辑", "Data": "数据", "Help": "帮助", "Plot": "图",
   "Open…": "打开…", "Save session (.jgz)": "保存会话（.jgz）", "New sheet": "新建表格", "Examples…": "示例…", "Copy sheet as TSV": "复制表格（TSV）", "Paste table into sheet": "粘贴表格",
   "Share link": "分享链接", "Export figure…": "导出图…", "Copy figure": "复制图", "Add row": "添加行", "Add column": "添加列", "Clear all data": "清空所有数据",
@@ -4594,7 +4737,7 @@ function syncTestOptions() {
 }
 // analysis options: re-run immediately if results are already on screen
 ["testSelect", "posthocSelect", "dunnAdj", "welchChk", "mu0"].forEach(id => $(id).addEventListener("change", () => {
-  syncTestOptions(); scheduleSave();
+  syncTestOptions(); syncSegs(); scheduleSave();
   run(true);
 }));
 // graph options: restyle the existing figure without recomputing statistics
@@ -4626,6 +4769,7 @@ function run(quiet) {
   }
   renderScopeBar(); paintColumnRoles();
   groups = transformGroups(groups, test, problems).filter(g => g.values.length > 0);
+  const transformedCount = groups.length;
 
   const minGroups = ONE_GROUP.has(test) ? 1 : 2;
   if (groups.length < minGroups) problems.push(minGroups === 1 ? "Enter some values first." : "Need at least 2 non-empty columns for this analysis.");
@@ -4633,6 +4777,7 @@ function run(quiet) {
     problems.push(`This analysis uses 2 columns — using “${groups[0].name}” and “${groups[1].name}”.`);
     groups = groups.slice(0, 2);
   }
+  const nAll = transformedCount;   // before a two-group test took the first two
   if (groups.length < minGroups) { showWarnings(quiet ? warns : problems, decimalComma); clearResults(); return; }
 
   const btn = $("runBtn"), label = btn.innerHTML;
@@ -4646,6 +4791,7 @@ function run(quiet) {
       flagOutliers(test, groups, res.report);
       res.report.methods = methodsText(test, groups, res.plot);
       verdictBox(res.verdict.sig, res.verdict.html);
+      $("advice").innerHTML = adviceHtml(test, groups, nAll);
       $("report").innerHTML = reportHtml(res.report);
       drawPlot(res.plot);
     } catch (err) {
@@ -4660,6 +4806,7 @@ function clearResults() {
   $("verdict").innerHTML = "";
   $("report").innerHTML = "";
   lastReport = null; lastPlot = null;
+  $("advice").innerHTML = ""; $("vGraph").classList.add("empty");
   $("plotHint").hidden = true;
   try { Plotly.purge("plot"); } catch (e) { /* nothing drawn yet */ }
 }
@@ -4693,7 +4840,7 @@ try { shutSections = new Set(JSON.parse(localStorage.getItem("plsig:shut") || "[
 function setResultsFolded(f) {
   $("vResults").classList.toggle("folded", f);
   $("foldBtn").setAttribute("aria-expanded", String(!f));
-  $("vOut").classList.toggle("res-folded", f);
+  $("work").classList.toggle("res-folded", f);
   try { localStorage.setItem("plsig:resFolded", f ? "1" : "0"); } catch (_) { /* fine */ }
 }
 /* the bottom pane's tabs: Results (click again to fold the tables) and Style */
@@ -4702,6 +4849,7 @@ $("resToggle").onclick = () => { if (!styleCard.hidden) closeStyleCard(); else i
 $("foldBtn").onclick = () => { if (!styleCard.hidden) closeStyleCard(); setResultsFolded(!$("vResults").classList.contains("folded")); };
 $("styleTab").onclick = () => { if (styleCard.hidden) openStyleCard(); };
 try { if (localStorage.getItem("plsig:resFolded") === "1") setResultsFolded(true); } catch (_) { /* fine */ }
+try { applyLayout(localStorage.getItem("plsig:layout") || LAYOUT_DEFAULT); } catch (_) { applyLayout(LAYOUT_DEFAULT); }
 $("report").addEventListener("click", e => {
   const t = e.target.closest(".sec-t");
   if (!t || e.target.closest("button")) return;   // the methods paragraph's Copy button sits in a title
@@ -4801,6 +4949,38 @@ function reportTSV(rep) {
   return lines.join("\n");
 }
 
+/* Advice under the conclusion (Nov 2026: make the statistics easier): when the data do not fit the
+   test that ran, say why in one sentence and offer the test that fits, one click away. Rules:
+   more columns than a two-group test reads → one-way ANOVA (or Kruskal–Wallis); a group that fails
+   Shapiro–Wilk under a mean-based test → its rank-based partner; a group of fewer than 3 values. */
+function adviceHtml(test, groups, nAll) {
+  const out = [];
+  const add = (text, to) => out.push(`<div><span>${text}</span>${to ? `<button type="button" data-adv="${to}">${escapeHtml(uiText("Use")) + " " + escapeHtml(uiText(SHORT_TEST[to]))}</button>` : ""}</div>`);
+  const zh = uiLang() === "zh";
+  if (["ttest", "mwu"].includes(test) && nAll > 2)
+    add(zh ? `表里有 ${nAll} 组，而这个检验只比较前两组。要一次比较所有组：` : `The sheet has ${nAll} groups, and this test compares only the first two. To compare them all at once:`, test === "mwu" ? "kruskal" : "anova");
+  if (["paired", "wilcoxon"].includes(test) && nAll > 2)
+    add(zh ? `表里有 ${nAll} 列，而这个检验只比较前两列。要比较所有配对列：` : `The sheet has ${nAll} columns, and this test compares only the first two. To compare all matched columns:`, test === "wilcoxon" ? "friedman" : "rmanova");
+  const RANK = { ttest: "mwu", anova: "kruskal", onet: "onew" };
+  if (RANK[test]) {
+    const bad = groups.map(g => ({ g, sw: g.values.length >= 3 ? S.shapiroWilk(g.values) : null })).filter(x => x.sw && x.sw.p < 0.05);
+    if (bad.length) {
+      const names = bad.slice(0, 3).map(x => `${escapeHtml(x.g.name)} (<i>P</i> ${pRel(x.sw.p)})`).join(zh ? "、" : ", ") + (bad.length > 3 ? "…" : "");
+      add(zh ? `${names} 不太符合正态分布（Shapiro–Wilk 检验），而这个检验假设数据正态。基于秩的检验没有这个假设：` : `${names} ${bad.length > 1 ? "do" : "does"} not look normally distributed (Shapiro–Wilk), and this test assumes it. A rank-based test does not:`, RANK[test]);
+    }
+  }
+  if (test === "paired") {
+    const [a, b] = groups, mb = new Map(b.rows.map((r, i) => [r, b.values[i]])), d = [];
+    a.rows.forEach((r, i) => { if (mb.has(r)) d.push(a.values[i] - mb.get(r)); });
+    const sw = d.length >= 3 ? S.shapiroWilk(d) : null;
+    if (sw && sw.p < 0.05) add(zh ? `配对差值不太符合正态分布（Shapiro–Wilk <i>P</i> ${pRel(sw.p)}），而配对 t 检验假设差值正态。基于秩的检验没有这个假设：` : `The paired differences do not look normally distributed (Shapiro–Wilk <i>P</i> ${pRel(sw.p)}), and the paired t-test assumes it. A rank-based test does not:`, "wilcoxon");
+  }
+  if (["ttest", "mwu", "anova", "kruskal"].includes(test)) {
+    const few = groups.filter(g => g.values.length < 3);
+    if (few.length) add(zh ? `${few.slice(0, 3).map(g => escapeHtml(g.name)).join("、")} 只有不到 3 个值：样本太少，无法检查假设，<i>P</i> 值仅供参考。` : `${few.slice(0, 3).map(g => escapeHtml(g.name)).join(", ")} ${few.length > 1 ? "have" : "has"} fewer than 3 values: too few to check the assumptions, so read the <i>P</i> value with care.`, "");
+  }
+  return out.join("");
+}
 function verdictBox(yes, html) {
   $("verdict").innerHTML = `<div class="${yes ? "v-yes" : "v-no"}">${html}</div>`;
 }
@@ -5624,7 +5804,7 @@ function render(traces, layout) {
     layout.shapes = layout.shapes.filter(a => a.name !== "sig");
   }
   applyBreak(traces, layout);
-  $("plotHint").hidden = false;
+  $("plotHint").hidden = false; $("vGraph").classList.remove("empty");
   renderDone = Plotly.newPlot("plot", traces, layout, { responsive: true, displayModeBar: false });
   renderDone.then(hookPlotEvents);
 }
